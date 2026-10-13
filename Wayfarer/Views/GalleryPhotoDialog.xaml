@@ -1,0 +1,39 @@
+<ContentDialog x:Class="Wayfarer.Views.GalleryPhotoDialog"
+               xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+               xmlns:helpers="using:Wayfarer.Helpers"
+               AutomationProperties.AutomationId="GalleryPhotoDialog"
+               CloseButtonText="Close"
+               DefaultButton="Close"
+               Title="{x:Bind Photo.Caption, Mode=OneTime}">
+
+    <StackPanel MinWidth="480"
+                MaxWidth="720"
+                Spacing="{StaticResource WayfarerItemSpacing}">
+        <Border MaxHeight="440"
+                Style="{StaticResource WayfarerPhotoFrameStyle}">
+            <Image AutomationProperties.AutomationId="GalleryDetailImage"
+                   AutomationProperties.Name="{x:Bind Photo.Caption, Mode=OneTime}"
+                   Source="{x:Bind Photo.ImageUri, Mode=OneTime}"
+                   Stretch="Uniform" />
+        </Border>
+
+        <StackPanel Spacing="{StaticResource WayfarerTightSpacing}">
+            <StackPanel Orientation="Horizontal"
+                        Spacing="{StaticResource WayfarerContentSpacing}">
+                <FontIcon AutomationProperties.AccessibilityView="Raw"
+                          FontSize="16"
+                          Foreground="{ThemeResource WayfarerAccentGlyphBrush}"
+                          Glyph="&#xE707;" />
+                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}"
+                           Text="{x:Bind Photo.Location, Mode=OneTime}" />
+            </StackPanel>
+            <TextBlock Style="{StaticResource WayfarerSecondaryTextBlockStyle}"
+                       Text="{x:Bind TripTitle, Mode=OneTime}" />
+            <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}"
+                       Text="{x:Bind helpers:Format.Date(Photo.TakenOn), Mode=OneTime}" />
+            <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}"
+                       Text="{x:Bind Credit, Mode=OneTime}" />
+        </StackPanel>
+    </StackPanel>
+</ContentDialog>
