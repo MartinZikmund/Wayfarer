@@ -1,0 +1,59 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- App brushes redirect to WinUI theme brushes; High Contrast uses system colors only. -->
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <StaticResource x:Key="WayfarerCardBackgroundBrush" ResourceKey="CardBackgroundFillColorDefaultBrush" />
+            <StaticResource x:Key="WayfarerCardBorderBrush" ResourceKey="CardStrokeColorDefaultBrush" />
+            <StaticResource x:Key="WayfarerSubtleCardBackgroundBrush" ResourceKey="CardBackgroundFillColorSecondaryBrush" />
+            <StaticResource x:Key="WayfarerPhotoPlaceholderBrush" ResourceKey="ControlFillColorSecondaryBrush" />
+            <StaticResource x:Key="WayfarerPhotoBorderBrush" ResourceKey="ControlStrokeColorSecondaryBrush" />
+            <StaticResource x:Key="WayfarerPhotoScrimBrush" ResourceKey="SmokeFillColorDefaultBrush" />
+            <StaticResource x:Key="WayfarerPhotoCaptionForegroundBrush" ResourceKey="TextOnAccentFillColorPrimaryBrush" />
+            <StaticResource x:Key="WayfarerHighlightBackgroundBrush" ResourceKey="SystemFillColorCautionBackgroundBrush" />
+            <StaticResource x:Key="WayfarerHighlightForegroundBrush" ResourceKey="TextFillColorPrimaryBrush" />
+            <StaticResource x:Key="WayfarerTagBackgroundBrush" ResourceKey="SubtleFillColorSecondaryBrush" />
+            <StaticResource x:Key="WayfarerTagForegroundBrush" ResourceKey="TextFillColorSecondaryBrush" />
+            <StaticResource x:Key="WayfarerEmptyStateGlyphBrush" ResourceKey="TextFillColorTertiaryBrush" />
+            <StaticResource x:Key="WayfarerDividerBrush" ResourceKey="DividerStrokeColorDefaultBrush" />
+            <StaticResource x:Key="WayfarerAccentGlyphBrush" ResourceKey="AccentTextFillColorPrimaryBrush" />
+        </ResourceDictionary>
+
+        <ResourceDictionary x:Key="Dark">
+            <StaticResource x:Key="WayfarerCardBackgroundBrush" ResourceKey="CardBackgroundFillColorDefaultBrush" />
+            <StaticResource x:Key="WayfarerCardBorderBrush" ResourceKey="CardStrokeColorDefaultBrush" />
+            <StaticResource x:Key="WayfarerSubtleCardBackgroundBrush" ResourceKey="CardBackgroundFillColorSecondaryBrush" />
+            <StaticResource x:Key="WayfarerPhotoPlaceholderBrush" ResourceKey="ControlFillColorSecondaryBrush" />
+            <StaticResource x:Key="WayfarerPhotoBorderBrush" ResourceKey="ControlStrokeColorSecondaryBrush" />
+            <StaticResource x:Key="WayfarerPhotoScrimBrush" ResourceKey="SmokeFillColorDefaultBrush" />
+            <!-- Over the dark scrim the caption stays light in both themes. -->
+            <StaticResource x:Key="WayfarerPhotoCaptionForegroundBrush" ResourceKey="TextFillColorPrimaryBrush" />
+            <StaticResource x:Key="WayfarerHighlightBackgroundBrush" ResourceKey="SystemFillColorCautionBackgroundBrush" />
+            <StaticResource x:Key="WayfarerHighlightForegroundBrush" ResourceKey="TextFillColorPrimaryBrush" />
+            <StaticResource x:Key="WayfarerTagBackgroundBrush" ResourceKey="SubtleFillColorSecondaryBrush" />
+            <StaticResource x:Key="WayfarerTagForegroundBrush" ResourceKey="TextFillColorSecondaryBrush" />
+            <StaticResource x:Key="WayfarerEmptyStateGlyphBrush" ResourceKey="TextFillColorTertiaryBrush" />
+            <StaticResource x:Key="WayfarerDividerBrush" ResourceKey="DividerStrokeColorDefaultBrush" />
+            <StaticResource x:Key="WayfarerAccentGlyphBrush" ResourceKey="AccentTextFillColorPrimaryBrush" />
+        </ResourceDictionary>
+
+        <ResourceDictionary x:Key="HighContrast">
+            <StaticResource x:Key="WayfarerCardBackgroundBrush" ResourceKey="SystemColorWindowColorBrush" />
+            <StaticResource x:Key="WayfarerCardBorderBrush" ResourceKey="SystemColorWindowTextColorBrush" />
+            <StaticResource x:Key="WayfarerSubtleCardBackgroundBrush" ResourceKey="SystemColorWindowColorBrush" />
+            <StaticResource x:Key="WayfarerPhotoPlaceholderBrush" ResourceKey="SystemColorWindowColorBrush" />
+            <StaticResource x:Key="WayfarerPhotoBorderBrush" ResourceKey="SystemColorWindowTextColorBrush" />
+            <StaticResource x:Key="WayfarerPhotoScrimBrush" ResourceKey="SystemColorWindowColorBrush" />
+            <StaticResource x:Key="WayfarerPhotoCaptionForegroundBrush" ResourceKey="SystemColorWindowTextColorBrush" />
+            <StaticResource x:Key="WayfarerHighlightBackgroundBrush" ResourceKey="SystemColorHighlightColorBrush" />
+            <StaticResource x:Key="WayfarerHighlightForegroundBrush" ResourceKey="SystemColorHighlightTextColorBrush" />
+            <StaticResource x:Key="WayfarerTagBackgroundBrush" ResourceKey="SystemColorButtonFaceColorBrush" />
+            <StaticResource x:Key="WayfarerTagForegroundBrush" ResourceKey="SystemColorButtonTextColorBrush" />
+            <StaticResource x:Key="WayfarerEmptyStateGlyphBrush" ResourceKey="SystemColorGrayTextColorBrush" />
+            <StaticResource x:Key="WayfarerDividerBrush" ResourceKey="SystemColorWindowTextColorBrush" />
+            <StaticResource x:Key="WayfarerAccentGlyphBrush" ResourceKey="SystemColorWindowTextColorBrush" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
+</ResourceDictionary>

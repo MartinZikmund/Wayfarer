@@ -1,0 +1,103 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Spacing tokens (4px grid) -->
+    <Thickness x:Key="WayfarerPagePadding">24,16,24,24</Thickness>
+    <Thickness x:Key="WayfarerCompactPagePadding">16,12,16,16</Thickness>
+    <Thickness x:Key="WayfarerCardPadding">16</Thickness>
+    <Thickness x:Key="WayfarerTagPadding">8,4,8,4</Thickness>
+    <Thickness x:Key="WayfarerPageHeaderMargin">0,0,0,24</Thickness>
+    <Thickness x:Key="WayfarerSectionHeaderMargin">0,24,0,12</Thickness>
+    <x:Double x:Key="WayfarerSectionSpacing">24</x:Double>
+    <x:Double x:Key="WayfarerItemSpacing">12</x:Double>
+    <x:Double x:Key="WayfarerTightSpacing">4</x:Double>
+    <x:Double x:Key="WayfarerContentSpacing">8</x:Double>
+    <x:Double x:Key="WayfarerReadingMaxWidth">720</x:Double>
+    <x:Double x:Key="WayfarerSettingsMaxWidth">1000</x:Double>
+    <x:Double x:Key="WayfarerCardMinHeight">68</x:Double>
+    <x:Double x:Key="WayfarerEmptyStateGlyphSize">48</x:Double>
+
+    <!-- Text -->
+    <Style x:Key="WayfarerPageTitleTextBlockStyle"
+           BasedOn="{StaticResource TitleTextBlockStyle}"
+           TargetType="TextBlock">
+        <Setter Property="Margin" Value="{StaticResource WayfarerPageHeaderMargin}" />
+    </Style>
+
+    <Style x:Key="WayfarerSectionHeaderTextBlockStyle"
+           BasedOn="{StaticResource BodyStrongTextBlockStyle}"
+           TargetType="TextBlock">
+        <Setter Property="Margin" Value="{StaticResource WayfarerSectionHeaderMargin}" />
+    </Style>
+
+    <Style x:Key="WayfarerSecondaryTextBlockStyle"
+           BasedOn="{StaticResource BodyTextBlockStyle}"
+           TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+    </Style>
+
+    <Style x:Key="WayfarerCaptionSecondaryTextBlockStyle"
+           BasedOn="{StaticResource CaptionTextBlockStyle}"
+           TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+    </Style>
+
+    <Style x:Key="WayfarerPhotoCaptionTextBlockStyle"
+           BasedOn="{StaticResource BodyStrongTextBlockStyle}"
+           TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{ThemeResource WayfarerPhotoCaptionForegroundBrush}" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <!-- Surfaces -->
+    <Style x:Key="WayfarerCardStyle" TargetType="Border">
+        <Setter Property="Background" Value="{ThemeResource WayfarerCardBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource WayfarerCardBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource OverlayCornerRadius}" />
+        <Setter Property="Padding" Value="{StaticResource WayfarerCardPadding}" />
+        <Setter Property="BackgroundSizing" Value="InnerBorderEdge" />
+    </Style>
+
+    <!-- A Settings-style row: icon, title/description, trailing control -->
+    <Style x:Key="WayfarerSettingsRowStyle" TargetType="Border">
+        <Setter Property="Background" Value="{ThemeResource WayfarerCardBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource WayfarerCardBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}" />
+        <Setter Property="Padding" Value="{StaticResource WayfarerCardPadding}" />
+        <Setter Property="MinHeight" Value="{StaticResource WayfarerCardMinHeight}" />
+        <Setter Property="BackgroundSizing" Value="InnerBorderEdge" />
+    </Style>
+
+    <Style x:Key="WayfarerPhotoFrameStyle" TargetType="Border">
+        <Setter Property="Background" Value="{ThemeResource WayfarerPhotoPlaceholderBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource WayfarerPhotoBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource OverlayCornerRadius}" />
+        <Setter Property="BackgroundSizing" Value="InnerBorderEdge" />
+    </Style>
+
+    <Style x:Key="WayfarerTagStyle" TargetType="Border">
+        <Setter Property="Background" Value="{ThemeResource WayfarerTagBackgroundBrush}" />
+        <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}" />
+        <Setter Property="Padding" Value="{StaticResource WayfarerTagPadding}" />
+    </Style>
+
+    <Style x:Key="WayfarerTagTextBlockStyle"
+           BasedOn="{StaticResource CaptionTextBlockStyle}"
+           TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{ThemeResource WayfarerTagForegroundBrush}" />
+    </Style>
+
+    <Style x:Key="WayfarerDividerStyle" TargetType="Rectangle">
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Fill" Value="{ThemeResource WayfarerDividerBrush}" />
+    </Style>
+
+    <Style x:Key="WayfarerSettingsGlyphStyle" TargetType="FontIcon">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="Foreground" Value="{ThemeResource WayfarerAccentGlyphBrush}" />
+    </Style>
+
+</ResourceDictionary>
