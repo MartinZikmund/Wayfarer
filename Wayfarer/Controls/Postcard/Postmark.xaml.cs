@@ -32,6 +32,11 @@ public sealed partial class Postmark : UserControl
     // Distance from the outer edge to the middle of the lettering band.
     private const double TextInset = 13;
 
+    // The press-and-fade plays once per app run, not on every navigation back to a page.
+    private static readonly HashSet<string> Stamped = new();
+
+    private bool _lettersDirty = true;
+
     public static readonly DependencyProperty PlaceProperty =
         DependencyProperty.Register(nameof(Place), typeof(string), typeof(Postmark), new PropertyMetadata("", OnTextChanged));
 
@@ -103,7 +108,10 @@ public sealed partial class Postmark : UserControl
         set => SetValue(TiltProperty, value);
     }
 
-    /// <summary>Stamps itself in (a quick press and fade) when loaded, unless animations are turned off.</summary>
+    /// <summary>
+    /// Stamps itself in (a quick press and fade) the first time a postmark with this place loads in a session,
+    /// unless animations are turned off.
+    /// </summary>
     public bool AnimateOnLoad
     {
         get => (bool)GetValue(AnimateOnLoadProperty);
@@ -116,9 +124,12 @@ public sealed partial class Postmark : UserControl
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        UpdateText();
+        if (_lettersDirty)
+        {
+            UpdateText();
+        }
 
-        if (AnimateOnLoad)
+        if (AnimateOnLoad && Stamped.Add(Place))
         {
             Motion.Animate(Root, nameof(Opacity), 0, 1, 200);
             Motion.Animate(RootTransform, nameof(CompositeTransform.ScaleX), 1.3, 1, 360);
@@ -161,9 +172,11 @@ public sealed partial class Postmark : UserControl
 
         if (!IsLoaded)
         {
+            _lettersDirty = true;
             return;
         }
 
+        _lettersDirty = false;
         ArcText.Children.Clear();
         double radius = Diameter / 2 - TextInset;
         string bottom = !string.IsNullOrEmpty(Caption) ? Caption : hasDate ? Date.Year.ToString(CultureInfo.InvariantCulture) : "";
