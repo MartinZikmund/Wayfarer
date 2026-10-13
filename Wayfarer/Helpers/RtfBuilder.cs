@@ -15,10 +15,15 @@ public static class RtfBuilder
         }
 
         StringBuilder sb = new(@"{\rtf1\ansi\deff0{\fonttbl{\f0 Segoe UI;}}\f0\fs21\sa180 ");
-        foreach (var paragraph in entry.Paragraphs)
+        for (int i = 0; i < entry.Paragraphs.Count; i++)
         {
-            AppendWithBold(sb, paragraph, entry.Highlights);
-            sb.Append(@"\par ");
+            // No \par after the last paragraph, or typing at the end lands in an empty one.
+            if (i > 0)
+            {
+                sb.Append(@"\par ");
+            }
+
+            AppendWithBold(sb, entry.Paragraphs[i], entry.Highlights);
         }
 
         return sb.Append('}').ToString();

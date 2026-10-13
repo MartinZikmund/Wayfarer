@@ -19,7 +19,7 @@ public sealed record JournalEntry
     /// <summary>Plain-text body, one item per paragraph.</summary>
     public IReadOnlyList<string> Paragraphs { get; init; } = [];
 
-    /// <summary>Phrases from <see cref="Paragraphs"/> worth highlighting (e.g. via TextHighlighter).</summary>
+    /// <summary>Phrases from <see cref="Paragraphs"/> worth emphasising (bold in the editor, accent in stories).</summary>
     public IReadOnlyList<string> Highlights { get; init; } = [];
 
     public IReadOnlyList<string> PhotoIds { get; init; } = [];
