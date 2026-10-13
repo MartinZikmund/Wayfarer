@@ -1,3 +1,4 @@
+using Microsoft.UI.Xaml.Automation.Peers;
 using System.Globalization;
 using Wayfarer.Helpers;
 using Windows.Foundation;
@@ -58,6 +59,8 @@ public sealed partial class Postmark : UserControl
         UpdateShape();
         Loaded += OnLoaded;
     }
+
+    protected override AutomationPeer OnCreateAutomationPeer() => new DecorativeAutomationPeer(this);
 
     /// <summary>Lettered around the top of the ring in capitals; trimmed with an ellipsis when it doesn't fit.</summary>
     public string Place

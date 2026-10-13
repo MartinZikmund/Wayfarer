@@ -1,3 +1,4 @@
+using Microsoft.UI.Xaml.Automation.Peers;
 using Windows.Foundation;
 
 namespace Wayfarer.Controls.Postcard;
@@ -13,6 +14,8 @@ public sealed partial class AirmailEdge : UserControl
         InitializeComponent();
         SizeChanged += (_, e) => Redraw(e.NewSize);
     }
+
+    protected override AutomationPeer OnCreateAutomationPeer() => new DecorativeAutomationPeer(this);
 
     private void Redraw(Size size)
     {

@@ -105,6 +105,7 @@
                                 AutomationProperties.AccessibilityView="Raw"
                                 IsHitTestVisible="False">
                             <FontIcon x:Name="Plane"
+                                      AutomationProperties.AccessibilityView="Raw"
                                       Width="24"
                                       Height="24"
                                       Foreground="{ThemeResource WayfarerRouteBrush}"

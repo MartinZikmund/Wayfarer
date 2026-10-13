@@ -1,3 +1,4 @@
+using Microsoft.UI.Xaml.Automation.Peers;
 using Wayfarer.Models;
 using Windows.Foundation;
 
@@ -38,6 +39,8 @@ public sealed partial class PostageStamp : UserControl
         UpdateArt();
         UpdateLabel();
     }
+
+    protected override AutomationPeer OnCreateAutomationPeer() => new DecorativeAutomationPeer(this);
 
     /// <summary>Photo printed on the stamp; wins over <see cref="Glyph"/>.</summary>
     public ImageSource? ImageSource

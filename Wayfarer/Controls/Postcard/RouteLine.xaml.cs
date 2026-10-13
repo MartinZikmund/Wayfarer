@@ -1,3 +1,4 @@
+using Microsoft.UI.Xaml.Automation.Peers;
 using Wayfarer.Helpers;
 using Windows.Foundation;
 
@@ -45,6 +46,8 @@ public sealed partial class RouteLine : UserControl
             }
         };
     }
+
+    protected override AutomationPeer OnCreateAutomationPeer() => new DecorativeAutomationPeer(this);
 
     /// <summary>Glyph at the tip of the line: <see cref="PlaneGlyph"/> (default), <see cref="PinGlyph"/>, or "" for none.</summary>
     public string Glyph
