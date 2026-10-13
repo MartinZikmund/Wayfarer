@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml.Input;
 using Wayfarer.Models;
 using Wayfarer.Services;
 using Wayfarer.ViewModels;
+using Windows.UI.Core;
 
 namespace Wayfarer.Views;
 
@@ -10,6 +11,8 @@ namespace Wayfarer.Views;
 public sealed partial class MainPage : Page
 {
     private readonly NavigationService _navigation = (NavigationService)App.GetService<INavigationService>();
+    private IBackNavigable? _backNavigablePage;
+    private bool _isSystemBackHooked;
 
     public MainPage()
     {
@@ -18,6 +21,7 @@ public sealed partial class MainPage : Page
         _navigation.Attach(ContentFrame);
         _navigation.Navigated += OnNavigated;
         Loaded += OnLoaded;
+        Unloaded += (_, _) => HookSystemBack(false);
     }
 
     public ShellViewModel ViewModel { get; } = App.GetService<ShellViewModel>();
@@ -39,9 +43,22 @@ public sealed partial class MainPage : Page
         }
     }
 
+    private bool CanGoBack => _backNavigablePage?.CanGoBack == true || _navigation.CanGoBack;
+
     private void OnNavigated(object? sender, AppPage page)
     {
-        AppTitleBar.IsBackButtonEnabled = _navigation.CanGoBack;
+        if (_backNavigablePage is not null)
+        {
+            _backNavigablePage.CanGoBackChanged -= OnPageCanGoBackChanged;
+        }
+
+        _backNavigablePage = ContentFrame.Content as IBackNavigable;
+        if (_backNavigablePage is not null)
+        {
+            _backNavigablePage.CanGoBackChanged += OnPageCanGoBackChanged;
+        }
+
+        UpdateBackState();
 
         object? item = page == AppPage.Settings
             ? NavView.SettingsItem
@@ -64,7 +81,49 @@ public sealed partial class MainPage : Page
         }
     }
 
-    private void OnBackRequested(TitleBar sender, object args) => _navigation.GoBack();
+    private void OnPageCanGoBackChanged(object? sender, EventArgs e) => UpdateBackState();
+
+    private void UpdateBackState()
+    {
+        AppTitleBar.IsBackButtonEnabled = CanGoBack;
+        HookSystemBack(CanGoBack);
+    }
+
+    // Android's system Back. Android 16+ consumes Back whenever BackRequested has a handler,
+    // so only listen while there is somewhere to go; otherwise Back leaves the app.
+    private void HookSystemBack(bool hook)
+    {
+        if (hook == _isSystemBackHooked || !OperatingSystem.IsAndroid())
+        {
+            return;
+        }
+
+        _isSystemBackHooked = hook;
+        SystemNavigationManager navigationManager = SystemNavigationManager.GetForCurrentView();
+        if (hook)
+        {
+            navigationManager.BackRequested += OnSystemBackRequested;
+        }
+        else
+        {
+            navigationManager.BackRequested -= OnSystemBackRequested;
+        }
+    }
+
+    private void OnSystemBackRequested(object? sender, BackRequestedEventArgs e) => e.Handled = GoBack();
+
+    private bool GoBack()
+    {
+        if (_backNavigablePage?.CanGoBack == true)
+        {
+            _backNavigablePage.GoBack();
+            return true;
+        }
+
+        return _navigation.GoBack();
+    }
+
+    private void OnBackRequested(TitleBar sender, object args) => GoBack();
 
     private void OnPaneToggleRequested(TitleBar sender, object args) => NavView.IsPaneOpen = !NavView.IsPaneOpen;
 

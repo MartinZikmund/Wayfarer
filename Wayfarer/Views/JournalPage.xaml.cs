@@ -1,9 +1,10 @@
 using System.ComponentModel;
+using Wayfarer.Services;
 using Wayfarer.ViewModels;
 
 namespace Wayfarer.Views;
 
-public sealed partial class JournalPage : Page
+public sealed partial class JournalPage : Page, IBackNavigable
 {
     private const double NarrowBreakpoint = 900;
 
@@ -20,6 +21,13 @@ public sealed partial class JournalPage : Page
     public Visibility EditorVisibility(JournalEntryItem? item) => item is null ? Visibility.Collapsed : Visibility.Visible;
 
     public Visibility PromptVisibility(JournalEntryItem? item) => item is null ? Visibility.Visible : Visibility.Collapsed;
+
+    public event EventHandler? CanGoBackChanged;
+
+    /// <summary>On narrow windows, Back first leaves the open entry for the list.</summary>
+    public bool CanGoBack => _isNarrow && ViewModel.SelectedItem is not null;
+
+    public void GoBack() => ViewModel.SelectedItem = null;
 
     protected override async void OnNavigatedTo(NavigationEventArgs e)
     {
@@ -81,6 +89,7 @@ public sealed partial class JournalPage : Page
     {
         var state = !_isNarrow ? "Wide" : ViewModel.SelectedItem is null ? "NarrowList" : "NarrowDetail";
         VisualStateManager.GoToState(this, state, true);
+        CanGoBackChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnEntryDeleted(object? sender, EventArgs e) => ViewModel.SelectedItem = null;
