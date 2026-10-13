@@ -8,16 +8,16 @@ It dresses up as a box of postcards (perforated stamps, postmarks, airmail edges
 
 <p align="center">
   <img src="docs/screenshots/home-light.png" alt="Home in the light theme: a greeting with a postmark, a postcard from this day in past trips, and trip postcards with stamps and dashed routes" width="49%" />
-  <img src="docs/screenshots/map-dark.png" alt="Routes in the dark theme: postage stamps for each stop joined by a dashed route on a postcard map" width="49%" />
+  <img src="docs/screenshots/map-dark.png" alt="Routes in the dark theme: numbered postage stamps for each stop joined by a dashed route on a postcard map" width="49%" />
 </p>
 
 ## What Uno Platform 7.0 features this shows
 
 | Feature | Where to see it | Where it lives |
 | --- | --- | --- |
-| **Composition shapes and animation**: the route is a `ShapeVisual` of `CompositionLineGeometry` dashes drawn in by stepping `TrimEnd`, along a centripetal Catmull-Rom curve, with a plane flown along it by `Vector3KeyFrameAnimation` and `ScalarKeyFrameAnimation` | Routes | [`Views/MapPage.xaml.cs`](Wayfarer/Views/MapPage.xaml.cs) |
+| **Composition shapes and animation**: the route is a `ShapeVisual` of `CompositionLineGeometry` dashes drawn in by stepping `TrimEnd`, along a centripetal Catmull-Rom curve with a chevron on each leg, and a plane flown along it by `Vector3KeyFrameAnimation` and `ScalarKeyFrameAnimation` | Routes | [`Views/MapPage.xaml.cs`](Wayfarer/Views/MapPage.xaml.cs) |
 | **Connected animation** from a trip postcard's cover to the stamp on its route. WinAppSDK uses `ConnectedAnimationService`; Uno Platform still stubs it, so the Skia heads fly a copy of the photo in a `Popup` | Home → Routes | [`Helpers/HeroTransition.cs`](Wayfarer/Helpers/HeroTransition.cs), [`Views/HomePage.xaml.cs`](Wayfarer/Views/HomePage.xaml.cs) |
-| **Postcard motif kit**: perforated `PostageStamp`, `Postmark` lettered on an arc, `RouteLine` and `PostcardCard`, all decorative (`AccessibilityView="Raw"`) and quiet when animations are off | Every page | [`Controls/Postcard`](Wayfarer/Controls/Postcard), [`Styles/Postcard.xaml`](Wayfarer/Styles/Postcard.xaml) |
+| **Postcard motif kit**: perforated `PostageStamp`, `Postmark` lettered on an arc, `RouteLine`, a `RouteSketch` of each trip's real route and `PostcardCard`. All decorative: `AccessibilityView="Raw"` plus an automation peer with no children, so screen readers skip the lettering. Quiet when animations are off | Every page | [`Controls/Postcard`](Wayfarer/Controls/Postcard), [`Styles/Postcard.xaml`](Wayfarer/Styles/Postcard.xaml) |
 | **ItemsRepeater** with `UniformGridLayout` and `AdaptiveTrigger` reflow | Home | [`Views/HomePage.xaml`](Wayfarer/Views/HomePage.xaml) |
 | **LinedFlowLayout** in an `ItemsView`, using `LineHeight`, `LineSpacing`, `ItemsJustification`, `ItemsStretch` and `ItemsInfoRequested` aspect ratios | Gallery | [`Views/GalleryPage.xaml`](Wayfarer/Views/GalleryPage.xaml), [`GalleryPage.xaml.cs`](Wayfarer/Views/GalleryPage.xaml.cs) |
 | **RichEditBox** with bold, italic, underline, strikethrough, font colour, links, undo/redo, and RTF import/export through `Document.GetText`/`SetText` | Journal | [`Views/JournalEntryEditor.xaml`](Wayfarer/Views/JournalEntryEditor.xaml), [`JournalEntryEditor.xaml.cs`](Wayfarer/Views/JournalEntryEditor.xaml.cs), [`Helpers/RtfBuilder.cs`](Wayfarer/Helpers/RtfBuilder.cs) |
@@ -113,7 +113,7 @@ On the web you need a browser with WebGPU enabled. The WebAssembly build links D
 - **Your journal stays on your device.** The trips, photos and starting entries ship in [`Assets/Data/trips.json`](Wayfarer/Assets/Data/trips.json). New, edited and deleted entries are saved to the app's local folder (IndexedDB in the browser) and replayed over that catalog. Nothing syncs between devices.
 - **Multi-window needs an iPad on Apple devices.** iPhone has no multi-scene support, so the "Open in new window" command is hidden there. Desktop heads always offer it. Android and the web don't offer it at all.
 - **The trips are made up.** The photos are stock images from Unsplash, so captions describe what's in the frame rather than naming landmarks.
-- **A few Uno Platform 7.0 preview gaps are worked around in the code**, each with a comment at the spot: `ConnectedAnimationService` is a stub on Skia (Home flies the photo itself), animating `CompositionGeometry.TrimEnd` doesn't render yet (the route steps `TrimEnd` each frame), and leaving a scrolled page could leave its pixels behind (the shell repaints the frame after each navigation).
+- **A few Uno Platform 7.0 preview gaps are worked around in the code**, each with a comment at the spot: `ConnectedAnimationService` is a stub on Skia (Home flies the photo itself), animating `CompositionGeometry.TrimEnd` doesn't render yet (the route steps `TrimEnd` each frame), leaving a scrolled page could leave its pixels behind (the shell repaints the frame after each navigation), and the web's accessibility tree ignores an automation peer's children (the motif's text is also marked Raw letter by letter).
 - **iOS and tvOS were compile-checked only.** Both heads were built on Windows for the simulator, but they haven't been run on an iPad or an Apple TV yet.
 
 ## Credits and license
