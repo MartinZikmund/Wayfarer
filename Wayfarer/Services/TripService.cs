@@ -17,6 +17,8 @@ public sealed class TripService : ITripService
 
     public event EventHandler<JournalEntry>? EntrySaved;
 
+    public event EventHandler<string>? EntryDeleted;
+
     public async Task<IReadOnlyList<Trip>> GetTripsAsync(CancellationToken ct = default)
     {
         await EnsureLoadedAsync(ct);
@@ -91,6 +93,16 @@ public sealed class TripService : ITripService
         _entries[entry.Id] = resolved;
         BuildTrips();
         EntrySaved?.Invoke(this, resolved);
+    }
+
+    public async Task DeleteEntryAsync(string entryId, CancellationToken ct = default)
+    {
+        await EnsureLoadedAsync(ct);
+        if (_entries.Remove(entryId))
+        {
+            BuildTrips();
+            EntryDeleted?.Invoke(this, entryId);
+        }
     }
 
     private async Task EnsureLoadedAsync(CancellationToken ct)
