@@ -14,7 +14,7 @@ public static class RtfBuilder
             return rtf;
         }
 
-        StringBuilder sb = new(@"{\rtf1\ansi\deff0{\fonttbl{\f0 Segoe UI;}}\f0\fs28 ");
+        StringBuilder sb = new(@"{\rtf1\ansi\deff0{\fonttbl{\f0 Segoe UI;}}\f0\fs21\sa180 ");
         foreach (var paragraph in entry.Paragraphs)
         {
             AppendWithBold(sb, paragraph, entry.Highlights);

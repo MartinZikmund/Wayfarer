@@ -183,6 +183,7 @@
             <CalendarDatePicker Grid.Row="1"
                                 AutomationProperties.AutomationId="EntryDatePicker"
                                 Date="{x:Bind ViewModel.EntryDate, Mode=TwoWay}"
+                                DateFormat="{}{day.integer} {month.abbreviated} {year.full}"
                                 Header="Date" />
             <ComboBox Grid.Row="1"
                       Grid.Column="1"
