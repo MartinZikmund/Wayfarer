@@ -53,6 +53,9 @@ public sealed partial class JournalEntryEditor : UserControl
         OpenWindowButton.Visibility = EntryWindow.IsSupported ? Visibility.Visible : Visibility.Collapsed;
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
+
+        // The trip stamp is decoration; narrow editors need the room for the date and trip pickers.
+        SizeChanged += (_, e) => EntryStamp.Visibility = e.NewSize.Width < 440 ? Visibility.Collapsed : Visibility.Visible;
     }
 
     public JournalEntryEditorViewModel ViewModel { get; } = new(App.GetService<ITripService>());
@@ -126,7 +129,7 @@ public sealed partial class JournalEntryEditor : UserControl
         }
     }
 
-    public string SaveStatusText(bool isDirty) => isDirty ? "Unsaved changes" : "All changes saved";
+    public string SaveStatusText(bool isDirty) => isDirty ? "Unsaved changes" : "Saved, safe and sound";
 
     private string GetPlainText()
     {

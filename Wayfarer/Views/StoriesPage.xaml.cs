@@ -67,6 +67,7 @@ public sealed partial class StoriesPage : Page
         {
             case nameof(StoriesViewModel.SelectedTrip):
                 BuildStory();
+                StoryRoute.Replay();
                 break;
             case nameof(StoriesViewModel.HighlightPlaces):
                 BuildStory();

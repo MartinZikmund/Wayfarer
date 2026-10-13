@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:controls="using:Wayfarer.Controls"
       xmlns:helpers="using:Wayfarer.Helpers"
+      xmlns:postcard="using:Wayfarer.Controls.Postcard"
       xmlns:views="using:Wayfarer.Views"
       xmlns:vm="using:Wayfarer.ViewModels"
       AutomationProperties.AutomationId="JournalPage"
@@ -36,27 +37,28 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <Grid ColumnSpacing="{StaticResource WayfarerItemSpacing}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <TextBlock VerticalAlignment="Center"
-                       Style="{StaticResource WayfarerPageTitleTextBlockStyle}"
-                       Text="Journal" />
-            <Button Grid.Column="1"
-                    AutomationProperties.AutomationId="NewEntryButton"
-                    Command="{x:Bind ViewModel.NewEntryCommand}"
-                    Style="{StaticResource AccentButtonStyle}">
-                <StackPanel Orientation="Horizontal" Spacing="{StaticResource WayfarerContentSpacing}">
-                    <FontIcon Glyph="&#xE710;" />
-                    <TextBlock Text="New entry" />
-                </StackPanel>
-                <Button.KeyboardAccelerators>
-                    <KeyboardAccelerator Key="N" Modifiers="Control" />
-                </Button.KeyboardAccelerators>
-            </Button>
-        </Grid>
+        <controls:PageHeader Title="Journal" Subtitle="Little notes from the road, kept safe on this device.">
+            <controls:PageHeader.Accent>
+                <postcard:Postmark AnimateOnLoad="True"
+                                   Date="{x:Bind helpers:Format.Today()}"
+                                   Place="Dear diary"
+                                   Waves="Left" />
+            </controls:PageHeader.Accent>
+            <controls:PageHeader.Actions>
+                <Button AutomationProperties.AutomationId="NewEntryButton"
+                        Command="{x:Bind ViewModel.NewEntryCommand}"
+                        Style="{StaticResource AccentButtonStyle}"
+                        ToolTipService.ToolTip="Start a fresh page (Ctrl+N)">
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource WayfarerContentSpacing}">
+                        <FontIcon Glyph="&#xE710;" />
+                        <TextBlock Text="New entry" />
+                    </StackPanel>
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="N" Modifiers="Control" />
+                    </Button.KeyboardAccelerators>
+                </Button>
+            </controls:PageHeader.Actions>
+        </controls:PageHeader>
 
         <Grid Grid.Row="1" ColumnSpacing="{StaticResource WayfarerSectionSpacing}">
             <Grid.ColumnDefinitions>
@@ -115,8 +117,15 @@
                 </ListView>
                 <controls:EmptyState Title="No entries yet"
                                      Glyph="&#xE70B;"
-                                     Message="Write about today, or jot down a few notes from the road."
-                                     Visibility="{x:Bind helpers:Format.VisibleIfNone(ViewModel.Items.Count), Mode=OneWay}" />
+                                     Message="The best stories start with a blank page."
+                                     Visibility="{x:Bind helpers:Format.VisibleIfNone(ViewModel.Items.Count), Mode=OneWay}">
+                    <controls:EmptyState.Art>
+                        <postcard:PostageStamp Glyph="&#xE70B;"
+                                               Label="Write"
+                                               Tilt="-4"
+                                               Tone="Maple" />
+                    </controls:EmptyState.Art>
+                </controls:EmptyState>
             </Grid>
 
             <Border x:Name="EditorPane"
@@ -124,9 +133,9 @@
                     Padding="{StaticResource WayfarerCompactPagePadding}"
                     Style="{StaticResource WayfarerCardStyle}">
                 <Grid>
-                    <controls:EmptyState Title="No entry open"
+                    <controls:EmptyState Title="Pick a page"
                                          Glyph="&#xE70B;"
-                                         Message="Pick an entry from the list, or start a new one."
+                                         Message="Open an entry from the list, or start a fresh one."
                                          Visibility="{x:Bind PromptVisibility(ViewModel.SelectedItem), Mode=OneWay}" />
                     <Grid RowSpacing="{StaticResource WayfarerContentSpacing}" Visibility="{x:Bind EditorVisibility(ViewModel.SelectedItem), Mode=OneWay}">
                         <Grid.RowDefinitions>

@@ -5,7 +5,7 @@ using Wayfarer.Services;
 namespace Wayfarer.ViewModels;
 
 /// <summary>A photo in the gallery grid; <see cref="Key"/> is its position in the current filter.</summary>
-public sealed record GalleryItem(Photo Photo, int Key);
+public sealed record GalleryItem(Photo Photo, int Key, Trip? Trip);
 
 public sealed partial class GalleryViewModel(ITripService tripService) : PageViewModel
 {
@@ -52,18 +52,18 @@ public sealed partial class GalleryViewModel(ITripService tripService) : PageVie
 
     public void ClearRequest() => RequestedPhotoId = null;
 
-    public string TripTitle(Photo photo) => Trips.FirstOrDefault(t => t.Id == photo.TripId)?.Title ?? "";
+    public Trip? TripOf(Photo photo) => Trips.FirstOrDefault(t => t.Id == photo.TripId);
 
     /// <param name="tripId">Trip to show, or null for all trips.</param>
     public void Filter(string? tripId)
     {
         List<Photo> photos = _allPhotos.Where(p => tripId is null || p.TripId == tripId).ToList();
-        List<GalleryItem> items = photos.Select((photo, index) => new GalleryItem(photo, index)).ToList();
+        List<GalleryItem> items = photos.Select((photo, index) => new GalleryItem(photo, index, TripOf(photo))).ToList();
 
         Items = items;
         IsEmpty = items.Count == 0;
         Summary = tripId is null
-            ? $"{Format.Photos(photos.Count)} from {Trips.Count} trips"
+            ? $"{Format.Photos(photos.Count)} from {Trips.Count} trips. Postcards you never had to write."
             : $"{Format.Photos(photos.Count)} from {Trips.FirstOrDefault(t => t.Id == tripId)?.Title}";
     }
 }

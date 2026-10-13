@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:helpers="using:Wayfarer.Helpers"
              xmlns:lottie="using:CommunityToolkit.WinUI.Lottie"
+             xmlns:postcard="using:Wayfarer.Controls.Postcard"
              xmlns:vm="using:Wayfarer.ViewModels">
 
     <UserControl.Resources>
@@ -115,6 +116,15 @@
                             ToolTipService.ToolTip="{x:Bind Moment.PlaybackName, Mode=OneWay}">
                         <FontIcon Glyph="{x:Bind Moment.PlaybackGlyph, Mode=OneWay}" Style="{StaticResource WayfarerIconStyle}" />
                     </Button>
+                    <postcard:PostageStamp Width="{StaticResource WayfarerStampSmallWidth}"
+                                           Height="{StaticResource WayfarerStampSmallHeight}"
+                                           Margin="8"
+                                           HorizontalAlignment="Right"
+                                           VerticalAlignment="Top"
+                                           ImageSource="{x:Bind helpers:Format.Image(Moment.Trip.CoverPhoto.ImageUri), Mode=OneWay}"
+                                           Label="{x:Bind Moment.Trip.Code, Mode=OneWay}"
+                                           Tilt="5"
+                                           Tone="{x:Bind Moment.Trip.StampTone, Mode=OneWay}" />
                 </Grid>
 
                 <StackPanel x:Name="Details"

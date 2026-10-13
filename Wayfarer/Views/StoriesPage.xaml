@@ -4,6 +4,7 @@
       xmlns:controls="using:Wayfarer.Controls"
       xmlns:helpers="using:Wayfarer.Helpers"
       xmlns:models="using:Wayfarer.Models"
+      xmlns:postcard="using:Wayfarer.Controls.Postcard"
       AutomationProperties.AutomationId="StoriesPage"
       SizeChanged="OnPageSizeChanged">
 
@@ -72,7 +73,10 @@
                     </StackPanel>
                 </Grid>
 
-                <Rectangle Style="{StaticResource WayfarerDividerStyle}" />
+                <!-- The trip's journey as a dashed flight path, in place of a plain divider. -->
+                <postcard:RouteLine x:Name="StoryRoute"
+                                    AnimateOnLoad="True"
+                                    Bend="0.5" />
 
                 <Grid x:Name="Columns"
                       HorizontalAlignment="Stretch"
@@ -127,7 +131,7 @@
 
         <controls:EmptyState Title="No stories yet"
                              Glyph="{x:Bind models:Glyphs.Stories}"
-                             Message="Add a trip and its journal entries will show up here as a story."
+                             Message="Journal a few days of a trip and we'll bind them into a story."
                              Visibility="{x:Bind helpers:Format.CollapsedIf(ViewModel.HasStory), Mode=OneWay}" />
     </Grid>
 </Page>

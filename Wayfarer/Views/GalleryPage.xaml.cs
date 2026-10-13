@@ -1,5 +1,8 @@
 using System.Runtime.InteropServices;
 using Microsoft.UI.Xaml.Automation;
+using Microsoft.UI.Xaml.Input;
+using Wayfarer.Controls.Postcard;
+using Wayfarer.Helpers;
 using Wayfarer.Models;
 using Wayfarer.Services;
 using Wayfarer.ViewModels;
@@ -82,6 +85,25 @@ public sealed partial class GalleryPage : Page
         args.SetDesiredAspectRatios(ratios);
     }
 
+    private void OnTilePointerEntered(object sender, PointerRoutedEventArgs e) => ShowBadge(sender, true);
+
+    private void OnTilePointerExited(object sender, PointerRoutedEventArgs e) => ShowBadge(sender, false);
+
+    // The trip's stamp slides in on hover, like a sticker peeking out of the corner.
+    private static void ShowBadge(object tile, bool show)
+    {
+        if (tile is not Panel panel || panel.Children.OfType<PostageStamp>().FirstOrDefault() is not { } badge)
+        {
+            return;
+        }
+
+        double target = show ? 1 : 0;
+        if (Motion.Animate(badge, nameof(UIElement.Opacity), badge.Opacity, target, show ? 200 : 120) is null)
+        {
+            badge.Opacity = target;
+        }
+    }
+
     private async void OnPhotoInvoked(ItemsView sender, ItemsViewItemInvokedEventArgs args)
     {
         if (args.InvokedItem is GalleryItem item)
@@ -101,7 +123,7 @@ public sealed partial class GalleryPage : Page
         _isDialogOpen = true;
         try
         {
-            GalleryPhotoDialog dialog = new(photo, ViewModel.TripTitle(photo)) { XamlRoot = XamlRoot };
+            GalleryPhotoDialog dialog = new(photo, ViewModel.TripOf(photo)) { XamlRoot = XamlRoot };
             await dialog.ShowAsync();
         }
         catch (Exception ex) when (ex is InvalidOperationException or COMException)

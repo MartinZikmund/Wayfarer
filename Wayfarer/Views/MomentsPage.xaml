@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:controls="using:Wayfarer.Controls"
       xmlns:helpers="using:Wayfarer.Helpers"
+      xmlns:postcard="using:Wayfarer.Controls.Postcard"
       xmlns:views="using:Wayfarer.Views"
       xmlns:vm="using:Wayfarer.ViewModels"
       AutomationProperties.AutomationId="MomentsPage">
@@ -17,17 +18,29 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <TextBlock Margin="{StaticResource WayfarerPageHeaderMargin}"
-                       Style="{StaticResource WayfarerPageTitleTextBlockStyle}"
-                       Text="{x:Bind ViewModel.Title, Mode=OneTime}" />
+            <controls:PageHeader Title="{x:Bind ViewModel.Title, Mode=OneTime}"
+                                 Margin="{StaticResource WayfarerPageHeaderMargin}"
+                                 Subtitle="Each trip at a glance: the miles, the days and the bits you caught.">
+                <controls:PageHeader.Accent>
+                    <postcard:Postmark AnimateOnLoad="True"
+                                       Date="{x:Bind helpers:Format.Today()}"
+                                       Place="Moments"
+                                       Waves="Left" />
+                </controls:PageHeader.Accent>
+            </controls:PageHeader>
 
             <StackPanel Grid.Row="1" Spacing="{StaticResource WayfarerItemSpacing}">
+                <StackPanel.ChildrenTransitions>
+                    <TransitionCollection>
+                        <EntranceThemeTransition IsStaggeringEnabled="True" />
+                    </TransitionCollection>
+                </StackPanel.ChildrenTransitions>
                 <InfoBar AutomationProperties.AutomationId="MomentsTip"
                          IsClosable="True"
                          IsOpen="True"
-                         Message="Pause an animation with the button in its corner. Journal a day to move its trip closer to complete."
+                         Message="Pause any animation from its corner. Every day you journal nudges its trip closer to complete."
                          Severity="Informational"
-                         Title="Tip" />
+                         Title="Travel tip" />
 
                 <ProgressRing Width="32"
                               Height="32"
@@ -49,7 +62,7 @@
 
                 <controls:EmptyState Title="No trips yet"
                                      Glyph="&#xE81C;"
-                                     Message="Add a trip and your journey will show up here with stats and a timeline."
+                                     Message="Your first adventure will land here, stats, timeline and all."
                                      Visibility="{x:Bind helpers:Format.VisibleIf(ViewModel.ShowEmpty), Mode=OneWay}" />
             </StackPanel>
         </Grid>

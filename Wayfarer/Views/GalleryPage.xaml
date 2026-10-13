@@ -2,7 +2,9 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:controls="using:Wayfarer.Controls"
+      xmlns:models="using:Wayfarer.Models"
       xmlns:helpers="using:Wayfarer.Helpers"
+      xmlns:postcard="using:Wayfarer.Controls.Postcard"
       xmlns:vm="using:Wayfarer.ViewModels"
       AutomationProperties.AutomationId="GalleryPage"
       SizeChanged="OnPageSizeChanged">
@@ -12,7 +14,10 @@
             <ItemContainer AutomationProperties.AutomationId="GalleryPhotoItem"
                            AutomationProperties.Name="{x:Bind Photo.Caption}"
                            ToolTipService.ToolTip="{x:Bind Photo.Caption}">
-                <Grid CornerRadius="{StaticResource ControlCornerRadius}">
+                <Grid CornerRadius="{StaticResource ControlCornerRadius}"
+                      PointerEntered="OnTilePointerEntered"
+                      PointerExited="OnTilePointerExited"
+                      PointerCanceled="OnTilePointerExited">
                     <Image Source="{x:Bind helpers:Format.Image(Photo.ImageUri)}"
                            Stretch="UniformToFill" />
                     <Border Padding="12,40,12,8"
@@ -27,6 +32,16 @@
                                        TextTrimming="CharacterEllipsis" />
                         </StackPanel>
                     </Border>
+                    <postcard:PostageStamp Width="{StaticResource WayfarerStampSmallWidth}"
+                                           Height="{StaticResource WayfarerStampSmallHeight}"
+                                           Margin="8"
+                                           HorizontalAlignment="Right"
+                                           VerticalAlignment="Top"
+                                           Glyph="{x:Bind models:Glyphs.Trip}"
+                                           Label="{x:Bind Trip.Code}"
+                                           Opacity="0"
+                                           Tilt="6"
+                                           Tone="{x:Bind Trip.StampTone}" />
                 </Grid>
             </ItemContainer>
         </DataTemplate>
@@ -34,15 +49,18 @@
 
     <Grid Padding="{StaticResource WayfarerPagePadding}"
           RowDefinitions="Auto,Auto,*">
-        <StackPanel Grid.Row="0"
-                    Margin="{StaticResource WayfarerPageHeaderWithFiltersMargin}"
-                    Spacing="{StaticResource WayfarerTightSpacing}">
-            <TextBlock Style="{StaticResource WayfarerPageTitleTextBlockStyle}"
-                       Text="{x:Bind ViewModel.Title, Mode=OneTime}" />
-            <TextBlock AutomationProperties.AutomationId="GallerySummary"
-                       Style="{StaticResource WayfarerSecondaryTextBlockStyle}"
-                       Text="{x:Bind ViewModel.Summary, Mode=OneWay}" />
-        </StackPanel>
+        <controls:PageHeader Title="{x:Bind ViewModel.Title, Mode=OneTime}"
+                             Grid.Row="0"
+                             Margin="{StaticResource WayfarerPageHeaderWithFiltersMargin}"
+                             Subtitle="{x:Bind ViewModel.Summary, Mode=OneWay}"
+                             SubtitleAutomationId="GallerySummary">
+            <controls:PageHeader.Accent>
+                <postcard:PostageStamp Glyph="&#xE722;"
+                                       Label="Photo"
+                                       Tilt="4"
+                                       Tone="Sea" />
+            </controls:PageHeader.Accent>
+        </controls:PageHeader>
 
         <SelectorBar x:Name="TripFilter"
                      Grid.Row="1"
@@ -78,7 +96,7 @@
         <controls:EmptyState Title="No photos yet"
                              Grid.Row="2"
                              Glyph="&#xE8B9;"
-                             Message="Photos from your trips will show up here."
+                             Message="Snap a few on your next trip and they'll pin themselves up here."
                              Visibility="{x:Bind helpers:Format.VisibleIf(ViewModel.IsEmpty), Mode=OneWay}" />
 
         <ProgressRing Grid.Row="2"
