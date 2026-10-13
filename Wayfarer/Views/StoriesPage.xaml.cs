@@ -11,6 +11,9 @@ public sealed partial class StoriesPage : Page
 {
     private const double TwoColumnWidth = 720;
     private const double ThreeColumnWidth = 1100;
+
+    // Below this the picker and toggle would squeeze a longer trip title.
+    private const double WideHeaderWidth = 900;
     private const double MinColumnHeight = 120;
     private const double ColumnHeightStep = 24;
     private const double ColumnSpacing = 24;
@@ -26,9 +29,8 @@ public sealed partial class StoriesPage : Page
     public StoriesPage()
     {
         InitializeComponent();
-        ViewModel.PropertyChanged += OnViewModelPropertyChanged;
-        Unloaded += (_, _) => ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
-        StoryText.LayoutUpdated += OnStoryLayoutUpdated;
+        Loaded += OnLoaded;
+        Unloaded += OnUnloaded;
         Columns.SizeChanged += OnColumnsSizeChanged;
         // Rebuild after the theme walk, so the probe already holds the new theme's brush.
         ActualThemeChanged += (_, _) => DispatcherQueue.TryEnqueue(BuildStory);
@@ -40,6 +42,23 @@ public sealed partial class StoriesPage : Page
     {
         base.OnNavigatedTo(e);
         await ViewModel.OnNavigatedToAsync(e.Parameter);
+    }
+
+    // LayoutUpdated is a global event that roots its handler, so only listen while the page is in the tree.
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        OnUnloaded(sender, e);
+        ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+        StoryText.LayoutUpdated += OnStoryLayoutUpdated;
+
+        // The trip may have been picked during OnNavigatedTo, before we were listening.
+        BuildStory();
+    }
+
+    private void OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+        StoryText.LayoutUpdated -= OnStoryLayoutUpdated;
     }
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -58,11 +77,7 @@ public sealed partial class StoriesPage : Page
     private void OnPageSizeChanged(object sender, SizeChangedEventArgs e)
     {
         int columns = e.NewSize.Width >= ThreeColumnWidth ? 3 : e.NewSize.Width >= TwoColumnWidth ? 2 : 1;
-
-        // Single-column pages stack the trip picker under the title instead of squeezing it.
-        bool stacked = columns == 1;
-        Grid.SetRow(StoryControls, stacked ? 1 : 0);
-        Grid.SetColumn(StoryControls, stacked ? 0 : 1);
+        VisualStateManager.GoToState(this, e.NewSize.Width >= WideHeaderWidth ? "WideHeader" : "NarrowHeader", false);
         if (columns != _columns)
         {
             _columns = columns;
@@ -93,7 +108,6 @@ public sealed partial class StoriesPage : Page
             StoryText.Blocks.Add(paragraph);
         }
 
-        ApplyColumns();
         RelinkOverflow();
     }
 

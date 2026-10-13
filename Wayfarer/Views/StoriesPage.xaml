@@ -8,7 +8,22 @@
       SizeChanged="OnPageSizeChanged">
 
     <Grid>
-        <!-- Story runs are built in code, so the theme-correct accent brush is read from this probe. -->
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="HeaderStates">
+                <VisualState x:Name="WideHeader" />
+                <!-- Controls wrap under the title, and the headline steps down to the page-title size. -->
+                <VisualState x:Name="NarrowHeader">
+                    <VisualState.Setters>
+                        <Setter Target="StoryControls.(Grid.Row)" Value="1" />
+                        <Setter Target="StoryControls.(Grid.Column)" Value="0" />
+                        <Setter Target="StoryControls.HorizontalAlignment" Value="Left" />
+                        <Setter Target="StoryTitle.Style" Value="{StaticResource TitleTextBlockStyle}" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <!-- Code can't resolve a ThemeResource for this page's theme (only the app's), so XAML hands the story builder its accent. -->
         <Border x:Name="AccentBrushProbe"
                 Background="{ThemeResource AccentTextFillColorPrimaryBrush}"
                 Visibility="Collapsed" />
@@ -28,9 +43,9 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <StackPanel Spacing="{StaticResource WayfarerTightSpacing}">
-                        <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}"
-                                   Text="STORIES" />
-                        <TextBlock AutomationProperties.AutomationId="StoryTitle"
+                        <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}" Text="Stories" />
+                        <TextBlock x:Name="StoryTitle"
+                                   AutomationProperties.AutomationId="StoryTitle"
                                    Style="{StaticResource TitleLargeTextBlockStyle}"
                                    Text="{x:Bind ViewModel.SelectedTrip.Title, Mode=OneWay}"
                                    TextWrapping="Wrap" />
@@ -40,6 +55,7 @@
                     </StackPanel>
                     <StackPanel x:Name="StoryControls"
                                 Grid.Column="1"
+                                HorizontalAlignment="Right"
                                 VerticalAlignment="Bottom"
                                 Orientation="Horizontal"
                                 Spacing="{StaticResource WayfarerItemSpacing}">
