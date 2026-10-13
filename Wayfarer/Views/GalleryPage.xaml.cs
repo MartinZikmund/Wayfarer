@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Microsoft.UI.Xaml.Automation;
 using Wayfarer.Models;
 using Wayfarer.Services;
@@ -9,6 +10,7 @@ public sealed partial class GalleryPage : Page
 {
     private const double NarrowWidth = 641;
     private bool _filterBuilt;
+    private bool _isDialogOpen;
 
     public GalleryPage()
     {
@@ -23,7 +25,8 @@ public sealed partial class GalleryPage : Page
         await ViewModel.OnNavigatedToAsync(e.Parameter);
         BuildTripFilter();
 
-        if (ViewModel.RequestedPhotoId is { } id)
+        // Back/forward re-delivers the original parameter; only a fresh navigation should open the photo.
+        if (e.NavigationMode == NavigationMode.New && ViewModel.RequestedPhotoId is { } id)
         {
             ViewModel.ClearRequest();
             Photo? photo = await App.GetService<ITripService>().GetPhotoAsync(id);
@@ -89,7 +92,25 @@ public sealed partial class GalleryPage : Page
 
     private async Task ShowPhotoAsync(Photo photo)
     {
-        GalleryPhotoDialog dialog = new(photo, ViewModel.TripTitle(photo)) { XamlRoot = XamlRoot };
-        await dialog.ShowAsync();
+        // A double tap can invoke twice, and only one ContentDialog may be open per XamlRoot.
+        if (_isDialogOpen || XamlRoot is null)
+        {
+            return;
+        }
+
+        _isDialogOpen = true;
+        try
+        {
+            GalleryPhotoDialog dialog = new(photo, ViewModel.TripTitle(photo)) { XamlRoot = XamlRoot };
+            await dialog.ShowAsync();
+        }
+        catch (Exception ex) when (ex is InvalidOperationException or COMException)
+        {
+            // Another dialog (e.g. from a different page) is already showing.
+        }
+        finally
+        {
+            _isDialogOpen = false;
+        }
     }
 }
