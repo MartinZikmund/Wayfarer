@@ -27,9 +27,14 @@ public sealed partial class MapPage : Page
     private const int DrawMilliseconds = 1800;
     private const float PlaneSize = 24;
 
+    // Uno's Skia renderer treats TrimStart = TrimEnd = 0 as "no trim" and draws the whole dash, so a hidden
+    // dash is trimmed to almost nothing instead. Flat caps keep that sliver invisible.
+    private const float HiddenTrim = 0.001f;
+
     private readonly AccessibilitySettings _accessibility = new();
     private bool _isWide = true;
     private bool _animateNextBuild;
+    private EventHandler<object>? _drawIn;
 
     public MapPage()
     {
@@ -62,7 +67,11 @@ public sealed partial class MapPage : Page
         Rebuild(true);
     }
 
-    private void OnUnloaded(object sender, RoutedEventArgs e) => ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+    private void OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+        StopDrawIn();
+    }
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -156,7 +165,7 @@ public sealed partial class MapPage : Page
 
         for (int i = 0; i < stops.Count; i++)
         {
-            Button button = CreateStopButton(stops[i]);
+            Button button = CreateStopButton(stops[i], i + 1);
             Canvas.SetLeft(button, centers[i].X - StampWidth / 2);
             Canvas.SetTop(button, centers[i].Y - StampHeight / 2);
             StopsLayer.Children.Add(button);
@@ -235,7 +244,7 @@ public sealed partial class MapPage : Page
         return ((min + max) / 2 - MinSpan / 2, MinSpan);
     }
 
-    private Button CreateStopButton(RouteStop stop)
+    private Button CreateStopButton(RouteStop stop, int order)
     {
         Button button = new()
         {
@@ -253,7 +262,7 @@ public sealed partial class MapPage : Page
             Tag = stop,
         };
         AutomationProperties.SetName(button, $"Day {stop.Day}, {stop.Name}");
-        AutomationProperties.SetAutomationId(button, $"RouteStop{stop.Day}");
+        AutomationProperties.SetAutomationId(button, $"RouteStop{order}");
         ToolTipService.SetToolTip(button, stop.Name);
         ApplyStopStyle(button);
         return button;
@@ -296,7 +305,8 @@ public sealed partial class MapPage : Page
         GridLines.Data = grid;
 
         // Rings are seeded by the trip so each map has its own terrain.
-        int seed = Math.Abs(ViewModel.SelectedTrip?.Id.GetHashCode() ?? 0);
+        // string.GetHashCode is randomized per process, so fold the id by hand to keep the terrain stable.
+        int seed = (ViewModel.SelectedTrip?.Id ?? "").Aggregate(17, (hash, ch) => unchecked(hash * 31 + ch)) & int.MaxValue;
         double cx = width * (0.25 + seed % 50 / 100.0);
         double cy = height * (0.3 + seed / 50 % 40 / 100.0);
         GeometryGroup rings = new();
@@ -322,6 +332,7 @@ public sealed partial class MapPage : Page
 
     private void DrawRoute(Vector2[] centers, Vector2 size, bool animate)
     {
+        StopDrawIn();
         Visual hostVisual = ElementCompositionPreview.GetElementVisual(RouteHost);
         Compositor compositor = hostVisual.Compositor;
         ShapeVisual shapes = compositor.CreateShapeVisual();
@@ -352,6 +363,7 @@ public sealed partial class MapPage : Page
         CompositionColorBrush stroke = compositor.CreateColorBrush(color);
         LinearEasingFunction linear = compositor.CreateLinearEasingFunction();
 
+        List<(CompositionLineGeometry Dash, float From)> dashes = new();
         for (float start = 0; start < total; start += DashPeriod)
         {
             CompositionLineGeometry dash = compositor.CreateLineGeometry();
@@ -360,8 +372,6 @@ public sealed partial class MapPage : Page
             CompositionSpriteShape shape = compositor.CreateSpriteShape(dash);
             shape.StrokeBrush = stroke;
             shape.StrokeThickness = 2;
-            shape.StrokeStartCap = CompositionStrokeCap.Round;
-            shape.StrokeEndCap = CompositionStrokeCap.Round;
             shapes.Shapes.Add(shape);
 
             if (!animate)
@@ -370,19 +380,48 @@ public sealed partial class MapPage : Page
                 continue;
             }
 
-            dash.TrimEnd = 0;
-            ScalarKeyFrameAnimation draw = compositor.CreateScalarKeyFrameAnimation();
-            // KeyFrameAnimation.DelayTime is not implemented on Skia, so the delay is a leading hold.
-            float from = start / total;
-            draw.InsertKeyFrame(from, 0, linear);
-            draw.InsertKeyFrame(Math.Min(1, from + DashLength / total), 1, linear);
-            draw.Duration = TimeSpan.FromMilliseconds(DrawMilliseconds);
-            dash.StartAnimation(nameof(CompositionGeometry.TrimEnd), draw);
+            dash.TrimEnd = HiddenTrim;
+            dashes.Add((dash, start / total));
         }
 
         if (animate)
         {
+            DrawIn(dashes, DashLength / total);
             FlyPlane(planeVisual, compositor, line, along, total, linear);
+        }
+    }
+
+    // Each dash's TrimEnd is stepped per frame, in step with the plane. A ScalarKeyFrameAnimation on TrimEnd
+    // would be the natural fit, but Uno's Skia compositor doesn't render geometry trim animations yet.
+    private void DrawIn(List<(CompositionLineGeometry Dash, float From)> dashes, float span)
+    {
+        StopDrawIn();
+        DateTimeOffset start = DateTimeOffset.UtcNow;
+
+        void OnRendering(object? sender, object e)
+        {
+            float t = (float)Math.Min(1, (DateTimeOffset.UtcNow - start).TotalMilliseconds / DrawMilliseconds);
+            foreach ((CompositionLineGeometry dash, float from) in dashes)
+            {
+                dash.TrimEnd = Math.Clamp((t - from) / span, HiddenTrim, 1);
+            }
+
+            if (t >= 1)
+            {
+                StopDrawIn();
+            }
+        }
+
+        _drawIn = OnRendering;
+        CompositionTarget.Rendering += OnRendering;
+    }
+
+    private void StopDrawIn()
+    {
+        if (_drawIn is not null)
+        {
+            CompositionTarget.Rendering -= _drawIn;
+            _drawIn = null;
         }
     }
 
@@ -427,16 +466,17 @@ public sealed partial class MapPage : Page
         plane.StartAnimation("Opacity", fade);
     }
 
-    // Catmull-Rom through the stops, so the route curves like a hand-drawn line instead of kinking at each stamp.
+    // Centripetal Catmull-Rom through the stops: curves like a hand-drawn line, but never loops or overshoots
+    // when the route doubles back (the uniform variant does).
     private static List<Vector2> Sample(Vector2[] points)
     {
         List<Vector2> result = new() { points[0] };
         for (int i = 0; i < points.Length - 1; i++)
         {
-            Vector2 p0 = points[Math.Max(i - 1, 0)];
             Vector2 p1 = points[i];
             Vector2 p2 = points[i + 1];
-            Vector2 p3 = points[Math.Min(i + 2, points.Length - 1)];
+            Vector2 p0 = i > 0 ? points[i - 1] : 2 * p1 - p2;
+            Vector2 p3 = i + 2 < points.Length ? points[i + 2] : 2 * p2 - p1;
             for (int s = 1; s <= SamplesPerLeg; s++)
             {
                 result.Add(CatmullRom(p0, p1, p2, p3, s / (float)SamplesPerLeg));
@@ -446,11 +486,22 @@ public sealed partial class MapPage : Page
         return result;
     }
 
-    private static Vector2 CatmullRom(Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, float t)
+    private static Vector2 CatmullRom(Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, float u)
     {
-        float t2 = t * t;
-        float t3 = t2 * t;
-        return 0.5f * (2 * p1 + (p2 - p0) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (3 * p1 - p0 - 3 * p2 + p3) * t3);
+        static float Knot(float t, Vector2 a, Vector2 b) => t + MathF.Max(MathF.Sqrt(Vector2.Distance(a, b)), 1e-3f);
+
+        float t0 = 0;
+        float t1 = Knot(t0, p0, p1);
+        float t2 = Knot(t1, p1, p2);
+        float t3 = Knot(t2, p2, p3);
+        float t = t1 + (t2 - t1) * u;
+
+        Vector2 a1 = ((t1 - t) * p0 + (t - t0) * p1) / (t1 - t0);
+        Vector2 a2 = ((t2 - t) * p1 + (t - t1) * p2) / (t2 - t1);
+        Vector2 a3 = ((t3 - t) * p2 + (t - t2) * p3) / (t3 - t2);
+        Vector2 b1 = ((t2 - t) * a1 + (t - t0) * a2) / (t2 - t0);
+        Vector2 b2 = ((t3 - t) * a2 + (t - t1) * a3) / (t3 - t1);
+        return ((t2 - t) * b1 + (t - t1) * b2) / (t2 - t1);
     }
 
     private static Vector2 PointAt(List<Vector2> line, float[] along, float distance, out float angle)
