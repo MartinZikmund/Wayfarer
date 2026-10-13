@@ -1,10 +1,155 @@
 <Page x:Class="Wayfarer.Views.JournalPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      AutomationProperties.AutomationId="JournalPage">
+      xmlns:controls="using:Wayfarer.Controls"
+      xmlns:helpers="using:Wayfarer.Helpers"
+      xmlns:views="using:Wayfarer.Views"
+      xmlns:vm="using:Wayfarer.ViewModels"
+      AutomationProperties.AutomationId="JournalPage"
+      SizeChanged="OnPageSizeChanged">
 
-    <Grid Padding="{StaticResource WayfarerPagePadding}">
-        <TextBlock Style="{StaticResource WayfarerPageTitleTextBlockStyle}"
-                   Text="{x:Bind ViewModel.Title, Mode=OneWay}" />
+    <Grid x:Name="Root"
+          Padding="{StaticResource WayfarerPagePadding}"
+          RowSpacing="{StaticResource WayfarerSectionSpacing}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="LayoutStates">
+                <VisualState x:Name="Wide" />
+                <VisualState x:Name="NarrowList">
+                    <VisualState.Setters>
+                        <Setter Target="ListPane.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="EditorPane.Visibility" Value="Collapsed" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="NarrowDetail">
+                    <VisualState.Setters>
+                        <Setter Target="ListPane.Visibility" Value="Collapsed" />
+                        <Setter Target="EditorPane.(Grid.Column)" Value="0" />
+                        <Setter Target="EditorPane.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="BackButton.Visibility" Value="Visible" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <Grid ColumnSpacing="{StaticResource WayfarerItemSpacing}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Margin="0"
+                       VerticalAlignment="Center"
+                       Style="{StaticResource WayfarerPageTitleTextBlockStyle}"
+                       Text="Journal" />
+            <Button Grid.Column="1"
+                    AutomationProperties.AutomationId="NewEntryButton"
+                    Command="{x:Bind ViewModel.NewEntryCommand}"
+                    Style="{StaticResource AccentButtonStyle}">
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource WayfarerContentSpacing}">
+                    <FontIcon Glyph="&#xE710;" />
+                    <TextBlock Text="New entry" />
+                </StackPanel>
+                <Button.KeyboardAccelerators>
+                    <KeyboardAccelerator Key="N" Modifiers="Control" />
+                </Button.KeyboardAccelerators>
+            </Button>
+        </Grid>
+
+        <Grid Grid.Row="1" ColumnSpacing="{StaticResource WayfarerSectionSpacing}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="360" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid x:Name="ListPane">
+                <ListView x:Name="EntriesList"
+                          AutomationProperties.AutomationId="EntriesListView"
+                          AutomationProperties.Name="Journal entries"
+                          ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
+                          SelectedItem="{x:Bind ViewModel.SelectedItem, Mode=TwoWay}">
+                    <ListView.Resources>
+                        <ResourceDictionary>
+                            <ResourceDictionary.ThemeDictionaries>
+                                <ResourceDictionary x:Key="Light">
+                                    <StaticResource x:Key="ListViewItemBackgroundSelected" ResourceKey="SubtleFillColorSecondaryBrush" />
+                                    <StaticResource x:Key="ListViewItemBackgroundSelectedPointerOver" ResourceKey="SubtleFillColorTertiaryBrush" />
+                                    <StaticResource x:Key="ListViewItemBackgroundSelectedPressed" ResourceKey="SubtleFillColorSecondaryBrush" />
+                                    <StaticResource x:Key="ListViewItemForegroundSelected" ResourceKey="TextFillColorPrimaryBrush" />
+                                    <StaticResource x:Key="ListViewItemForegroundSelectedPointerOver" ResourceKey="TextFillColorPrimaryBrush" />
+                                    <StaticResource x:Key="ListViewItemForegroundSelectedPressed" ResourceKey="TextFillColorPrimaryBrush" />
+                                </ResourceDictionary>
+                                <ResourceDictionary x:Key="Dark">
+                                    <StaticResource x:Key="ListViewItemBackgroundSelected" ResourceKey="SubtleFillColorSecondaryBrush" />
+                                    <StaticResource x:Key="ListViewItemBackgroundSelectedPointerOver" ResourceKey="SubtleFillColorTertiaryBrush" />
+                                    <StaticResource x:Key="ListViewItemBackgroundSelectedPressed" ResourceKey="SubtleFillColorSecondaryBrush" />
+                                    <StaticResource x:Key="ListViewItemForegroundSelected" ResourceKey="TextFillColorPrimaryBrush" />
+                                    <StaticResource x:Key="ListViewItemForegroundSelectedPointerOver" ResourceKey="TextFillColorPrimaryBrush" />
+                                    <StaticResource x:Key="ListViewItemForegroundSelectedPressed" ResourceKey="TextFillColorPrimaryBrush" />
+                                </ResourceDictionary>
+                                <ResourceDictionary x:Key="HighContrast" />
+                            </ResourceDictionary.ThemeDictionaries>
+                        </ResourceDictionary>
+                    </ListView.Resources>
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:JournalEntryItem">
+                            <StackPanel Padding="0,8,0,8" Spacing="{StaticResource WayfarerTightSpacing}">
+                                <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}" TextTrimming="CharacterEllipsis">
+                                    <Run Text="{x:Bind helpers:Format.Date(Entry.Date), Mode=OneWay}" />
+                                    <Run Text="·" />
+                                    <Run Text="{x:Bind TripTitle, Mode=OneWay}" />
+                                </TextBlock>
+                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}"
+                                           Text="{x:Bind Entry.Title, Mode=OneWay}"
+                                           TextTrimming="CharacterEllipsis" />
+                                <TextBlock MaxLines="2"
+                                           Style="{StaticResource WayfarerSecondaryTextBlockStyle}"
+                                           Text="{x:Bind Entry.Excerpt, Mode=OneWay}"
+                                           TextTrimming="CharacterEllipsis"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <controls:EmptyState Title="No entries yet"
+                                     Glyph="&#xE70B;"
+                                     Message="Write about today, or jot down a few notes from the road."
+                                     Visibility="{x:Bind helpers:Format.VisibleIfNone(ViewModel.Items.Count), Mode=OneWay}" />
+            </Grid>
+
+            <Border x:Name="EditorPane"
+                    Grid.Column="1"
+                    Padding="{StaticResource WayfarerCompactPagePadding}"
+                    Style="{StaticResource WayfarerCardStyle}">
+                <Grid>
+                    <controls:EmptyState Title="No entry open"
+                                         Glyph="&#xE70B;"
+                                         Message="Pick an entry from the list, or start a new one."
+                                         Visibility="{x:Bind PromptVisibility(ViewModel.SelectedItem), Mode=OneWay}" />
+                    <Grid RowSpacing="{StaticResource WayfarerContentSpacing}" Visibility="{x:Bind EditorVisibility(ViewModel.SelectedItem), Mode=OneWay}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Button x:Name="BackButton"
+                                AutomationProperties.AutomationId="BackToEntriesButton"
+                                Command="{x:Bind ViewModel.CloseEntryCommand}"
+                                Visibility="Collapsed">
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource WayfarerContentSpacing}">
+                                <FontIcon Glyph="&#xE72B;" />
+                                <TextBlock Text="All entries" />
+                            </StackPanel>
+                        </Button>
+                        <views:JournalEntryEditor x:Name="EntryEditor"
+                                                  Grid.Row="1"
+                                                  Deleted="OnEntryDeleted"
+                                                  OpenedInNewWindow="OnEntryOpenedInNewWindow" />
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </Page>
