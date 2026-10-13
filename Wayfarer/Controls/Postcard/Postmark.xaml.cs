@@ -1,3 +1,4 @@
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Automation.Peers;
 using System.Globalization;
 using Wayfarer.Helpers;
@@ -195,7 +196,7 @@ public sealed partial class Postmark : UserControl
         List<TextBlock> letters = new();
         foreach (char c in text.Trim().ToUpperInvariant())
         {
-            TextBlock letter = new() { Text = c.ToString(), Style = style, RenderTransformOrigin = new Point(0.5, 0.5) };
+            TextBlock letter = NewLetter(c.ToString(), style);
             if (c == ' ')
             {
                 // A lone space measures as zero width, which would glue the words together.
@@ -210,7 +211,7 @@ public sealed partial class Postmark : UserControl
         double available = radius * maxSweepDegrees * Math.PI / 180;
         if (Length(letters) > available)
         {
-            TextBlock ellipsis = new() { Text = "…", Style = style, RenderTransformOrigin = new Point(0.5, 0.5) };
+            TextBlock ellipsis = NewLetter("…", style);
             ArcText.Children.Add(ellipsis);
             ellipsis.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             while (letters.Count > 1 && Length(letters) + LetterSpacing + ellipsis.DesiredSize.Width > available)
@@ -244,6 +245,15 @@ public sealed partial class Postmark : UserControl
             Canvas.SetTop(letter, centre + radius * Math.Sin(angle) - size.Height / 2);
             letter.RenderTransform = new RotateTransform { Angle = angle * 180 / Math.PI + (top ? 90 : -90) };
         }
+    }
+
+    // Raw on each letter as well as the control: the WebAssembly semantic DOM walks the visual tree and
+    // ignores DecorativeAutomationPeer's empty children.
+    private static TextBlock NewLetter(string text, Style style)
+    {
+        TextBlock letter = new() { Text = text, Style = style, RenderTransformOrigin = new Point(0.5, 0.5) };
+        AutomationProperties.SetAccessibilityView(letter, AccessibilityView.Raw);
+        return letter;
     }
 
     private static double Length(List<TextBlock> letters) =>

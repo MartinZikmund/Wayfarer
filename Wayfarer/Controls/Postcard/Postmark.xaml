@@ -32,6 +32,7 @@
                            Fill="{ThemeResource WayfarerPostmarkInkBrush}" />
                 <TextBlock x:Name="DateText"
                            HorizontalAlignment="Center"
+                           AutomationProperties.AccessibilityView="Raw"
                            Style="{StaticResource WayfarerPostmarkTextBlockStyle}" />
                 <Rectangle Width="24"
                            Height="1"

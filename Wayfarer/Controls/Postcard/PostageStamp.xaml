@@ -50,15 +50,19 @@
             <Grid x:Name="Art" Background="{ThemeResource WayfarerStampAccentBrush}">
                 <Border Background="{x:Bind Tint, Mode=OneWay}" />
                 <Image x:Name="ArtImage"
+                       AutomationProperties.AccessibilityView="Raw"
                        Source="{x:Bind ImageSource, Mode=OneWay}"
                        Stretch="UniformToFill" />
                 <FontIcon x:Name="ArtGlyph"
+                          AutomationProperties.AccessibilityView="Raw"
                           Foreground="{ThemeResource WayfarerStampArtForegroundBrush}"
                           Glyph="{x:Bind Glyph, Mode=OneWay}"
                           IsTextScaleFactorEnabled="False" />
             </Grid>
+            <!-- Raw here too: the WebAssembly semantic DOM ignores the control's automation peer. -->
             <TextBlock x:Name="LabelText"
                        Grid.Row="1"
+                       AutomationProperties.AccessibilityView="Raw"
                        HorizontalAlignment="Center"
                        Foreground="{ThemeResource WayfarerStampLabelBrush}"
                        Style="{StaticResource WayfarerStampLabelTextBlockStyle}" />

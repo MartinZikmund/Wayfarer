@@ -18,6 +18,7 @@
                  Stroke="{ThemeResource WayfarerRouteBrush}"
                  StrokeThickness="2" />
         <FontIcon x:Name="Marker"
+                  AutomationProperties.AccessibilityView="Raw"
                   Width="24"
                   Height="24"
                   FontSize="{StaticResource WayfarerRouteMarkerGlyphSize}"
