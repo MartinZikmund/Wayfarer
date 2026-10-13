@@ -5,6 +5,7 @@
                AutomationProperties.AutomationId="GalleryPhotoDialog"
                CloseButtonText="Close"
                DefaultButton="Close"
+               Style="{StaticResource DefaultContentDialogStyle}"
                Title="{x:Bind Photo.Caption, Mode=OneTime}">
 
     <StackPanel Spacing="{StaticResource WayfarerItemSpacing}">

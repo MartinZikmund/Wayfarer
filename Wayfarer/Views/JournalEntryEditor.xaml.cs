@@ -321,6 +321,7 @@ public sealed partial class JournalEntryEditor : UserControl
             PrimaryButtonText = "Delete",
             CloseButtonText = "Keep it",
             DefaultButton = ContentDialogButton.Close,
+            Style = (Style)Application.Current.Resources["DefaultContentDialogStyle"],
         };
         AutomationProperties.SetAutomationId(dialog, "DeleteEntryDialog");
 
