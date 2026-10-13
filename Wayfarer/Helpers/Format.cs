@@ -29,6 +29,9 @@ public static class Format
     /// <summary>Today, for postmarks that say "posted today".</summary>
     public static DateOnly Today() => DateOnly.FromDateTime(DateTime.Now);
 
+    /// <summary>Accessible name for a trip card's "Open the route" button, so the buttons don't all sound alike.</summary>
+    public static string OpenRouteName(string tripTitle) => $"Open the route for {tripTitle}";
+
     public static string Days(int count) => count == 1 ? "1 day" : $"{count} days";
 
     public static string Photos(int count) => count == 1 ? "1 photo" : $"{count} photos";

@@ -10,24 +10,32 @@
 
     <Page.Resources>
         <DataTemplate x:Key="TripPostcardTemplate" x:DataType="models:Trip">
-            <postcard:PostcardCard Padding="16,20,16,16" AutomationProperties.AutomationId="HomeTripCard">
+            <postcard:PostcardCard Padding="16,20,16,16"
+                                   AutomationProperties.AutomationId="HomeTripCard"
+                                   ShowAirmailEdge="False">
                 <StackPanel Spacing="{StaticResource WayfarerItemSpacing}">
                     <Grid>
                         <Border Height="140" CornerRadius="{StaticResource ControlCornerRadius}">
+                            <!-- The heading below already names the trip. -->
                             <Image x:Name="CoverImage"
-                                   AutomationProperties.Name="{x:Bind Title}"
+                                   AutomationProperties.AccessibilityView="Raw"
                                    Source="{x:Bind views:HomePage.Cover(CoverPhoto.ImageUri)}"
                                    Stretch="UniformToFill" />
                         </Border>
+                        <!-- Overhangs the photo's bottom edge, like a stamp stuck half on the picture. -->
                         <postcard:PostageStamp Width="{StaticResource WayfarerStampSmallWidth}"
                                                Height="{StaticResource WayfarerStampSmallHeight}"
-                                               Margin="0,0,8,-16"
+                                               Margin="0,0,8,0"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Bottom"
-                                               Glyph="&#xE709;"
+                                               Glyph="{x:Bind models:Glyphs.Trip}"
                                                Label="{x:Bind Code}"
                                                Tilt="5"
-                                               Tone="{x:Bind StampTone}" />
+                                               Tone="{x:Bind StampTone}">
+                            <postcard:PostageStamp.RenderTransform>
+                                <TranslateTransform Y="16" />
+                            </postcard:PostageStamp.RenderTransform>
+                        </postcard:PostageStamp>
                     </Grid>
                     <StackPanel Spacing="{StaticResource WayfarerTightSpacing}">
                         <TextBlock AutomationProperties.HeadingLevel="Level3"
@@ -37,13 +45,16 @@
                         <TextBlock Style="{StaticResource WayfarerSecondaryTextBlockStyle}" Text="{x:Bind Destination}" />
                         <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}" Text="{x:Bind helpers:Format.DateRange(StartDate, EndDate)}" />
                     </StackPanel>
-                    <postcard:RouteLine Width="160"
-                                        HorizontalAlignment="Left"
-                                        Glyph="&#xE707;" />
+                    <!-- The trip's real route in miniature, framed like the Routes map. -->
+                    <postcard:RouteSketch Width="96"
+                                          Height="56"
+                                          HorizontalAlignment="Left"
+                                          Stops="{x:Bind Route}" />
                     <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}"
                                Text="{x:Bind views:HomePage.TripStats(DayCount, Photos.Count, DistanceKm)}"
                                TextWrapping="Wrap" />
                     <Button AutomationProperties.AutomationId="HomeOpenRouteButton"
+                            AutomationProperties.Name="{x:Bind helpers:Format.OpenRouteName(Title)}"
                             Click="OnTripClick"
                             Content="Open the route" />
                 </StackPanel>
@@ -66,10 +77,9 @@
                                  Subtitle="{x:Bind ViewModel.Subtitle, Mode=OneWay}"
                                  SubtitleAutomationId="HomeQuip">
                 <controls:PageHeader.Accent>
-                    <postcard:Postmark AnimateOnLoad="True"
-                                       Date="{x:Bind helpers:Format.Today()}"
+                    <postcard:Postmark Date="{x:Bind helpers:Format.Today()}"
                                        Place="Wayfarer"
-                                       Waves="Left" />
+                                       Waves="None" />
                 </controls:PageHeader.Accent>
             </controls:PageHeader>
 
@@ -116,6 +126,7 @@
 
                     <postcard:PostcardCard x:Name="MemoryCard"
                                            AutomationProperties.AutomationId="HomeMemoryCard"
+                                           ShowAirmailEdge="False"
                                            Visibility="{x:Bind views:HomePage.VisibleIfPresent(ViewModel.Memory), Mode=OneWay}">
                         <postcard:PostcardCard.Stamp>
                             <postcard:Postmark Date="{x:Bind ViewModel.Memory.Entry.Date, Mode=OneWay}"
@@ -190,12 +201,6 @@
                 </StackPanel>
 
                 <postcard:PostcardCard AutomationProperties.AutomationId="HomeNextAdventureCard" ShowAirmailEdge="False">
-                    <postcard:PostcardCard.Stamp>
-                        <postcard:PostageStamp Glyph="&#xE70F;"
-                                               Label="Next"
-                                               Tilt="-4"
-                                               Tone="Sand" />
-                    </postcard:PostcardCard.Stamp>
                     <StackPanel Spacing="{StaticResource WayfarerContentSpacing}">
                         <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}" Text="Next adventure" />
                         <TextBlock AutomationProperties.HeadingLevel="Level2"

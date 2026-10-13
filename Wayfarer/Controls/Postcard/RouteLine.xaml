@@ -20,7 +20,7 @@
         <FontIcon x:Name="Marker"
                   Width="24"
                   Height="24"
-                  FontSize="20"
+                  FontSize="{StaticResource WayfarerRouteMarkerGlyphSize}"
                   Foreground="{ThemeResource WayfarerRouteBrush}"
                   Glyph="{x:Bind Glyph, Mode=OneWay}"
                   IsTextScaleFactorEnabled="False"

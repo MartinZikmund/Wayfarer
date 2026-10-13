@@ -93,6 +93,7 @@
     <x:Double x:Key="WayfarerPostmarkSize">88</x:Double>
     <x:Double x:Key="WayfarerPostmarkLargeSize">104</x:Double>
     <x:Double x:Key="WayfarerAirmailEdgeHeight">4</x:Double>
+    <x:Double x:Key="WayfarerRouteMarkerGlyphSize">20</x:Double>
     <Thickness x:Key="WayfarerPostcardPadding">20,24,20,20</Thickness>
 
     <!-- Motif text. Postmark and stamp text is decoration (AccessibilityView Raw); real UI text uses the type ramp. -->
