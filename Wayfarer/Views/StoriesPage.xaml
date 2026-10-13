@@ -1,10 +1,88 @@
 <Page x:Class="Wayfarer.Views.StoriesPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      AutomationProperties.AutomationId="StoriesPage">
+      xmlns:controls="using:Wayfarer.Controls"
+      xmlns:helpers="using:Wayfarer.Helpers"
+      xmlns:models="using:Wayfarer.Models"
+      AutomationProperties.AutomationId="StoriesPage"
+      SizeChanged="OnPageSizeChanged">
 
-    <Grid Padding="{StaticResource WayfarerPagePadding}">
-        <TextBlock Style="{StaticResource WayfarerPageTitleTextBlockStyle}"
-                   Text="{x:Bind ViewModel.Title, Mode=OneWay}" />
+    <Grid>
+        <!-- TextHighlighter is not a DependencyObject in Uno, so ThemeResource brushes are read from this probe. -->
+        <Border x:Name="HighlightBrushProbe"
+                Background="{ThemeResource WayfarerHighlightBackgroundBrush}"
+                BorderBrush="{ThemeResource WayfarerHighlightForegroundBrush}"
+                Visibility="Collapsed" />
+        <ScrollViewer Padding="{StaticResource WayfarerPagePadding}"
+                      AutomationProperties.AutomationId="StoriesScrollViewer"
+                      Visibility="{x:Bind helpers:Format.VisibleIf(ViewModel.HasStory), Mode=OneWay}">
+            <StackPanel Spacing="{StaticResource WayfarerSectionSpacing}">
+
+                <Grid ColumnSpacing="{StaticResource WayfarerItemSpacing}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Spacing="{StaticResource WayfarerTightSpacing}">
+                        <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}"
+                                   Text="STORIES" />
+                        <TextBlock AutomationProperties.AutomationId="StoryTitle"
+                                   Style="{StaticResource TitleLargeTextBlockStyle}"
+                                   Text="{x:Bind ViewModel.SelectedTrip.Title, Mode=OneWay}"
+                                   TextWrapping="Wrap" />
+                        <TextBlock Style="{StaticResource WayfarerSecondaryTextBlockStyle}"
+                                   Text="{x:Bind helpers:StoryComposer.Byline(ViewModel.SelectedTrip), Mode=OneWay}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1"
+                                VerticalAlignment="Bottom"
+                                Orientation="Horizontal"
+                                Spacing="{StaticResource WayfarerItemSpacing}">
+                        <ComboBox MinWidth="200"
+                                  AutomationProperties.AutomationId="StoryTripPicker"
+                                  AutomationProperties.Name="Trip"
+                                  DisplayMemberPath="Title"
+                                  ItemsSource="{x:Bind ViewModel.Trips, Mode=OneWay}"
+                                  SelectedItem="{x:Bind ViewModel.SelectedTrip, Mode=TwoWay}" />
+                        <ToggleSwitch AutomationProperties.AutomationId="HighlightPlacesToggle"
+                                      IsOn="{x:Bind ViewModel.HighlightPlaces, Mode=TwoWay}"
+                                      OffContent="Highlight places"
+                                      OnContent="Highlight places" />
+                    </StackPanel>
+                </Grid>
+
+                <Rectangle Style="{StaticResource WayfarerDividerStyle}" />
+
+                <Grid x:Name="Columns"
+                      HorizontalAlignment="Stretch"
+                      ColumnSpacing="{StaticResource WayfarerSectionSpacing}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition x:Name="Column0" Width="*" />
+                        <ColumnDefinition x:Name="Column1" Width="*" />
+                        <ColumnDefinition x:Name="Column2" Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <RichTextBlock x:Name="StoryText"
+                                   AutomationProperties.AutomationId="StoryText"
+                                   IsTextSelectionEnabled="True"
+                                   OverflowContentTarget="{x:Bind Overflow1}"
+                                   TextWrapping="Wrap">
+                        <RichTextBlock.TextHighlighters>
+                            <TextHighlighter x:Name="PlaceHighlighter" />
+                        </RichTextBlock.TextHighlighters>
+                    </RichTextBlock>
+                    <RichTextBlockOverflow x:Name="Overflow1"
+                                           Grid.Column="1"
+                                           OverflowContentTarget="{x:Bind Overflow2}" />
+                    <RichTextBlockOverflow x:Name="Overflow2"
+                                           Grid.Column="2" />
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+
+        <controls:EmptyState Title="No stories yet"
+                             Glyph="{x:Bind models:Glyphs.Stories}"
+                             Message="Add a trip and its journal entries will show up here as a story."
+                             Visibility="{x:Bind helpers:Format.CollapsedIf(ViewModel.HasStory), Mode=OneWay}" />
     </Grid>
 </Page>
