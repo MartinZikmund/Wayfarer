@@ -21,7 +21,7 @@ Captions and locations are fictional, written for the sample trips.
 | `kyoto-13.jpg` | Jerry Adney | [Unsplash](https://unsplash.com/photos/_WiFMBRT7Aw) (picsum id 28) |
 | `kyoto-14.jpg` | Alejandro Escamilla | [Unsplash](https://unsplash.com/photos/Iuq0EL4EINY) (picsum id 25) |
 | `kyoto-15.jpg` | Rula Sibai | [Unsplash](https://unsplash.com/photos/-vq7mi4oF0s) (picsum id 82) |
-| `kyoto-16.jpg` | Pawel Kadysz | [Unsplash](https://unsplash.com/photos/CuFYW1c97w8) (picsum id 96) |
+| `kyoto-16.jpg` | Christian Joudrey | [Unsplash](https://unsplash.com/photos/mWRR1xj95hg) (picsum id 1043) |
 | `patagonia-17.jpg` | Go Wild | [Unsplash](https://unsplash.com/photos/V0yAek6BgGk) (picsum id 29) |
 | `patagonia-18.jpg` | Matteo Minelli | [Unsplash](https://unsplash.com/photos/hlnucYOsL-c) (picsum id 128) |
 | `patagonia-19.jpg` | Danka & Peter | [Unsplash](https://unsplash.com/photos/tvicgTdh7Fg) (picsum id 177) |

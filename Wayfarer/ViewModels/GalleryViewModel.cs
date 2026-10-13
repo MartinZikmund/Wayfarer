@@ -4,14 +4,11 @@ using Wayfarer.Services;
 
 namespace Wayfarer.ViewModels;
 
-/// <summary>A photo in the gallery grid. Photos are repeated, so <see cref="Key"/> keeps entries distinct.</summary>
+/// <summary>A photo in the gallery grid; <see cref="Key"/> is its position in the current filter.</summary>
 public sealed record GalleryItem(Photo Photo, int Key);
 
 public sealed partial class GalleryViewModel(ITripService tripService) : PageViewModel
 {
-    // Repeats the 24 photos so scrolling and flings have a realistic amount to chew on.
-    private const int Repeat = 6;
-
     private readonly ITripService _tripService = tripService;
     private IReadOnlyList<Photo> _allPhotos = [];
 
@@ -61,14 +58,7 @@ public sealed partial class GalleryViewModel(ITripService tripService) : PageVie
     public void Filter(string? tripId)
     {
         List<Photo> photos = _allPhotos.Where(p => tripId is null || p.TripId == tripId).ToList();
-        List<GalleryItem> items = new(photos.Count * Repeat);
-        for (int round = 0; round < Repeat; round++)
-        {
-            foreach (Photo photo in photos)
-            {
-                items.Add(new GalleryItem(photo, items.Count));
-            }
-        }
+        List<GalleryItem> items = photos.Select((photo, index) => new GalleryItem(photo, index)).ToList();
 
         Items = items;
         IsEmpty = items.Count == 0;

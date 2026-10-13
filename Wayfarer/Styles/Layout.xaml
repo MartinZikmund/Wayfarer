@@ -47,6 +47,7 @@
            TargetType="TextBlock">
         <Setter Property="Foreground" Value="{ThemeResource WayfarerPhotoCaptionForegroundBrush}" />
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        <Setter Property="MaxLines" Value="2" />
     </Style>
 
     <!-- Surfaces -->

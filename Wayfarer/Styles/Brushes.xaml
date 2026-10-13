@@ -9,7 +9,11 @@
             <StaticResource x:Key="WayfarerSubtleCardBackgroundBrush" ResourceKey="CardBackgroundFillColorSecondaryBrush" />
             <StaticResource x:Key="WayfarerPhotoPlaceholderBrush" ResourceKey="ControlFillColorSecondaryBrush" />
             <StaticResource x:Key="WayfarerPhotoBorderBrush" ResourceKey="ControlStrokeColorSecondaryBrush" />
-            <StaticResource x:Key="WayfarerPhotoScrimBrush" ResourceKey="SmokeFillColorDefaultBrush" />
+            <LinearGradientBrush x:Key="WayfarerPhotoScrimBrush" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Offset="0" Color="Transparent" />
+                <GradientStop Offset="0.3" Color="{StaticResource SystemChromeBlackMediumLowColor}" />
+                <GradientStop Offset="1" Color="{StaticResource SystemChromeBlackMediumColor}" />
+            </LinearGradientBrush>
             <StaticResource x:Key="WayfarerPhotoCaptionForegroundBrush" ResourceKey="TextOnAccentFillColorPrimaryBrush" />
             <StaticResource x:Key="WayfarerHighlightBackgroundBrush" ResourceKey="SystemFillColorCautionBackgroundBrush" />
             <StaticResource x:Key="WayfarerHighlightForegroundBrush" ResourceKey="TextFillColorPrimaryBrush" />
@@ -26,7 +30,11 @@
             <StaticResource x:Key="WayfarerSubtleCardBackgroundBrush" ResourceKey="CardBackgroundFillColorSecondaryBrush" />
             <StaticResource x:Key="WayfarerPhotoPlaceholderBrush" ResourceKey="ControlFillColorSecondaryBrush" />
             <StaticResource x:Key="WayfarerPhotoBorderBrush" ResourceKey="ControlStrokeColorSecondaryBrush" />
-            <StaticResource x:Key="WayfarerPhotoScrimBrush" ResourceKey="SmokeFillColorDefaultBrush" />
+            <LinearGradientBrush x:Key="WayfarerPhotoScrimBrush" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Offset="0" Color="Transparent" />
+                <GradientStop Offset="0.3" Color="{StaticResource SystemChromeBlackMediumLowColor}" />
+                <GradientStop Offset="1" Color="{StaticResource SystemChromeBlackMediumColor}" />
+            </LinearGradientBrush>
             <!-- Over the dark scrim the caption stays light in both themes. -->
             <StaticResource x:Key="WayfarerPhotoCaptionForegroundBrush" ResourceKey="TextFillColorPrimaryBrush" />
             <StaticResource x:Key="WayfarerHighlightBackgroundBrush" ResourceKey="SystemFillColorCautionBackgroundBrush" />
