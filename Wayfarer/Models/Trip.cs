@@ -1,0 +1,43 @@
+using System.Text.Json.Serialization;
+
+namespace Wayfarer.Models;
+
+public sealed record Trip
+{
+    public required string Id { get; init; }
+
+    public required string Title { get; init; }
+
+    public string Region { get; init; } = "";
+
+    public string Country { get; init; } = "";
+
+    public string Summary { get; init; } = "";
+
+    public DateOnly StartDate { get; init; }
+
+    public DateOnly EndDate { get; init; }
+
+    public string CoverPhotoId { get; init; } = "";
+
+    public int DistanceKm { get; init; }
+
+    public IReadOnlyList<string> Tags { get; init; } = [];
+
+    /// <summary>Resolved by the trip service.</summary>
+    [JsonIgnore]
+    public IReadOnlyList<Photo> Photos { get; init; } = [];
+
+    /// <summary>Resolved by the trip service, newest first.</summary>
+    [JsonIgnore]
+    public IReadOnlyList<JournalEntry> Entries { get; init; } = [];
+
+    [JsonIgnore]
+    public Photo? CoverPhoto => Photos.FirstOrDefault(p => p.Id == CoverPhotoId) ?? Photos.FirstOrDefault();
+
+    [JsonIgnore]
+    public int DayCount => EndDate.DayNumber - StartDate.DayNumber + 1;
+
+    [JsonIgnore]
+    public string Destination => string.IsNullOrEmpty(Region) ? Country : $"{Region}, {Country}";
+}

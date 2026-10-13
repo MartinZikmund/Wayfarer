@@ -1,0 +1,524 @@
+{
+  "trips": [
+    {
+      "id": "lofoten",
+      "title": "Lofoten Islands",
+      "region": "Nordland",
+      "country": "Norway",
+      "startDate": "2025-06-13",
+      "endDate": "2025-06-20",
+      "summary": "A week of midnight sun, red rorbu cabins and granite peaks rising straight out of the Norwegian Sea.",
+      "coverPhotoId": "p01",
+      "distanceKm": 412,
+      "tags": [
+        "Coast",
+        "Midnight sun",
+        "Road trip"
+      ]
+    },
+    {
+      "id": "kyoto",
+      "title": "Kyoto in autumn",
+      "region": "Kansai",
+      "country": "Japan",
+      "startDate": "2024-11-20",
+      "endDate": "2024-11-27",
+      "summary": "Temple gardens at peak momiji, early trains to beat the crowds and far too much matcha.",
+      "coverPhotoId": "p10",
+      "distanceKm": 96,
+      "tags": [
+        "Temples",
+        "Foliage",
+        "Slow travel"
+      ]
+    },
+    {
+      "id": "patagonia",
+      "title": "Patagonia W-Trek",
+      "region": "Magallanes",
+      "country": "Chile",
+      "startDate": "2026-02-01",
+      "endDate": "2026-02-07",
+      "summary": "Five days, 80 kilometres and four seasons a day on the classic W route through Torres del Paine.",
+      "coverPhotoId": "p17",
+      "distanceKm": 80,
+      "tags": [
+        "Hiking",
+        "Mountains",
+        "Glaciers"
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "id": "e01",
+      "tripId": "lofoten",
+      "date": "2025-06-14",
+      "location": "Reine",
+      "mood": "Awestruck",
+      "title": "The light that refuses to leave",
+      "paragraphs": [
+        "We rolled into Reine just before midnight and the sun was still hanging above the ridge like it had forgotten its way home. The red rorbu cabins glowed against the water and nobody on the bridge was talking.",
+        "Dinner was stockfish soup from the only kitchen still open. The owner told us the cod racks would be empty in a few weeks, and that the gulls know the schedule better than anyone.",
+        "Note for next time: blackout curtains are not optional."
+      ],
+      "highlights": [
+        "midnight",
+        "rorbu cabins",
+        "blackout curtains"
+      ],
+      "photoIds": [
+        "p01",
+        "p02"
+      ]
+    },
+    {
+      "id": "e02",
+      "tripId": "lofoten",
+      "date": "2025-06-17",
+      "location": "Haukland Beach",
+      "mood": "Calm",
+      "title": "Turquoise water, Arctic temperatures",
+      "paragraphs": [
+        "Haukland looks like the Caribbean right up until you put a toe in. Six degrees, according to the sign, and it felt optimistic.",
+        "We walked the old road around Mannen instead of climbing it, watching the clouds pour over the summit like milk. On the far side, Uttakleiv was empty except for a family of oystercatchers who very much wanted us gone.",
+        "Best decision of the day: the thermos of hot chocolate we almost left in the car."
+      ],
+      "highlights": [
+        "Six degrees",
+        "Mannen",
+        "hot chocolate"
+      ],
+      "photoIds": [
+        "p05",
+        "p06"
+      ]
+    },
+    {
+      "id": "e03",
+      "tripId": "kyoto",
+      "date": "2024-11-22",
+      "location": "Eikandō",
+      "mood": "Inspired",
+      "title": "Momiji, at last",
+      "paragraphs": [
+        "We timed it right. Eikandō was at full colour: every maple a different shade between saffron and blood orange, reflected twice in the pond.",
+        "The pagoda on the hill is worth every step. From the top, the city fades into haze and the only sound is the temple broom scraping leaves off the stone path, a job that will never, ever be finished.",
+        "Afterwards, yudofu at a tiny place by Nanzen-ji. Tofu has no right to be this good."
+      ],
+      "highlights": [
+        "full colour",
+        "pagoda",
+        "yudofu"
+      ],
+      "photoIds": [
+        "p10",
+        "p11"
+      ]
+    },
+    {
+      "id": "e04",
+      "tripId": "kyoto",
+      "date": "2024-11-25",
+      "location": "Philosopher’s Path",
+      "mood": "Reflective",
+      "title": "Walking with the philosophers",
+      "paragraphs": [
+        "Two kilometres of canal, stone and cats. The Philosopher’s Path is supposed to be about cherry blossoms, but in late November it belongs to the maples and the locals walking their dogs.",
+        "We stopped at Hōnen-in, where the sand mounds by the gate are raked into a new pattern every season. This week: falling leaves and flowing water.",
+        "Bought a hand-dyed furoshiki from the woman who made it. She wrapped it in another furoshiki."
+      ],
+      "highlights": [
+        "Philosopher’s Path",
+        "Hōnen-in",
+        "furoshiki"
+      ],
+      "photoIds": [
+        "p14",
+        "p15"
+      ]
+    },
+    {
+      "id": "e05",
+      "tripId": "patagonia",
+      "date": "2026-02-03",
+      "location": "Refugio Paine Grande",
+      "mood": "Exhausted",
+      "title": "Wind you can lean on",
+      "paragraphs": [
+        "The catamaran across Lago Pehoé was the calmest part of the day. Once we stepped off at Paine Grande, the wind hit like a door slammed open, and it never really closed.",
+        "Gusts of 90 km/h flattened the grass and stole one of our hats somewhere over the lake. The rangers call it a mild day. We call it character building.",
+        "The refugio had hot showers, a warm stove and a view of the Cuernos turning pink at sunset. We earned every second of it."
+      ],
+      "highlights": [
+        "Lago Pehoé",
+        "90 km/h",
+        "Cuernos"
+      ],
+      "photoIds": [
+        "p18",
+        "p17"
+      ]
+    },
+    {
+      "id": "e06",
+      "tripId": "patagonia",
+      "date": "2026-02-06",
+      "location": "Base Las Torres",
+      "mood": "Triumphant",
+      "title": "The towers at sunrise",
+      "paragraphs": [
+        "Alarm at 3:30. Headlamps on. The last hour to the mirador is a boulder field that does not care how tired your legs are.",
+        "We made it with ten minutes to spare. When the sun hit the three granite towers they went from grey to orange to gold in under a minute, and the glacial lake below turned an impossible shade of green.",
+        "Eighty kilometres done. Patagonia, thank you for the blisters."
+      ],
+      "highlights": [
+        "3:30",
+        "three granite towers",
+        "Eighty kilometres"
+      ],
+      "photoIds": [
+        "p24",
+        "p19"
+      ]
+    }
+  ],
+  "photos": [
+    {
+      "id": "p01",
+      "tripId": "lofoten",
+      "fileName": "lofoten-01.jpg",
+      "caption": "Islands stitched together by bridges and blue water",
+      "location": "Reine, Moskenesøya",
+      "takenOn": "2025-06-14",
+      "width": 1800,
+      "height": 600,
+      "aspect": "Panoramic",
+      "author": "Paul Jarvis",
+      "sourceUrl": "https://unsplash.com/photos/gkT4FfgHO5o",
+      "picsumId": 16
+    },
+    {
+      "id": "p02",
+      "tripId": "lofoten",
+      "fileName": "lofoten-02.jpg",
+      "caption": "Pines leaning toward the Vestfjorden",
+      "location": "Hamnøy",
+      "takenOn": "2025-06-14",
+      "width": 1200,
+      "height": 800,
+      "aspect": "Landscape",
+      "author": "Paul Jarvis",
+      "sourceUrl": "https://unsplash.com/photos/6J--NXulQCs",
+      "picsumId": 10
+    },
+    {
+      "id": "p03",
+      "tripId": "lofoten",
+      "fileName": "lofoten-03.jpg",
+      "caption": "Low tide on the rocks below Ramberg",
+      "location": "Ramberg Beach",
+      "takenOn": "2025-06-15",
+      "width": 1200,
+      "height": 800,
+      "aspect": "Landscape",
+      "author": "Paul Jarvis",
+      "sourceUrl": "https://unsplash.com/photos/I_9ILwtsl_k",
+      "picsumId": 12
+    },
+    {
+      "id": "p04",
+      "tripId": "lofoten",
+      "fileName": "lofoten-04.jpg",
+      "caption": "The lighthouse that never quite gets dark",
+      "location": "Glåppen",
+      "takenOn": "2025-06-16",
+      "width": 800,
+      "height": 1200,
+      "aspect": "Portrait",
+      "author": "Tony Naccarato",
+      "sourceUrl": "https://unsplash.com/photos/-kEr-QltARg",
+      "picsumId": 58
+    },
+    {
+      "id": "p05",
+      "tripId": "lofoten",
+      "fileName": "lofoten-05.jpg",
+      "caption": "A beach nobody told us about",
+      "location": "Haukland Beach",
+      "takenOn": "2025-06-17",
+      "width": 1000,
+      "height": 1000,
+      "aspect": "Square",
+      "author": "Paul Jarvis",
+      "sourceUrl": "https://unsplash.com/photos/3MtiSMdnoCo",
+      "picsumId": 13
+    },
+    {
+      "id": "p06",
+      "tripId": "lofoten",
+      "fileName": "lofoten-06.jpg",
+      "caption": "Granite and kelp at the edge of Uttakleiv",
+      "location": "Uttakleiv",
+      "takenOn": "2025-06-17",
+      "width": 1200,
+      "height": 800,
+      "aspect": "Landscape",
+      "author": "Paul Jarvis",
+      "sourceUrl": "https://unsplash.com/photos/IQ1kOQTJrOQ",
+      "picsumId": 14
+    },
+    {
+      "id": "p07",
+      "tripId": "lofoten",
+      "fileName": "lofoten-07.jpg",
+      "caption": "The old fishing pier at 1 a.m., still golden",
+      "location": "Henningsvær",
+      "takenOn": "2025-06-18",
+      "width": 800,
+      "height": 1200,
+      "aspect": "Portrait",
+      "author": "May Pamintuan",
+      "sourceUrl": "https://unsplash.com/photos/j9nfqTi5T5o",
+      "picsumId": 77
+    },
+    {
+      "id": "p08",
+      "tripId": "lofoten",
+      "fileName": "lofoten-08.jpg",
+      "caption": "Weather rolling in over the Norwegian Sea",
+      "location": "Eggum",
+      "takenOn": "2025-06-19",
+      "width": 1800,
+      "height": 600,
+      "aspect": "Panoramic",
+      "author": "Kundan Ramisetti",
+      "sourceUrl": "https://unsplash.com/photos/OODWPtfXAF0",
+      "picsumId": 147
+    },
+    {
+      "id": "p09",
+      "tripId": "kyoto",
+      "fileName": "kyoto-09.jpg",
+      "caption": "Morning mist in the temple grove",
+      "location": "Ōhara",
+      "takenOn": "2024-11-21",
+      "width": 800,
+      "height": 1200,
+      "aspect": "Portrait",
+      "author": "Simon Pape",
+      "sourceUrl": "https://unsplash.com/photos/2kc8bigeqEI",
+      "picsumId": 186
+    },
+    {
+      "id": "p10",
+      "tripId": "kyoto",
+      "fileName": "kyoto-10.jpg",
+      "caption": "Maple leaves carpeting the stone steps",
+      "location": "Eikandō Zenrin-ji",
+      "takenOn": "2024-11-22",
+      "width": 1000,
+      "height": 1000,
+      "aspect": "Square",
+      "author": "petradr",
+      "sourceUrl": "https://unsplash.com/photos/WqK_xV_hbug",
+      "picsumId": 167
+    },
+    {
+      "id": "p11",
+      "tripId": "kyoto",
+      "fileName": "kyoto-11.jpg",
+      "caption": "The quiet path behind the bamboo",
+      "location": "Arashiyama",
+      "takenOn": "2024-11-22",
+      "width": 800,
+      "height": 1200,
+      "aspect": "Portrait",
+      "author": "Paul Jarvis",
+      "sourceUrl": "https://unsplash.com/photos/Ven2CV8IJ5A",
+      "picsumId": 17
+    },
+    {
+      "id": "p12",
+      "tripId": "kyoto",
+      "fileName": "kyoto-12.jpg",
+      "caption": "Moss garden after the rain",
+      "location": "Saihō-ji",
+      "takenOn": "2024-11-23",
+      "width": 1200,
+      "height": 800,
+      "aspect": "Landscape",
+      "author": "Paul Jarvis",
+      "sourceUrl": "https://unsplash.com/photos/P7Lh0usGcuk",
+      "picsumId": 19
+    },
+    {
+      "id": "p13",
+      "tripId": "kyoto",
+      "fileName": "kyoto-13.jpg",
+      "caption": "Kamo River headwaters in full colour",
+      "location": "Kurama",
+      "takenOn": "2024-11-24",
+      "width": 1200,
+      "height": 800,
+      "aspect": "Landscape",
+      "author": "Jerry Adney",
+      "sourceUrl": "https://unsplash.com/photos/_WiFMBRT7Aw",
+      "picsumId": 28
+    },
+    {
+      "id": "p14",
+      "tripId": "kyoto",
+      "fileName": "kyoto-14.jpg",
+      "caption": "A stubborn early bloom by the canal",
+      "location": "Philosopher’s Path",
+      "takenOn": "2024-11-25",
+      "width": 1000,
+      "height": 1000,
+      "aspect": "Square",
+      "author": "Alejandro Escamilla",
+      "sourceUrl": "https://unsplash.com/photos/Iuq0EL4EINY",
+      "picsumId": 25
+    },
+    {
+      "id": "p15",
+      "tripId": "kyoto",
+      "fileName": "kyoto-15.jpg",
+      "caption": "Late camellias outside the tea house",
+      "location": "Gion",
+      "takenOn": "2024-11-25",
+      "width": 800,
+      "height": 1200,
+      "aspect": "Portrait",
+      "author": "Rula Sibai",
+      "sourceUrl": "https://unsplash.com/photos/-vq7mi4oF0s",
+      "picsumId": 82
+    },
+    {
+      "id": "p16",
+      "tripId": "kyoto",
+      "fileName": "kyoto-16.jpg",
+      "caption": "Bare branches over the old capital",
+      "location": "Daigo-ji",
+      "takenOn": "2024-11-26",
+      "width": 1800,
+      "height": 600,
+      "aspect": "Panoramic",
+      "author": "Pawel Kadysz",
+      "sourceUrl": "https://unsplash.com/photos/CuFYW1c97w8",
+      "picsumId": 96
+    },
+    {
+      "id": "p17",
+      "tripId": "patagonia",
+      "fileName": "patagonia-17.jpg",
+      "caption": "First light on the Cuernos",
+      "location": "Torres del Paine",
+      "takenOn": "2026-02-03",
+      "width": 1800,
+      "height": 600,
+      "aspect": "Panoramic",
+      "author": "Go Wild",
+      "sourceUrl": "https://unsplash.com/photos/V0yAek6BgGk",
+      "picsumId": 29
+    },
+    {
+      "id": "p18",
+      "tripId": "patagonia",
+      "fileName": "patagonia-18.jpg",
+      "caption": "Lago Pehoé from the catamaran",
+      "location": "Pudeto",
+      "takenOn": "2026-02-03",
+      "width": 1200,
+      "height": 800,
+      "aspect": "Landscape",
+      "author": "Matteo Minelli",
+      "sourceUrl": "https://unsplash.com/photos/hlnucYOsL-c",
+      "picsumId": 128
+    },
+    {
+      "id": "p19",
+      "tripId": "patagonia",
+      "fileName": "patagonia-19.jpg",
+      "caption": "Climbing toward Mirador Británico",
+      "location": "Valle del Francés",
+      "takenOn": "2026-02-05",
+      "width": 800,
+      "height": 1200,
+      "aspect": "Portrait",
+      "author": "Danka & Peter",
+      "sourceUrl": "https://unsplash.com/photos/tvicgTdh7Fg",
+      "picsumId": 177
+    },
+    {
+      "id": "p20",
+      "tripId": "patagonia",
+      "fileName": "patagonia-20.jpg",
+      "caption": "Meltwater racing down from the glacier",
+      "location": "Río del Francés",
+      "takenOn": "2026-02-05",
+      "width": 800,
+      "height": 1200,
+      "aspect": "Portrait",
+      "author": "Paul Jarvis",
+      "sourceUrl": "https://unsplash.com/photos/NYDo21ssGao",
+      "picsumId": 15
+    },
+    {
+      "id": "p21",
+      "tripId": "patagonia",
+      "fileName": "patagonia-21.jpg",
+      "caption": "The steppe opens up east of the park",
+      "location": "Laguna Amarga",
+      "takenOn": "2026-02-02",
+      "width": 1800,
+      "height": 600,
+      "aspect": "Panoramic",
+      "author": "Jeffrey Kam",
+      "sourceUrl": "https://unsplash.com/photos/Nzw3HHsNHYU",
+      "picsumId": 46
+    },
+    {
+      "id": "p22",
+      "tripId": "patagonia",
+      "fileName": "patagonia-22.jpg",
+      "caption": "Gravel road to the end of the world",
+      "location": "Ruta Y-150",
+      "takenOn": "2026-02-02",
+      "width": 1200,
+      "height": 800,
+      "aspect": "Landscape",
+      "author": "Alex Talmon",
+      "sourceUrl": "https://unsplash.com/photos/6iat9p85VnQ",
+      "picsumId": 191
+    },
+    {
+      "id": "p23",
+      "tripId": "patagonia",
+      "fileName": "patagonia-23.jpg",
+      "caption": "Wind-flattened grass and a sky that never sits still",
+      "location": "Refugio Cuernos",
+      "takenOn": "2026-02-04",
+      "width": 1000,
+      "height": 1000,
+      "aspect": "Square",
+      "author": "Nicholas Swanson",
+      "sourceUrl": "https://unsplash.com/photos/agnhLQWqr1Q",
+      "picsumId": 66
+    },
+    {
+      "id": "p24",
+      "tripId": "patagonia",
+      "fileName": "patagonia-24.jpg",
+      "caption": "The towers, finally, after the scree",
+      "location": "Mirador Base Las Torres",
+      "takenOn": "2026-02-06",
+      "width": 1200,
+      "height": 800,
+      "aspect": "Landscape",
+      "author": "Dorothy Lin",
+      "sourceUrl": "https://unsplash.com/photos/TIr6EwYMRUM",
+      "picsumId": 79
+    }
+  ]
+}
