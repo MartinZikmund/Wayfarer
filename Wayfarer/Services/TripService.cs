@@ -67,6 +67,9 @@ public sealed class TripService(ILogger<TripService> logger) : ITripService
         return _photos.GetValueOrDefault(photoId);
     }
 
+    public async Task<IReadOnlyList<RouteStop>> GetRouteAsync(string tripId, CancellationToken ct = default) =>
+        (await GetTripAsync(tripId, ct))?.Route ?? [];
+
     public async Task<IReadOnlyList<SearchResult>> SearchAsync(string query, CancellationToken ct = default)
     {
         await EnsureLoadedAsync(ct);
@@ -212,9 +215,17 @@ public sealed class TripService(ILogger<TripService> logger) : ITripService
             {
                 Photos = _photos.Values.Where(p => p.TripId == t.Id).OrderBy(p => p.TakenOn).ToList(),
                 Entries = _entries.Values.Where(e => e.TripId == t.Id).OrderByDescending(e => e.Date).ToList(),
+                Route = t.Route.Select(s => ResolveStop(t, s)).ToList(),
             })
             .OrderByDescending(t => t.StartDate)
             .ToList();
+
+    private RouteStop ResolveStop(Trip trip, RouteStop stop) => stop with
+    {
+        Date = trip.StartDate.AddDays(stop.Day - 1),
+        Entry = stop.EntryId is { } id ? _entries.GetValueOrDefault(id) : null,
+        Photos = ResolvePhotos(stop.PhotoIds),
+    };
 
     private List<Photo> ResolvePhotos(IEnumerable<string> ids) =>
         ids.Select(id => _photos.GetValueOrDefault(id)).OfType<Photo>().ToList();

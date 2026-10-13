@@ -24,6 +24,14 @@ public sealed record Trip
 
     public IReadOnlyList<string> Tags { get; init; } = [];
 
+    /// <summary>Three-letter code of the nearest airport, printed on the trip's stamps, e.g. "LKN".</summary>
+    public string Code { get; init; } = "";
+
+    public StampTone StampTone { get; init; }
+
+    /// <summary>Stops in travel order; resolved by the trip service.</summary>
+    public IReadOnlyList<RouteStop> Route { get; init; } = [];
+
     /// <summary>Resolved by the trip service.</summary>
     [JsonIgnore]
     public IReadOnlyList<Photo> Photos { get; init; } = [];

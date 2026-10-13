@@ -14,6 +14,92 @@
         "Coast",
         "Midnight sun",
         "Road trip"
+      ],
+      "code": "LKN",
+      "stampTone": "Sea",
+      "route": [
+        {
+          "id": "lofoten-reine",
+          "name": "Reine",
+          "day": 2,
+          "x": 0.16,
+          "y": 0.82,
+          "entryId": "e01",
+          "photoIds": [
+            "p01"
+          ]
+        },
+        {
+          "id": "lofoten-hamnoy",
+          "name": "Hamnøy",
+          "day": 2,
+          "x": 0.22,
+          "y": 0.74,
+          "photoIds": [
+            "p02"
+          ]
+        },
+        {
+          "id": "lofoten-ramberg",
+          "name": "Ramberg Beach",
+          "day": 3,
+          "x": 0.34,
+          "y": 0.6,
+          "photoIds": [
+            "p03"
+          ]
+        },
+        {
+          "id": "lofoten-glappen",
+          "name": "Glåppen",
+          "day": 4,
+          "x": 0.42,
+          "y": 0.7,
+          "photoIds": [
+            "p04"
+          ]
+        },
+        {
+          "id": "lofoten-haukland",
+          "name": "Haukland Beach",
+          "day": 5,
+          "x": 0.58,
+          "y": 0.44,
+          "entryId": "e02",
+          "photoIds": [
+            "p05"
+          ]
+        },
+        {
+          "id": "lofoten-uttakleiv",
+          "name": "Uttakleiv",
+          "day": 5,
+          "x": 0.63,
+          "y": 0.36,
+          "photoIds": [
+            "p06"
+          ]
+        },
+        {
+          "id": "lofoten-pier",
+          "name": "Harbour pier",
+          "day": 6,
+          "x": 0.72,
+          "y": 0.48,
+          "photoIds": [
+            "p07"
+          ]
+        },
+        {
+          "id": "lofoten-eggum",
+          "name": "Eggum",
+          "day": 7,
+          "x": 0.84,
+          "y": 0.22,
+          "photoIds": [
+            "p08"
+          ]
+        }
       ]
     },
     {
@@ -30,6 +116,92 @@
         "Temples",
         "Foliage",
         "Slow travel"
+      ],
+      "code": "KIX",
+      "stampTone": "Maple",
+      "route": [
+        {
+          "id": "kyoto-ohara",
+          "name": "Ōhara",
+          "day": 2,
+          "x": 0.8,
+          "y": 0.12,
+          "photoIds": [
+            "p09"
+          ]
+        },
+        {
+          "id": "kyoto-eikando",
+          "name": "Eikandō Zenrin-ji",
+          "day": 3,
+          "x": 0.7,
+          "y": 0.52,
+          "entryId": "e03",
+          "photoIds": [
+            "p10"
+          ]
+        },
+        {
+          "id": "kyoto-arashiyama",
+          "name": "Arashiyama",
+          "day": 3,
+          "x": 0.1,
+          "y": 0.54,
+          "photoIds": [
+            "p11"
+          ]
+        },
+        {
+          "id": "kyoto-saihoji",
+          "name": "Saihō-ji",
+          "day": 4,
+          "x": 0.16,
+          "y": 0.78,
+          "photoIds": [
+            "p12"
+          ]
+        },
+        {
+          "id": "kyoto-kurama",
+          "name": "Kurama",
+          "day": 5,
+          "x": 0.5,
+          "y": 0.08,
+          "photoIds": [
+            "p13"
+          ]
+        },
+        {
+          "id": "kyoto-philosophers-path",
+          "name": "Philosopher’s Path",
+          "day": 6,
+          "x": 0.72,
+          "y": 0.44,
+          "entryId": "e04",
+          "photoIds": [
+            "p14"
+          ]
+        },
+        {
+          "id": "kyoto-gion",
+          "name": "Gion",
+          "day": 6,
+          "x": 0.62,
+          "y": 0.66,
+          "photoIds": [
+            "p15"
+          ]
+        },
+        {
+          "id": "kyoto-northern-hills",
+          "name": "Northern hills",
+          "day": 7,
+          "x": 0.44,
+          "y": 0.26,
+          "photoIds": [
+            "p16"
+          ]
+        }
       ]
     },
     {
@@ -46,6 +218,83 @@
         "Hiking",
         "Mountains",
         "Glaciers"
+      ],
+      "code": "PNT",
+      "stampTone": "Moss",
+      "route": [
+        {
+          "id": "patagonia-road-in",
+          "name": "On the way to the park",
+          "day": 2,
+          "x": 0.26,
+          "y": 0.9,
+          "photoIds": [
+            "p22"
+          ]
+        },
+        {
+          "id": "patagonia-laguna-amarga",
+          "name": "Laguna Amarga",
+          "day": 2,
+          "x": 0.8,
+          "y": 0.52,
+          "photoIds": [
+            "p21"
+          ]
+        },
+        {
+          "id": "patagonia-pudeto",
+          "name": "Pudeto",
+          "day": 3,
+          "x": 0.56,
+          "y": 0.72,
+          "photoIds": [
+            "p18"
+          ]
+        },
+        {
+          "id": "patagonia-paine-grande",
+          "name": "Refugio Paine Grande",
+          "day": 3,
+          "x": 0.36,
+          "y": 0.62,
+          "entryId": "e05",
+          "photoIds": [
+            "p17"
+          ]
+        },
+        {
+          "id": "patagonia-cuernos",
+          "name": "Refugio Cuernos",
+          "day": 4,
+          "x": 0.62,
+          "y": 0.54,
+          "photoIds": [
+            "p23"
+          ]
+        },
+        {
+          "id": "patagonia-valle-frances",
+          "name": "Valle del Francés",
+          "day": 5,
+          "x": 0.48,
+          "y": 0.38,
+          "photoIds": [
+            "p19",
+            "p20"
+          ]
+        },
+        {
+          "id": "patagonia-las-torres",
+          "name": "Base Las Torres",
+          "day": 6,
+          "x": 0.72,
+          "y": 0.2,
+          "entryId": "e06",
+          "photoIds": [
+            "p24"
+          ]
+        }
       ]
     }
   ],

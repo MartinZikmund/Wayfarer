@@ -23,6 +23,9 @@ public interface ITripService
 
     Task<Photo?> GetPhotoAsync(string photoId, CancellationToken ct = default);
 
+    /// <summary>A trip's route stops in travel order, with dates, entries and photos resolved; empty for an unknown trip.</summary>
+    Task<IReadOnlyList<RouteStop>> GetRouteAsync(string tripId, CancellationToken ct = default);
+
     Task<IReadOnlyList<SearchResult>> SearchAsync(string query, CancellationToken ct = default);
 
     /// <summary>Adds or replaces an entry and saves it on this device.</summary>
