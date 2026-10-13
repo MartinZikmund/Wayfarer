@@ -51,7 +51,9 @@ public sealed partial class MapViewModel(ITripService tripService, INavigationSe
 
     public bool HasSelectedPhoto => SelectedPhoto is not null;
 
-    public string SelectedStopCaption => SelectedStop is { } stop ? $"Day {stop.Day} · {stop.Date:d MMM yyyy}" : "";
+    public string SelectedStopCaption => SelectedStop is { } stop
+        ? $"Stop {IndexOf(stop) + 1} · Day {stop.Day} · {stop.Date:d MMM yyyy}"
+        : "";
 
     [RelayCommand]
     private void SelectStop(RouteStop? stop) => SelectedStop = stop;
@@ -63,6 +65,19 @@ public sealed partial class MapViewModel(ITripService tripService, INavigationSe
         {
             _navigation.Navigate(AppPage.Journal, entryId);
         }
+    }
+
+    private int IndexOf(RouteStop stop)
+    {
+        for (int i = 0; i < Stops.Count; i++)
+        {
+            if (ReferenceEquals(Stops[i], stop))
+            {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     partial void OnSelectedTripChanged(Trip? value)

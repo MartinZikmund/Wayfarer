@@ -29,6 +29,7 @@
             </LinearGradientBrush>
             <StaticResource x:Key="WayfarerPostcardBorderBrush" ResourceKey="CardStrokeColorDefaultBrush" />
             <StaticResource x:Key="WayfarerPostcardDividerBrush" ResourceKey="DividerStrokeColorDefaultBrush" />
+            <StaticResource x:Key="WayfarerMapOrnamentBrush" ResourceKey="DividerStrokeColorDefaultBrush" />
             <SolidColorBrush x:Key="WayfarerAirmailRedBrush" Color="#FFC4473D" />
             <SolidColorBrush x:Key="WayfarerAirmailBlueBrush" Color="#FF2D5B9A" />
         </ResourceDictionary>
@@ -53,6 +54,7 @@
             </LinearGradientBrush>
             <StaticResource x:Key="WayfarerPostcardBorderBrush" ResourceKey="CardStrokeColorDefaultBrush" />
             <StaticResource x:Key="WayfarerPostcardDividerBrush" ResourceKey="DividerStrokeColorDefaultBrush" />
+            <StaticResource x:Key="WayfarerMapOrnamentBrush" ResourceKey="DividerStrokeColorDefaultBrush" />
             <SolidColorBrush x:Key="WayfarerAirmailRedBrush" Color="#FFDE7B71" />
             <SolidColorBrush x:Key="WayfarerAirmailBlueBrush" Color="#FF82A8DE" />
         </ResourceDictionary>
@@ -74,7 +76,8 @@
             <StaticResource x:Key="WayfarerPostcardBackgroundBrush" ResourceKey="SystemColorWindowColorBrush" />
             <StaticResource x:Key="WayfarerPostcardBorderBrush" ResourceKey="SystemColorWindowTextColorBrush" />
             <StaticResource x:Key="WayfarerPostcardDividerBrush" ResourceKey="SystemColorWindowTextColorBrush" />
-            <!-- Window colour on window colour: the stripes simply disappear. -->
+            <!-- Window colour on window colour: the stripes and map ornaments simply disappear. -->
+            <StaticResource x:Key="WayfarerMapOrnamentBrush" ResourceKey="SystemColorWindowColorBrush" />
             <StaticResource x:Key="WayfarerAirmailRedBrush" ResourceKey="SystemColorWindowColorBrush" />
             <StaticResource x:Key="WayfarerAirmailBlueBrush" ResourceKey="SystemColorWindowColorBrush" />
         </ResourceDictionary>

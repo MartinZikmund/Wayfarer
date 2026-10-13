@@ -1,8 +1,11 @@
 using System.ComponentModel;
+using System.Globalization;
 using System.Numerics;
 using Microsoft.UI.Composition;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Hosting;
+using Wayfarer.Controls.Postcard;
 using Wayfarer.Helpers;
 using Wayfarer.Models;
 using Wayfarer.ViewModels;
@@ -15,7 +18,6 @@ public sealed partial class MapPage : Page
     /// <summary>Name Home gives its connected animation when it opens a trip here.</summary>
     public const string TripHeroAnimationKey = "TripHero";
 
-    private const double WideLayoutWidth = 840;
     private const double StampWidth = 56;
     private const double StampHeight = 64;
     private const double EdgeInset = 40;
@@ -24,45 +26,58 @@ public sealed partial class MapPage : Page
     private const int SamplesPerLeg = 14;
     private const float DashLength = 8;
     private const float DashPeriod = 15;
+    private const float ChevronSize = 5;
     private const int DrawMilliseconds = 1800;
     private const float PlaneSize = 24;
+    private static readonly TimeSpan ResizeSettle = TimeSpan.FromMilliseconds(100);
 
     // Uno's Skia renderer treats TrimStart = TrimEnd = 0 as "no trim" and draws the whole dash, so a hidden
     // dash is trimmed to almost nothing instead. Flat caps keep that sliver invisible.
     private const float HiddenTrim = 0.001f;
 
     private readonly AccessibilitySettings _accessibility = new();
-    private bool _isWide = true;
+    private readonly List<Button> _stopButtons = new();
+    private Trip? _stopsTrip;
     private bool _animateNextBuild;
     private EventHandler<object>? _drawIn;
+    private DispatcherQueueTimer? _resizeTimer;
+    private ShapeVisual? _routeVisual;
+    private CompositionColorBrush? _routeBrush;
 
     public MapPage()
     {
         InitializeComponent();
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
-        ActualThemeChanged += (_, _) => DispatcherQueue.TryEnqueue(() => Rebuild(false));
+        ActualThemeChanged += (_, _) => DispatcherQueue.TryEnqueue(UpdateRouteColor);
         ElementCompositionPreview.SetIsTranslationEnabled(Plane, true);
     }
 
     public MapViewModel ViewModel { get; } = App.GetService<MapViewModel>();
 
+    private bool IsWide => LayoutStates.CurrentState != NarrowLayout;
+
+    private Windows.UI.Color RouteColor => ((SolidColorBrush)BrushProbe.Background).Color;
+
     protected override async void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
-        if (e.Parameter is string)
-        {
-            CompleteHeroAnimation();
-        }
-
         await ViewModel.OnNavigatedToAsync(e.Parameter);
         BuildSelector();
+
+        // The stamp sits in the route card, which only shows once the stops are in: land the cover after that.
+        if (e.Parameter is string)
+        {
+            UpdateLayout();
+            CompleteHeroAnimation();
+        }
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         OnUnloaded(sender, e);
         ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+        _accessibility.HighContrastChanged += OnHighContrastChanged;
         BuildSelector();
         Rebuild(true);
     }
@@ -70,7 +85,10 @@ public sealed partial class MapPage : Page
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
         ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+        _accessibility.HighContrastChanged -= OnHighContrastChanged;
+        _resizeTimer?.Stop();
         StopDrawIn();
+        ReleaseRoute();
     }
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -86,6 +104,10 @@ public sealed partial class MapPage : Page
                 break;
         }
     }
+
+    // Switching to or from High Contrast doesn't always change ActualTheme (Dark to a dark HC theme stays Dark).
+    private void OnHighContrastChanged(AccessibilitySettings sender, object args) =>
+        DispatcherQueue.TryEnqueue(() => Rebuild(false));
 
     private void BuildSelector()
     {
@@ -121,28 +143,30 @@ public sealed partial class MapPage : Page
         }
     }
 
-    private void OnPageSizeChanged(object sender, SizeChangedEventArgs e)
+    private void OnLayoutStateChanged(object sender, VisualStateChangedEventArgs e) => FitMapCard(ContentScroller.ActualHeight);
+
+    private void OnContentSizeChanged(object sender, SizeChangedEventArgs e) => FitMapCard(e.NewSize.Height);
+
+    private void FitMapCard(double scrollerHeight)
     {
-        bool wide = e.NewSize.Width >= WideLayoutWidth;
-        if (wide == _isWide)
+        double available = scrollerHeight - ContentGrid.Margin.Bottom;
+        MapCard.Height = Math.Max(IsWide ? 360 : 320, IsWide ? available : available * 0.7);
+    }
+
+    // A window drag resizes the map every frame; redraw once it settles rather than on every pixel.
+    private void OnMapSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (_resizeTimer is null)
         {
-            return;
+            _resizeTimer = DispatcherQueue.CreateTimer();
+            _resizeTimer.Interval = ResizeSettle;
+            _resizeTimer.IsRepeating = false;
+            _resizeTimer.Tick += (_, _) => Rebuild(false);
         }
 
-        _isWide = wide;
-        PanelColumn.Width = wide ? new GridLength(320) : new GridLength(0);
-        Grid.SetColumn(DetailCard, wide ? 1 : 0);
-        Grid.SetRow(DetailCard, wide ? 0 : 1);
-        ContentGrid.ColumnSpacing = wide ? 16 : 0;
+        _resizeTimer.Stop();
+        _resizeTimer.Start();
     }
-
-    private void OnContentSizeChanged(object sender, SizeChangedEventArgs e)
-    {
-        double available = e.NewSize.Height - ContentGrid.Margin.Bottom;
-        MapCard.Height = Math.Max(_isWide ? 360 : 320, _isWide ? available : available * 0.7);
-    }
-
-    private void OnMapSizeChanged(object sender, SizeChangedEventArgs e) => Rebuild(false);
 
     private void Rebuild(bool animate)
     {
@@ -150,7 +174,7 @@ public sealed partial class MapPage : Page
         double width = MapArea.ActualWidth;
         double height = MapArea.ActualHeight;
         IReadOnlyList<RouteStop> stops = ViewModel.Stops;
-        StopsLayer.Children.Clear();
+        EnsureStopButtons(stops);
         if (width < 200 || height < 160 || stops.Count == 0)
         {
             return;
@@ -163,15 +187,32 @@ public sealed partial class MapPage : Page
 
         Vector2[] centers = Layout(stops, (float)width, (float)height);
 
-        for (int i = 0; i < stops.Count; i++)
+        // The buttons outlive resizes and theme changes, so keyboard focus on a stop survives them.
+        for (int i = 0; i < _stopButtons.Count; i++)
         {
-            Button button = CreateStopButton(stops[i], i + 1);
-            Canvas.SetLeft(button, centers[i].X - StampWidth / 2);
-            Canvas.SetTop(button, centers[i].Y - StampHeight / 2);
-            StopsLayer.Children.Add(button);
+            Canvas.SetLeft(_stopButtons[i], centers[i].X - StampWidth / 2);
+            Canvas.SetTop(_stopButtons[i], centers[i].Y - StampHeight / 2);
         }
 
         DrawRoute(centers, new Vector2((float)width, (float)height), animateNow);
+    }
+
+    private void EnsureStopButtons(IReadOnlyList<RouteStop> stops)
+    {
+        if (ReferenceEquals(_stopsTrip, ViewModel.SelectedTrip) && _stopButtons.Count == stops.Count)
+        {
+            return;
+        }
+
+        _stopsTrip = ViewModel.SelectedTrip;
+        _stopButtons.Clear();
+        StopsLayer.Children.Clear();
+        for (int i = 0; i < stops.Count; i++)
+        {
+            Button button = CreateStopButton(stops[i], i + 1, stops.Count);
+            _stopButtons.Add(button);
+            StopsLayer.Children.Add(button);
+        }
     }
 
     // Stops are framed by their own bounding box (at least MinSpan of the map, so a tight cluster still spreads out),
@@ -244,26 +285,27 @@ public sealed partial class MapPage : Page
         return ((min + max) / 2 - MinSpan / 2, MinSpan);
     }
 
-    private Button CreateStopButton(RouteStop stop, int order)
+    // Stamps carry the stop's place in the route rather than its day, since several stops can share a day.
+    private Button CreateStopButton(RouteStop stop, int order, int count)
     {
         Button button = new()
         {
-            Content = new Wayfarer.Controls.Postcard.PostageStamp
+            Content = new PostageStamp
             {
-                Width = 48,
-                Height = 56,
+                Width = (double)Application.Current.Resources["WayfarerStampSmallWidth"],
+                Height = (double)Application.Current.Resources["WayfarerStampSmallHeight"],
                 Glyph = Glyphs.Routes,
-                Label = $"Day {stop.Day}",
+                Label = order.ToString(CultureInfo.CurrentCulture),
                 Tone = ViewModel.SelectedTrip?.StampTone ?? StampTone.Accent,
-                Tilt = stop.Day % 2 == 0 ? 3 : -3,
+                Tilt = order % 2 == 0 ? 3 : -3,
             },
             Command = ViewModel.SelectStopCommand,
             CommandParameter = stop,
             Tag = stop,
         };
-        AutomationProperties.SetName(button, $"Day {stop.Day}, {stop.Name}");
+        AutomationProperties.SetName(button, $"Stop {order} of {count}: day {stop.Day}, {stop.Name}");
         AutomationProperties.SetAutomationId(button, $"RouteStop{order}");
-        ToolTipService.SetToolTip(button, stop.Name);
+        ToolTipService.SetToolTip(button, $"{order}. {stop.Name} (day {stop.Day})");
         ApplyStopStyle(button);
         return button;
     }
@@ -275,7 +317,7 @@ public sealed partial class MapPage : Page
 
     private void UpdateStopStyles()
     {
-        foreach (Button button in StopsLayer.Children.OfType<Button>())
+        foreach (Button button in _stopButtons)
         {
             ApplyStopStyle(button);
         }
@@ -333,17 +375,22 @@ public sealed partial class MapPage : Page
     private void DrawRoute(Vector2[] centers, Vector2 size, bool animate)
     {
         StopDrawIn();
-        Visual hostVisual = ElementCompositionPreview.GetElementVisual(RouteHost);
-        Compositor compositor = hostVisual.Compositor;
-        ShapeVisual shapes = compositor.CreateShapeVisual();
+        Compositor compositor = ElementCompositionPreview.GetElementVisual(RouteHost).Compositor;
+        if (_routeVisual is null)
+        {
+            _routeVisual = compositor.CreateShapeVisual();
+            ElementCompositionPreview.SetElementChildVisual(RouteHost, _routeVisual);
+        }
+
+        ShapeVisual shapes = _routeVisual;
+        ClearShapes(shapes);
         shapes.Size = size;
-        ElementCompositionPreview.SetElementChildVisual(RouteHost, shapes);
+        _routeBrush ??= compositor.CreateColorBrush();
+        _routeBrush.Color = RouteColor;
+        CompositionColorBrush stroke = _routeBrush;
 
         Visual planeVisual = ElementCompositionPreview.GetElementVisual(Plane);
-        planeVisual.StopAnimation("Translation");
-        planeVisual.StopAnimation("RotationAngleInDegrees");
-        planeVisual.StopAnimation("Opacity");
-        planeVisual.Opacity = 1;
+        StopPlane(planeVisual);
         Plane.Visibility = animate ? Visibility.Visible : Visibility.Collapsed;
 
         List<Vector2> line = Sample(centers);
@@ -359,41 +406,93 @@ public sealed partial class MapPage : Page
             return;
         }
 
-        Windows.UI.Color color = ((SolidColorBrush)BrushProbe.Background).Color;
-        CompositionColorBrush stroke = compositor.CreateColorBrush(color);
-        LinearEasingFunction linear = compositor.CreateLinearEasingFunction();
-
-        List<(CompositionLineGeometry Dash, float From)> dashes = new();
-        for (float start = 0; start < total; start += DashPeriod)
+        List<(CompositionLineGeometry Line, float From)> strokes = new();
+        void AddStroke(Vector2 from, Vector2 to, float distance)
         {
-            CompositionLineGeometry dash = compositor.CreateLineGeometry();
-            dash.Start = PointAt(line, along, start, out _);
-            dash.End = PointAt(line, along, Math.Min(start + DashLength, total), out _);
-            CompositionSpriteShape shape = compositor.CreateSpriteShape(dash);
+            CompositionLineGeometry geometry = compositor.CreateLineGeometry();
+            geometry.Start = from;
+            geometry.End = to;
+            geometry.TrimEnd = animate ? HiddenTrim : 1;
+            CompositionSpriteShape shape = compositor.CreateSpriteShape(geometry);
             shape.StrokeBrush = stroke;
             shape.StrokeThickness = 2;
             shapes.Shapes.Add(shape);
+            strokes.Add((geometry, distance / total));
+        }
 
-            if (!animate)
+        for (float start = 0; start < total; start += DashPeriod)
+        {
+            AddStroke(PointAt(line, along, start, out _), PointAt(line, along, Math.Min(start + DashLength, total), out _), start);
+        }
+
+        // A chevron halfway along each leg, so the direction reads without the plane (and with motion off).
+        for (int leg = 0; leg < centers.Length - 1; leg++)
+        {
+            float middle = along[leg * SamplesPerLeg + SamplesPerLeg / 2];
+            Vector2 tip = PointAt(line, along, middle, out float angle);
+            foreach (float side in new[] { -1f, 1f })
             {
-                dash.TrimEnd = 1;
-                continue;
+                float back = angle + MathF.PI + side * MathF.PI / 4;
+                AddStroke(tip + ChevronSize * new Vector2(MathF.Cos(back), MathF.Sin(back)), tip, middle);
             }
-
-            dash.TrimEnd = HiddenTrim;
-            dashes.Add((dash, start / total));
         }
 
         if (animate)
         {
-            DrawIn(dashes, DashLength / total);
-            FlyPlane(planeVisual, compositor, line, along, total, linear);
+            DrawIn(strokes, DashLength / total);
+            FlyPlane(planeVisual, compositor, line, along, total, compositor.CreateLinearEasingFunction());
         }
+    }
+
+    private void UpdateRouteColor()
+    {
+        if (_routeBrush is not null)
+        {
+            _routeBrush.Color = RouteColor;
+        }
+    }
+
+    private static void ClearShapes(ShapeVisual visual)
+    {
+        foreach (CompositionShape shape in visual.Shapes)
+        {
+            if (shape is CompositionSpriteShape { Geometry: { } geometry })
+            {
+                geometry.Dispose();
+            }
+
+            shape.Dispose();
+        }
+
+        visual.Shapes.Clear();
+    }
+
+    private static void StopPlane(Visual plane)
+    {
+        plane.StopAnimation("Translation");
+        plane.StopAnimation("RotationAngleInDegrees");
+        plane.StopAnimation("Opacity");
+        plane.Opacity = 1;
+    }
+
+    private void ReleaseRoute()
+    {
+        StopPlane(ElementCompositionPreview.GetElementVisual(Plane));
+        if (_routeVisual is not null)
+        {
+            ElementCompositionPreview.SetElementChildVisual(RouteHost, null);
+            ClearShapes(_routeVisual);
+            _routeVisual.Dispose();
+            _routeVisual = null;
+        }
+
+        _routeBrush?.Dispose();
+        _routeBrush = null;
     }
 
     // Each dash's TrimEnd is stepped per frame, in step with the plane. A ScalarKeyFrameAnimation on TrimEnd
     // would be the natural fit, but Uno's Skia compositor doesn't render geometry trim animations yet.
-    private void DrawIn(List<(CompositionLineGeometry Dash, float From)> dashes, float span)
+    private void DrawIn(List<(CompositionLineGeometry Line, float From)> strokes, float span)
     {
         StopDrawIn();
         DateTimeOffset start = DateTimeOffset.UtcNow;
@@ -401,9 +500,9 @@ public sealed partial class MapPage : Page
         void OnRendering(object? sender, object e)
         {
             float t = (float)Math.Min(1, (DateTimeOffset.UtcNow - start).TotalMilliseconds / DrawMilliseconds);
-            foreach ((CompositionLineGeometry dash, float from) in dashes)
+            foreach ((CompositionLineGeometry stroke, float from) in strokes)
             {
-                dash.TrimEnd = Math.Clamp((t - from) / span, HiddenTrim, 1);
+                stroke.TrimEnd = Math.Clamp((t - from) / span, HiddenTrim, 1);
             }
 
             if (t >= 1)
