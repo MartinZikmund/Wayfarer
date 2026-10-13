@@ -59,6 +59,7 @@ public sealed partial class MainPage : Page
         }
 
         UpdateBackState();
+        RepaintContentArea();
 
         object? item = page == AppPage.Settings
             ? NavView.SettingsItem
@@ -67,6 +68,15 @@ public sealed partial class MainPage : Page
         {
             NavView.SelectedItem = item;
         }
+    }
+
+    // Uno 7.0 dev builds can leave a scrolled page's pixels behind after navigating away (stale damage
+    // region). Swapping the frame's background damages the whole content area, which clears them.
+    private void RepaintContentArea()
+    {
+#if HAS_UNO
+        ContentFrame.Background = ContentFrame.Background is null ? new SolidColorBrush(Microsoft.UI.ColorHelper.FromArgb(1, 0, 0, 0)) : null;
+#endif
     }
 
     private void OnNavSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
