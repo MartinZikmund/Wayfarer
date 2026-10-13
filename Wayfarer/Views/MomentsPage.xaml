@@ -1,0 +1,10 @@
+<Page x:Class="Wayfarer.Views.MomentsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      AutomationProperties.AutomationId="MomentsPage">
+
+    <Grid Padding="{StaticResource WayfarerPagePadding}">
+        <TextBlock Style="{StaticResource WayfarerPageTitleTextBlockStyle}"
+                   Text="{x:Bind ViewModel.Title, Mode=OneWay}" />
+    </Grid>
+</Page>

@@ -1,0 +1,133 @@
+<Page x:Class="Wayfarer.Views.MainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:models="using:Wayfarer.Models"
+      Background="Transparent">
+
+    <Page.KeyboardAccelerators>
+        <KeyboardAccelerator Invoked="OnSearchAcceleratorInvoked"
+                             Key="F"
+                             Modifiers="Control" />
+    </Page.KeyboardAccelerators>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TitleBar x:Name="AppTitleBar"
+                  AutomationProperties.AutomationId="AppTitleBar"
+                  BackRequested="OnBackRequested"
+                  IsBackButtonEnabled="False"
+                  IsBackButtonVisible="True"
+                  IsPaneToggleButtonVisible="True"
+                  PaneToggleRequested="OnPaneToggleRequested"
+                  Subtitle="Travel journal"
+                  Title="Wayfarer">
+            <TitleBar.IconSource>
+                <BitmapIconSource ShowAsMonochrome="False" UriSource="ms-appx:///Assets/Images/app_logo.png" />
+            </TitleBar.IconSource>
+            <TitleBar.Content>
+                <AutoSuggestBox x:Name="SearchBox"
+                                MinWidth="240"
+                                MaxWidth="480"
+                                VerticalAlignment="Center"
+                                AutomationProperties.AutomationId="SearchBox"
+                                AutomationProperties.Name="Search trips, places and entries"
+                                PlaceholderText="Search trips, places and entries"
+                                QueryIcon="Find"
+                                QuerySubmitted="OnSearchQuerySubmitted"
+                                TextChanged="OnSearchTextChanged"
+                                TextMemberPath="Title">
+                    <AutoSuggestBox.ItemTemplate>
+                        <DataTemplate x:DataType="models:SearchResult">
+                            <Grid Padding="0,8,0,8" ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <FontIcon VerticalAlignment="Center"
+                                          AutomationProperties.AccessibilityView="Raw"
+                                          FontSize="16"
+                                          Glyph="{x:Bind Glyph}" />
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{x:Bind Title}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}"
+                                               Text="{x:Bind Subtitle}"
+                                               TextTrimming="CharacterEllipsis"
+                                               TextWrapping="NoWrap" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </AutoSuggestBox.ItemTemplate>
+                </AutoSuggestBox>
+            </TitleBar.Content>
+        </TitleBar>
+
+        <NavigationView x:Name="NavView"
+                        Grid.Row="1"
+                        AlwaysShowHeader="False"
+                        AutomationProperties.AutomationId="NavView"
+                        IsBackButtonVisible="Collapsed"
+                        IsPaneToggleButtonVisible="False"
+                        IsSettingsVisible="True"
+                        IsTitleBarAutoPaddingEnabled="False"
+                        OpenPaneLength="280"
+                        PaneDisplayMode="Left"
+                        SelectionChanged="OnNavSelectionChanged">
+            <NavigationView.MenuItems>
+                <NavigationViewItem AutomationProperties.AutomationId="NavGallery"
+                                    Content="Gallery"
+                                    Tag="Gallery">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE8B9;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem AutomationProperties.AutomationId="NavJournal"
+                                    Content="Journal"
+                                    Tag="Journal">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE70B;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem AutomationProperties.AutomationId="NavStories"
+                                    Content="Stories"
+                                    Tag="Stories">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE736;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem AutomationProperties.AutomationId="NavMoments"
+                                    Content="Moments"
+                                    Tag="Moments">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE81C;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+
+            <Frame x:Name="ContentFrame" AutomationProperties.AutomationId="ContentFrame" />
+        </NavigationView>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="WindowWidthStates">
+                <VisualState x:Name="Narrow">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="NavView.PaneDisplayMode" Value="LeftMinimal" />
+                        <Setter Target="AppTitleBar.Subtitle" Value="" />
+                        <Setter Target="SearchBox.MinWidth" Value="160" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Wide">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="641" />
+                    </VisualState.StateTriggers>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+    </Grid>
+</Page>

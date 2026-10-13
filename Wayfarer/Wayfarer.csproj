@@ -12,6 +12,7 @@
     <!-- Versions -->
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <ApplicationVersion>1</ApplicationVersion>
+    <Version>1.0.0</Version>
     <!-- Package Publisher -->
     <ApplicationPublisher>O=Martin Zikmund</ApplicationPublisher>
     <!-- Package Description -->

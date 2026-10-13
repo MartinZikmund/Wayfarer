@@ -1,0 +1,179 @@
+<Page x:Class="Wayfarer.Views.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:vm="using:Wayfarer.ViewModels"
+      AutomationProperties.AutomationId="SettingsPage">
+
+    <ScrollViewer>
+        <StackPanel MaxWidth="{StaticResource WayfarerSettingsMaxWidth}"
+                    Padding="{StaticResource WayfarerPagePadding}"
+                    HorizontalAlignment="Stretch">
+            <TextBlock Style="{StaticResource WayfarerPageTitleTextBlockStyle}" Text="Settings" />
+
+            <!-- Appearance -->
+            <TextBlock Margin="0,0,0,12"
+                       Style="{StaticResource BodyStrongTextBlockStyle}"
+                       Text="Appearance" />
+            <Border Style="{StaticResource WayfarerSettingsRowStyle}">
+                <Grid ColumnSpacing="16" RowSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <FontIcon VerticalAlignment="Top"
+                              AutomationProperties.AccessibilityView="Raw"
+                              Glyph="&#xE790;"
+                              Style="{StaticResource WayfarerSettingsGlyphStyle}" />
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="App theme" />
+                        <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}"
+                                   Text="Choose how Wayfarer looks. System follows your device setting."
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                    <RadioButtons x:Name="ThemeRadioButtons"
+                                  Grid.Row="1"
+                                  Grid.Column="1"
+                                  AutomationProperties.AutomationId="ThemeRadioButtons"
+                                  AutomationProperties.Name="App theme"
+                                  MaxColumns="3"
+                                  SelectedIndex="{x:Bind ViewModel.ThemeIndex, Mode=TwoWay}">
+                        <RadioButton AutomationProperties.AutomationId="ThemeSystemRadioButton" Content="System" />
+                        <RadioButton AutomationProperties.AutomationId="ThemeLightRadioButton" Content="Light" />
+                        <RadioButton AutomationProperties.AutomationId="ThemeDarkRadioButton" Content="Dark" />
+                    </RadioButtons>
+                </Grid>
+            </Border>
+
+            <!-- Rendering -->
+            <TextBlock Style="{StaticResource WayfarerSectionHeaderTextBlockStyle}" Text="Rendering" />
+            <Border Style="{StaticResource WayfarerSettingsRowStyle}">
+                <Grid ColumnSpacing="16" RowSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <FontIcon Grid.RowSpan="4"
+                              VerticalAlignment="Top"
+                              AutomationProperties.AccessibilityView="Raw"
+                              Glyph="&#xE7F4;"
+                              Style="{StaticResource WayfarerSettingsGlyphStyle}" />
+
+                    <TextBlock Grid.Column="1"
+                               Style="{StaticResource WayfarerSecondaryTextBlockStyle}"
+                               Text="Renderer" />
+                    <TextBlock Grid.Column="2"
+                               AutomationProperties.AutomationId="RendererText"
+                               IsTextSelectionEnabled="True"
+                               Text="{x:Bind ViewModel.Rendering.Renderer}" />
+
+                    <TextBlock Grid.Row="1"
+                               Grid.Column="1"
+                               Style="{StaticResource WayfarerSecondaryTextBlockStyle}"
+                               Text="Platform" />
+                    <TextBlock Grid.Row="1"
+                               Grid.Column="2"
+                               AutomationProperties.AutomationId="PlatformText"
+                               IsTextSelectionEnabled="True"
+                               Text="{x:Bind ViewModel.Rendering.Platform}" />
+
+                    <TextBlock Grid.Row="2"
+                               Grid.Column="1"
+                               Style="{StaticResource WayfarerSecondaryTextBlockStyle}"
+                               Text=".NET runtime" />
+                    <TextBlock Grid.Row="2"
+                               Grid.Column="2"
+                               IsTextSelectionEnabled="True"
+                               Text="{x:Bind ViewModel.Rendering.Runtime}"
+                               TextWrapping="Wrap" />
+
+                    <TextBlock Grid.Row="3"
+                               Grid.Column="1"
+                               Style="{StaticResource WayfarerSecondaryTextBlockStyle}"
+                               Text="Uno Platform" />
+                    <TextBlock Grid.Row="3"
+                               Grid.Column="2"
+                               AutomationProperties.AutomationId="UnoVersionText"
+                               IsTextSelectionEnabled="True"
+                               Text="{x:Bind ViewModel.Rendering.UnoVersion}" />
+                </Grid>
+            </Border>
+
+            <!-- About -->
+            <TextBlock Style="{StaticResource WayfarerSectionHeaderTextBlockStyle}" Text="About" />
+            <Border Style="{StaticResource WayfarerCardStyle}">
+                <StackPanel Spacing="{StaticResource WayfarerSectionSpacing}">
+                    <Grid ColumnSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Image Width="48"
+                               Height="48"
+                               AutomationProperties.AccessibilityView="Raw"
+                               Source="ms-appx:///Assets/Images/app_logo.png" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Wayfarer" />
+                            <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}">
+                                <Run Text="Version" />
+                                <Run Text="{x:Bind ViewModel.AppVersion}" />
+                                <Run Text="· A travel journal built with Uno Platform 7.0" />
+                            </TextBlock>
+                        </StackPanel>
+                    </Grid>
+
+                    <StackPanel Spacing="{StaticResource WayfarerItemSpacing}">
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="What's inside" />
+                        <ItemsRepeater AutomationProperties.AutomationId="FeatureList" ItemsSource="{x:Bind ViewModel.Features}">
+                            <ItemsRepeater.Layout>
+                                <UniformGridLayout ItemsStretch="Fill"
+                                                   MinColumnSpacing="12"
+                                                   MinItemWidth="280"
+                                                   MinRowSpacing="12" />
+                            </ItemsRepeater.Layout>
+                            <ItemsRepeater.ItemTemplate>
+                                <DataTemplate x:DataType="vm:FeatureInfo">
+                                    <Grid Padding="12"
+                                          Background="{ThemeResource WayfarerSubtleCardBackgroundBrush}"
+                                          BorderBrush="{ThemeResource WayfarerCardBorderBrush}"
+                                          BorderThickness="1"
+                                          ColumnSpacing="12"
+                                          CornerRadius="{StaticResource ControlCornerRadius}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <FontIcon VerticalAlignment="Top"
+                                                  AutomationProperties.AccessibilityView="Raw"
+                                                  Glyph="{x:Bind Glyph}"
+                                                  Style="{StaticResource WayfarerSettingsGlyphStyle}" />
+                                        <StackPanel Grid.Column="1" Spacing="{StaticResource WayfarerTightSpacing}">
+                                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind Title}" />
+                                            <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}"
+                                                       Text="{x:Bind Description}"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsRepeater.ItemTemplate>
+                        </ItemsRepeater>
+                    </StackPanel>
+
+                    <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}"
+                               Text="Photos from Unsplash via Lorem Picsum. Trip stories are fictional."
+                               TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
