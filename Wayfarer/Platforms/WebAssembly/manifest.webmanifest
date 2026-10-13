@@ -1,0 +1,10 @@
+{
+  "background_color": "#ffffff",
+  "description": "Wayfarer",
+  "display": "standalone",
+  "name": "Wayfarer",
+  "short_name": "Wayfarer",
+  "start_url": "/index.html",
+  "theme_color": "#ffffff",
+  "scope": "/"
+}
