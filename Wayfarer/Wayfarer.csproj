@@ -1,6 +1,6 @@
 <Project Sdk="Uno.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-windows10.0.26100;net10.0-browserwasm;net10.0-desktop</TargetFrameworks>
+    <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-tvos;net10.0-windows10.0.26100;net10.0-browserwasm;net10.0-desktop</TargetFrameworks>
 
     <OutputType>Exe</OutputType>
     <UnoSingleProject>true</UnoSingleProject>
@@ -15,7 +15,7 @@
     <!-- Package Publisher -->
     <ApplicationPublisher>O=Martin Zikmund</ApplicationPublisher>
     <!-- Package Description -->
-    <Description>Wayfarer powered by Uno Platform.</Description>
+    <Description>Wayfarer, a travel journal built with Uno Platform.</Description>
     <!--
       If you encounter this error message:
 
@@ -32,10 +32,19 @@
       UnoFeatures are used to quickly add and manage features enabled for your app.
       https://aka.platform.uno/singleproject-features
     -->
+    <!--
+      Skia renders by default. To also ship the opt-in WebGPU backend, add "WebGpu;" below;
+      Skia stays the default and the platform head opts into WebGPU on its host builder.
+    -->
     <UnoFeatures>
       Mvvm;
       SkiaRenderer;
     </UnoFeatures>
+
+    <!-- App icon and theme-aware splash (WASM follows the browser theme) -->
+    <UnoIconBackgroundColor>#0E7C7B</UnoIconBackgroundColor>
+    <UnoSplashScreenBackgroundColor>#F3F7F7</UnoSplashScreenBackgroundColor>
+    <UnoSplashScreenDarkBackgroundColor>#0F1C1E</UnoSplashScreenDarkBackgroundColor>
   </PropertyGroup>
 
 </Project>

@@ -1,10 +1,10 @@
 {
   "background_color": "#ffffff",
-  "description": "Wayfarer",
+  "description": "Wayfarer travel journal",
   "display": "standalone",
   "name": "Wayfarer",
   "short_name": "Wayfarer",
   "start_url": "/index.html",
-  "theme_color": "#ffffff",
+  "theme_color": "#0E7C7B",
   "scope": "/"
 }
