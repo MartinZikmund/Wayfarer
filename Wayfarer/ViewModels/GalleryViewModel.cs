@@ -1,10 +1,79 @@
+using Wayfarer.Helpers;
+using Wayfarer.Models;
 using Wayfarer.Services;
 
 namespace Wayfarer.ViewModels;
 
+/// <summary>A photo in the gallery grid. Photos are repeated, so <see cref="Key"/> keeps entries distinct.</summary>
+public sealed record GalleryItem(Photo Photo, int Key);
+
 public sealed partial class GalleryViewModel(ITripService tripService) : PageViewModel
 {
+    // Repeats the 24 photos so scrolling and flings have a realistic amount to chew on.
+    private const int Repeat = 6;
+
     private readonly ITripService _tripService = tripService;
+    private IReadOnlyList<Photo> _allPhotos = [];
 
     public string Title => "Gallery";
+
+    public IReadOnlyList<Trip> Trips { get; private set; } = [];
+
+    /// <summary>Photo id requested through navigation (e.g. from search); consumed by the page.</summary>
+    public string? RequestedPhotoId { get; private set; }
+
+    [ObservableProperty]
+    public partial IReadOnlyList<GalleryItem> Items { get; set; } = [];
+
+    [ObservableProperty]
+    public partial string Summary { get; set; } = "";
+
+    [ObservableProperty]
+    public partial bool IsEmpty { get; set; }
+
+    public override async Task OnNavigatedToAsync(object? parameter)
+    {
+        RequestedPhotoId = parameter as string;
+
+        if (_allPhotos.Count > 0)
+        {
+            return;
+        }
+
+        IsLoading = true;
+        try
+        {
+            Trips = await _tripService.GetTripsAsync();
+            _allPhotos = await _tripService.GetPhotosAsync();
+            Filter(null);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    public void ClearRequest() => RequestedPhotoId = null;
+
+    public string TripTitle(Photo photo) => Trips.FirstOrDefault(t => t.Id == photo.TripId)?.Title ?? "";
+
+    /// <param name="tripId">Trip to show, or null for all trips.</param>
+    public void Filter(string? tripId)
+    {
+        List<Photo> photos = _allPhotos.Where(p => tripId is null || p.TripId == tripId).ToList();
+        List<GalleryItem> items = new(photos.Count * Repeat);
+        for (int round = 0; round < Repeat; round++)
+        {
+            foreach (Photo photo in photos)
+            {
+                items.Add(new GalleryItem(photo, items.Count));
+            }
+        }
+
+        Items = items;
+        IsEmpty = items.Count == 0;
+        Summary = tripId is null
+            ? $"{Format.Photos(photos.Count)} from {Trips.Count} trips"
+            : $"{Format.Photos(photos.Count)} from {Trips.FirstOrDefault(t => t.Id == tripId)?.Title}";
+    }
 }
