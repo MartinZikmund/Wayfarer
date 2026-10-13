@@ -3,7 +3,8 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:models="using:Wayfarer.Models"
       Background="Transparent"
-      KeyboardAcceleratorPlacementMode="Hidden">
+      KeyboardAcceleratorPlacementMode="Hidden"
+      XYFocusKeyboardNavigation="Enabled">
 
     <Page.KeyboardAccelerators>
         <KeyboardAccelerator Invoked="OnSearchAcceleratorInvoked"
@@ -120,7 +121,8 @@
                     <VisualState.Setters>
                         <Setter Target="NavView.PaneDisplayMode" Value="LeftMinimal" />
                         <Setter Target="AppTitleBar.Subtitle" Value="" />
-                        <Setter Target="SearchBox.MinWidth" Value="160" />
+                        <Setter Target="SearchBox.MinWidth" Value="120" />
+                        <Setter Target="SearchBox.PlaceholderText" Value="Search" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="Wide">

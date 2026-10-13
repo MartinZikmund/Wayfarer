@@ -33,7 +33,6 @@ public sealed partial class SettingsViewModel : PageViewModel
         new("", "TitleBar", "The WinUI TitleBar hosts search, back and pane toggle in the window chrome."),
         new("", "Smooth scrolling", "Native flings and smooth wheel scrolling in ScrollViewer and ScrollView."),
         new("", "Multi-window on iPad", "Each activated window gets its own UIKit scene."),
-        new("", "tvOS", "Siri Remote navigation through XY focus."),
         new("", "Accessibility", "TalkBack and VoiceOver through automation peers."),
         new("", "Theme-aware splash", "The WebAssembly splash follows the browser's light or dark theme."),
     ];
