@@ -26,6 +26,9 @@ public static class Format
         : start.Month != end.Month ? $"{start:d MMM} – {end:d MMM yyyy}"
         : $"{start.Day}–{end:d MMM yyyy}";
 
+    /// <summary>Today, for postmarks that say "posted today".</summary>
+    public static DateOnly Today() => DateOnly.FromDateTime(DateTime.Now);
+
     public static string Days(int count) => count == 1 ? "1 day" : $"{count} days";
 
     public static string Photos(int count) => count == 1 ? "1 photo" : $"{count} photos";

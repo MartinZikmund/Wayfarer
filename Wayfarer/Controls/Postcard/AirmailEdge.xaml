@@ -1,0 +1,12 @@
+<UserControl x:Class="Wayfarer.Controls.Postcard.AirmailEdge"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             AutomationProperties.AccessibilityView="Raw"
+             IsHitTestVisible="False"
+             IsTabStop="False">
+
+    <Grid>
+        <Path x:Name="RedStripes" Fill="{ThemeResource WayfarerAirmailRedBrush}" />
+        <Path x:Name="BlueStripes" Fill="{ThemeResource WayfarerAirmailBlueBrush}" />
+    </Grid>
+</UserControl>

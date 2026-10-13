@@ -1,0 +1,67 @@
+<UserControl x:Class="Wayfarer.Controls.Postcard.PostageStamp"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="{StaticResource WayfarerStampWidth}"
+             Height="{StaticResource WayfarerStampHeight}"
+             AutomationProperties.AccessibilityView="Raw"
+             IsHitTestVisible="False"
+             IsTabStop="False">
+
+    <Grid x:Name="Root" RenderTransformOrigin="0.5,0.5">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="ToneStates">
+                <VisualState x:Name="Accent" />
+                <VisualState x:Name="Sea">
+                    <VisualState.Setters>
+                        <Setter Target="Art.Background" Value="{ThemeResource WayfarerStampSeaBrush}" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Maple">
+                    <VisualState.Setters>
+                        <Setter Target="Art.Background" Value="{ThemeResource WayfarerStampMapleBrush}" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Moss">
+                    <VisualState.Setters>
+                        <Setter Target="Art.Background" Value="{ThemeResource WayfarerStampMossBrush}" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Sand">
+                    <VisualState.Setters>
+                        <Setter Target="Art.Background" Value="{ThemeResource WayfarerStampSandBrush}" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <Grid.RenderTransform>
+            <RotateTransform x:Name="TiltTransform" />
+        </Grid.RenderTransform>
+
+        <Path x:Name="Paper"
+              Fill="{ThemeResource WayfarerStampPaperBrush}"
+              Stroke="{ThemeResource WayfarerStampEdgeBrush}"
+              StrokeThickness="1" />
+
+        <Grid x:Name="Face" RowSpacing="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid x:Name="Art" Background="{ThemeResource WayfarerStampAccentBrush}">
+                <Border Background="{x:Bind Tint, Mode=OneWay}" />
+                <Image x:Name="ArtImage"
+                       Source="{x:Bind ImageSource, Mode=OneWay}"
+                       Stretch="UniformToFill" />
+                <FontIcon x:Name="ArtGlyph"
+                          Foreground="{ThemeResource WayfarerStampArtForegroundBrush}"
+                          Glyph="{x:Bind Glyph, Mode=OneWay}"
+                          IsTextScaleFactorEnabled="False" />
+            </Grid>
+            <TextBlock x:Name="LabelText"
+                       Grid.Row="1"
+                       HorizontalAlignment="Center"
+                       Foreground="{ThemeResource WayfarerStampLabelBrush}"
+                       Style="{StaticResource WayfarerStampLabelTextBlockStyle}" />
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,42 @@
+<UserControl x:Class="Wayfarer.Controls.Postcard.Postmark"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             AutomationProperties.AccessibilityView="Raw"
+             Foreground="{ThemeResource WayfarerPostmarkInkBrush}"
+             IsHitTestVisible="False"
+             IsTabStop="False">
+
+    <Grid x:Name="Root">
+        <Grid.RenderTransform>
+            <CompositeTransform x:Name="RootTransform" />
+        </Grid.RenderTransform>
+
+        <Path x:Name="WaveLines"
+              Stroke="{ThemeResource WayfarerPostmarkInkBrush}"
+              StrokeEndLineCap="Round"
+              StrokeStartLineCap="Round"
+              StrokeThickness="1.5" />
+
+        <Grid x:Name="Ring">
+            <Ellipse Stroke="{ThemeResource WayfarerPostmarkInkBrush}" StrokeThickness="2" />
+            <Ellipse Margin="4"
+                     Stroke="{ThemeResource WayfarerPostmarkInkBrush}"
+                     StrokeThickness="1" />
+            <Canvas x:Name="ArcText" />
+            <StackPanel x:Name="Centre"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="2">
+                <Rectangle Width="24"
+                           Height="1"
+                           Fill="{ThemeResource WayfarerPostmarkInkBrush}" />
+                <TextBlock x:Name="DateText"
+                           HorizontalAlignment="Center"
+                           Style="{StaticResource WayfarerPostmarkTextBlockStyle}" />
+                <Rectangle Width="24"
+                           Height="1"
+                           Fill="{ThemeResource WayfarerPostmarkInkBrush}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

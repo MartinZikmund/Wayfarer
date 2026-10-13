@@ -1,4 +1,4 @@
-<Application x:Class="Wayfarer.App"
+﻿<Application x:Class="Wayfarer.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              HighContrastAdjustment="None">
@@ -9,6 +9,7 @@
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
                 <ResourceDictionary Source="ms-appx:///Styles/Brushes.xaml" />
                 <ResourceDictionary Source="ms-appx:///Styles/Layout.xaml" />
+                <ResourceDictionary Source="ms-appx:///Styles/Postcard.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
