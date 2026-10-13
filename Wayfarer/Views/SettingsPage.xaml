@@ -40,12 +40,6 @@
             <controls:PageHeader Title="Settings"
                                  Margin="{StaticResource WayfarerPageHeaderMargin}"
                                  Subtitle="Make Wayfarer feel like home.">
-                <controls:PageHeader.Accent>
-                    <postcard:PostageStamp Glyph="&#xE713;"
-                                           Label="Home"
-                                           Tilt="-3"
-                                           Tone="Sand" />
-                </controls:PageHeader.Accent>
             </controls:PageHeader>
 
             <StackPanel Grid.Row="1">
@@ -74,7 +68,7 @@
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                             <TextBlock x:Name="ThemeLabel" Text="App theme" />
                             <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}"
-                                       Text="Sunny side or after dark? System follows your device."
+                                       Text="Select which app theme to display."
                                        TextWrapping="Wrap" />
                         </StackPanel>
                         <ComboBox x:Name="ThemeComboBox"

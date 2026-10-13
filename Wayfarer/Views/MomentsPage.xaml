@@ -3,7 +3,6 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:controls="using:Wayfarer.Controls"
       xmlns:helpers="using:Wayfarer.Helpers"
-      xmlns:postcard="using:Wayfarer.Controls.Postcard"
       xmlns:views="using:Wayfarer.Views"
       xmlns:vm="using:Wayfarer.ViewModels"
       AutomationProperties.AutomationId="MomentsPage">
@@ -21,12 +20,6 @@
             <controls:PageHeader Title="{x:Bind ViewModel.Title, Mode=OneTime}"
                                  Margin="{StaticResource WayfarerPageHeaderMargin}"
                                  Subtitle="Each trip at a glance: the miles, the days and the bits you caught.">
-                <controls:PageHeader.Accent>
-                    <postcard:Postmark AnimateOnLoad="True"
-                                       Date="{x:Bind helpers:Format.Today()}"
-                                       Place="Moments"
-                                       Waves="Left" />
-                </controls:PageHeader.Accent>
             </controls:PageHeader>
 
             <StackPanel Grid.Row="1" Spacing="{StaticResource WayfarerItemSpacing}">

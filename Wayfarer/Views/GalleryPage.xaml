@@ -56,12 +56,6 @@
                              Margin="{StaticResource WayfarerPageHeaderWithFiltersMargin}"
                              Subtitle="{x:Bind ViewModel.Summary, Mode=OneWay}"
                              SubtitleAutomationId="GallerySummary">
-            <controls:PageHeader.Accent>
-                <postcard:PostageStamp Glyph="&#xE722;"
-                                       Label="Photo"
-                                       Tilt="4"
-                                       Tone="Sea" />
-            </controls:PageHeader.Accent>
         </controls:PageHeader>
 
         <SelectorBar x:Name="TripFilter"
