@@ -44,6 +44,17 @@ public sealed partial class JournalEntryEditorViewModel(ITripService tripService
 
     public void MarkDirty() => Touch();
 
+    public void Unload()
+    {
+        _loading = true;
+        Entry = null;
+        EntryTitle = "";
+        EntryDate = null;
+        SelectedTrip = null;
+        IsDirty = false;
+        _loading = false;
+    }
+
     public async Task SaveAsync(string rtf, string plainText)
     {
         if (Entry is not { } entry)

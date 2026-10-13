@@ -32,6 +32,11 @@ public sealed partial class JournalViewModel(ITripService tripService) : PageVie
 
     public override async Task OnNavigatedToAsync(object? parameter)
     {
+        // Subscribe before any await, so a Detach() that runs mid-load always wins.
+        Detach();
+        _tripService.EntrySaved += OnEntrySaved;
+        _tripService.EntryDeleted += OnEntryDeleted;
+
         IsLoading = true;
         try
         {
@@ -43,9 +48,6 @@ public sealed partial class JournalViewModel(ITripService tripService) : PageVie
             {
                 Items.Add(new JournalEntryItem(entry, TripTitleOf(entry.TripId)));
             }
-
-            _tripService.EntrySaved += OnEntrySaved;
-            _tripService.EntryDeleted += OnEntryDeleted;
 
             if (parameter is string id)
             {

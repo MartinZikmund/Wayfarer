@@ -41,14 +41,18 @@ public sealed partial class JournalEntryEditor : UserControl
         new("Green", ColorHelper.FromArgb(255, 12, 151, 24)),
     ];
 
+    private readonly ITripService _tripService = App.GetService<ITripService>();
     private string _baseline = "";
     private bool _loading;
+    private bool _saving;
 
     public JournalEntryEditor()
     {
         InitializeComponent();
         ColorGrid.ItemsSource = Palette;
         OpenWindowButton.Visibility = EntryWindow.IsSupported ? Visibility.Visible : Visibility.Collapsed;
+        Loaded += OnLoaded;
+        Unloaded += OnUnloaded;
     }
 
     public JournalEntryEditorViewModel ViewModel { get; } = new(App.GetService<ITripService>());
@@ -94,7 +98,32 @@ public sealed partial class JournalEntryEditor : UserControl
         }
 
         Editor.Document.GetText(TextGetOptions.FormatRtf, out var rtf);
-        await ViewModel.SaveAsync(rtf, GetPlainText());
+        _saving = true;
+        try
+        {
+            await ViewModel.SaveAsync(rtf, GetPlainText());
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    /// <summary>Drops the loaded entry without saving, e.g. once another window owns it.</summary>
+    public void Unload()
+    {
+        _loading = true;
+        try
+        {
+            ViewModel.Unload();
+            Editor.Document.SetText(TextSetOptions.None, "");
+            Editor.Document.ClearUndoRedoHistory();
+            _baseline = "";
+        }
+        finally
+        {
+            _loading = false;
+        }
     }
 
     public string SaveStatusText(bool isDirty) => isDirty ? "Unsaved changes" : "All changes saved";
@@ -121,6 +150,38 @@ public sealed partial class JournalEntryEditor : UserControl
         ViewModel.MarkDirty();
         Editor.Focus(FocusState.Programmatic);
         UpdateToolbarState();
+    }
+
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        // Loaded can repeat (e.g. on reparenting), so never subscribe twice.
+        OnUnloaded(sender, e);
+        _tripService.EntrySaved += OnEntrySavedElsewhere;
+        _tripService.EntryDeleted += OnEntryDeletedElsewhere;
+    }
+
+    private void OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        _tripService.EntrySaved -= OnEntrySavedElsewhere;
+        _tripService.EntryDeleted -= OnEntryDeletedElsewhere;
+    }
+
+    // Another editor (page or window) saved this entry; pick up its version unless we have edits of our own.
+    private async void OnEntrySavedElsewhere(object? sender, Models.JournalEntry entry)
+    {
+        if (!_saving && entry.Id == EntryId && !ViewModel.IsDirty)
+        {
+            await LoadAsync(entry.Id);
+        }
+    }
+
+    private void OnEntryDeletedElsewhere(object? sender, string entryId)
+    {
+        if (entryId == EntryId)
+        {
+            Unload();
+            Deleted?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     private void OnEditorSelectionChanged(object sender, RoutedEventArgs e) => UpdateToolbarState();

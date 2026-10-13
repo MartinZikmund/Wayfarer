@@ -8,6 +8,7 @@ public sealed partial class JournalPage : Page
     private const double NarrowBreakpoint = 900;
 
     private bool _isNarrow;
+    private bool _isActive;
 
     public JournalPage()
     {
@@ -23,7 +24,12 @@ public sealed partial class JournalPage : Page
     protected override async void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
+        _isActive = true;
         await ViewModel.OnNavigatedToAsync(e.Parameter);
+        if (!_isActive)
+        {
+            return;
+        }
 
         ViewModel.PropertyChanged += OnViewModelPropertyChanged;
         if (ViewModel.SelectedItem is null && !_isNarrow && ViewModel.Items.Count > 0)
@@ -39,6 +45,7 @@ public sealed partial class JournalPage : Page
     protected override void OnNavigatedFrom(NavigationEventArgs e)
     {
         base.OnNavigatedFrom(e);
+        _isActive = false;
         ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
         ViewModel.Detach();
         _ = EntryEditor.SaveIfDirtyAsync();
@@ -78,5 +85,10 @@ public sealed partial class JournalPage : Page
 
     private void OnEntryDeleted(object? sender, EventArgs e) => ViewModel.SelectedItem = null;
 
-    private void OnEntryOpenedInNewWindow(object? sender, EventArgs e) => ViewModel.SelectedItem = null;
+    // The window owns the entry now; unload it here so re-selecting it loads the window's latest save.
+    private void OnEntryOpenedInNewWindow(object? sender, EventArgs e)
+    {
+        EntryEditor.Unload();
+        ViewModel.SelectedItem = null;
+    }
 }
