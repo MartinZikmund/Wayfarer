@@ -130,7 +130,7 @@ public sealed partial class StoriesPage : Page
         SetColumnHeight();
     }
 
-    // Starts the columns just short of their final height; the grow loop adds the last few lines.
+    // Sizes the columns from a measured single-column height; HasOverflowContent alone is not reliable on Uno.
     private double EstimateColumnHeight()
     {
         // Before the first arrange the width is unknown; OnColumnsSizeChanged refits once it is.
@@ -147,7 +147,7 @@ public sealed partial class StoriesPage : Page
         }
 
         probe.Measure(new Size(columnWidth, double.PositiveInfinity));
-        return probe.DesiredSize.Height / _columns - 2 * LineSlack;
+        return probe.DesiredSize.Height / _columns + LineSlack;
     }
 
     private void SetColumnHeight()
