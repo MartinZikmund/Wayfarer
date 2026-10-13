@@ -14,7 +14,8 @@ public static class RtfBuilder
             return rtf;
         }
 
-        StringBuilder sb = new(@"{\rtf1\ansi\deff0{\fonttbl{\f0 Segoe UI;}}\f0\fs21\sa180 ");
+        // No font table, so every head renders in the editor's own platform font.
+        StringBuilder sb = new(@"{\rtf1\ansi\fs21\sa180 ");
         for (int i = 0; i < entry.Paragraphs.Count; i++)
         {
             // No \par after the last paragraph, or typing at the end lands in an empty one.

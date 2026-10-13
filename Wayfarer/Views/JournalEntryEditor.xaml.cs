@@ -27,16 +27,18 @@ public sealed class ColorSwatch(string name, Color color)
 /// <summary>Rich text editor for one journal entry. Shared by the journal page and the entry window.</summary>
 public sealed partial class JournalEntryEditor : UserControl
 {
+    // Saved into the RTF, so one palette has to read on both themes: every swatch is at least 3.7:1
+    // against the light and the dark editor surface.
     private static readonly ColorSwatch[] Palette =
     [
-        new("Teal", ColorHelper.FromArgb(255, 14, 124, 123)),
-        new("Blue", ColorHelper.FromArgb(255, 0, 99, 177)),
-        new("Purple", ColorHelper.FromArgb(255, 117, 78, 168)),
-        new("Magenta", ColorHelper.FromArgb(255, 195, 51, 129)),
-        new("Red", ColorHelper.FromArgb(255, 196, 43, 28)),
-        new("Orange", ColorHelper.FromArgb(255, 218, 100, 17)),
-        new("Gold", ColorHelper.FromArgb(255, 184, 134, 11)),
-        new("Green", ColorHelper.FromArgb(255, 16, 124, 16)),
+        new("Teal", ColorHelper.FromArgb(255, 12, 146, 142)),
+        new("Blue", ColorHelper.FromArgb(255, 29, 133, 237)),
+        new("Purple", ColorHelper.FromArgb(255, 168, 95, 242)),
+        new("Magenta", ColorHelper.FromArgb(255, 238, 43, 173)),
+        new("Red", ColorHelper.FromArgb(255, 239, 69, 57)),
+        new("Orange", ColorHelper.FromArgb(255, 217, 97, 18)),
+        new("Gold", ColorHelper.FromArgb(255, 165, 125, 13)),
+        new("Green", ColorHelper.FromArgb(255, 12, 151, 24)),
     ];
 
     private string _baseline = "";
@@ -181,7 +183,7 @@ public sealed partial class JournalEntryEditor : UserControl
 
     private void OnAutomaticColorClick(object sender, RoutedEventArgs e)
     {
-        Editor.Document.Selection.CharacterFormat.ForegroundColor = Colors.Transparent;
+        Editor.Document.Selection.CharacterFormat.ForegroundColor = TextConstants.AutoColor;
         ColorFlyout.Hide();
         Formatted();
     }

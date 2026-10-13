@@ -28,7 +28,9 @@
                           Width="48"
                           AutomationProperties.AutomationId="EntryUndo"
                           Click="OnUndoClick"
-                          Label="Undo">
+                          Label="Undo"
+
+                          ToolTipService.ToolTip="Undo">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE7A7;" />
                 </AppBarButton.Icon>
@@ -37,7 +39,9 @@
                           Width="48"
                           AutomationProperties.AutomationId="EntryRedo"
                           Click="OnRedoClick"
-                          Label="Redo">
+                          Label="Redo"
+
+                          ToolTipService.ToolTip="Redo">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE7A6;" />
                 </AppBarButton.Icon>
@@ -47,7 +51,9 @@
                                 Width="48"
                                 AutomationProperties.AutomationId="EntryBold"
                                 Click="OnBoldClick"
-                                Label="Bold">
+                                Label="Bold"
+
+                                ToolTipService.ToolTip="Bold">
                 <AppBarToggleButton.Icon>
                     <FontIcon Glyph="&#xE8DD;" />
                 </AppBarToggleButton.Icon>
@@ -56,7 +62,9 @@
                                 Width="48"
                                 AutomationProperties.AutomationId="EntryItalic"
                                 Click="OnItalicClick"
-                                Label="Italic">
+                                Label="Italic"
+
+                                ToolTipService.ToolTip="Italic">
                 <AppBarToggleButton.Icon>
                     <FontIcon Glyph="&#xE8DB;" />
                 </AppBarToggleButton.Icon>
@@ -65,7 +73,9 @@
                                 Width="48"
                                 AutomationProperties.AutomationId="EntryUnderline"
                                 Click="OnUnderlineClick"
-                                Label="Underline">
+                                Label="Underline"
+
+                                ToolTipService.ToolTip="Underline">
                 <AppBarToggleButton.Icon>
                     <FontIcon Glyph="&#xE8DC;" />
                 </AppBarToggleButton.Icon>
@@ -74,14 +84,18 @@
                                 Width="48"
                                 AutomationProperties.AutomationId="EntryStrikethrough"
                                 Click="OnStrikethroughClick"
-                                Label="Strikethrough">
+                                Label="Strikethrough"
+
+                                ToolTipService.ToolTip="Strikethrough">
                 <AppBarToggleButton.Icon>
                     <FontIcon Glyph="&#xEDE0;" />
                 </AppBarToggleButton.Icon>
             </AppBarToggleButton>
             <AppBarButton Width="48"
                           AutomationProperties.AutomationId="EntryFontColor"
-                          Label="Font color">
+                          Label="Font color"
+
+                          ToolTipService.ToolTip="Font color">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE790;" />
                 </AppBarButton.Icon>
@@ -115,7 +129,9 @@
             </AppBarButton>
             <AppBarButton Width="48"
                           AutomationProperties.AutomationId="EntryInsertLink"
-                          Label="Insert link">
+                          Label="Insert link"
+
+                          ToolTipService.ToolTip="Insert link">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE71B;" />
                 </AppBarButton.Icon>
@@ -137,29 +153,29 @@
             </AppBarButton>
 
             <CommandBar.SecondaryCommands>
-            <AppBarButton AutomationProperties.AutomationId="EntrySave"
-                          Click="OnSaveClick"
-                          IsEnabled="{x:Bind ViewModel.IsDirty, Mode=OneWay}"
-                          Label="Save">
-                <AppBarButton.Icon>
-                    <FontIcon Glyph="&#xE74E;" />
-                </AppBarButton.Icon>
-            </AppBarButton>
-            <AppBarButton x:Name="OpenWindowButton"
-                          AutomationProperties.AutomationId="EntryOpenInNewWindow"
-                          Click="OnOpenInNewWindowClick"
-                          Label="Open in new window">
-                <AppBarButton.Icon>
-                    <FontIcon Glyph="&#xE8A7;" />
-                </AppBarButton.Icon>
-            </AppBarButton>
-            <AppBarButton AutomationProperties.AutomationId="EntryDelete"
-                          Click="OnDeleteClick"
-                          Label="Delete entry">
-                <AppBarButton.Icon>
-                    <FontIcon Glyph="&#xE74D;" />
-                </AppBarButton.Icon>
-            </AppBarButton>
+                <AppBarButton AutomationProperties.AutomationId="EntrySave"
+                              Click="OnSaveClick"
+                              IsEnabled="{x:Bind ViewModel.IsDirty, Mode=OneWay}"
+                              Label="Save">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE74E;" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton x:Name="OpenWindowButton"
+                              AutomationProperties.AutomationId="EntryOpenInNewWindow"
+                              Click="OnOpenInNewWindowClick"
+                              Label="Open in new window">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE8A7;" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton AutomationProperties.AutomationId="EntryDelete"
+                              Click="OnDeleteClick"
+                              Label="Delete entry">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE74D;" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
             </CommandBar.SecondaryCommands>
         </CommandBar>
 
