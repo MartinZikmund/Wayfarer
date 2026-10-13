@@ -1,10 +1,227 @@
 <Page x:Class="Wayfarer.Views.MomentsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      AutomationProperties.AutomationId="MomentsPage">
+      xmlns:controls="using:Wayfarer.Controls"
+      xmlns:helpers="using:Wayfarer.Helpers"
+      xmlns:local="using:Wayfarer.Views"
+      xmlns:lottie="using:CommunityToolkit.WinUI.Lottie"
+      xmlns:vm="using:Wayfarer.ViewModels"
+      AutomationProperties.AutomationId="MomentsPage"
+      XYFocusKeyboardNavigation="Enabled">
 
-    <Grid Padding="{StaticResource WayfarerPagePadding}">
-        <TextBlock Style="{StaticResource WayfarerPageTitleTextBlockStyle}"
-                   Text="{x:Bind ViewModel.Title, Mode=OneWay}" />
-    </Grid>
+    <Page.Resources>
+        <DataTemplate x:Key="ItineraryStopTemplate" x:DataType="vm:ItineraryStop">
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="32" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Width="2"
+                        Margin="0,32,0,0"
+                        HorizontalAlignment="Center"
+                        Background="{ThemeResource WayfarerDividerBrush}"
+                        Visibility="{x:Bind helpers:Format.CollapsedIf(IsLast)}" />
+                <Border Width="32"
+                        Height="32"
+                        VerticalAlignment="Top"
+                        Background="{ThemeResource WayfarerTagBackgroundBrush}"
+                        CornerRadius="16">
+                    <FontIcon AutomationProperties.AccessibilityView="Raw"
+                              FontSize="16"
+                              Foreground="{ThemeResource WayfarerAccentGlyphBrush}"
+                              Glyph="{x:Bind Glyph}" />
+                </Border>
+
+                <StackPanel Grid.Column="1"
+                            Padding="0,0,0,16"
+                            Spacing="{StaticResource WayfarerTightSpacing}">
+                    <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}">
+                        <Run Text="{x:Bind Day}" />
+                        <Run Text="·" />
+                        <Run Text="{x:Bind helpers:Format.Date(Date)}" />
+                    </TextBlock>
+                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}"
+                               Text="{x:Bind Title}"
+                               TextWrapping="Wrap" />
+                    <TextBlock Style="{StaticResource WayfarerSecondaryTextBlockStyle}"
+                               Text="{x:Bind Subtitle}"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="MomentTemplate" x:DataType="vm:TripMoment">
+            <Border Style="{StaticResource WayfarerCardStyle}">
+                <StackPanel Spacing="{StaticResource WayfarerSectionSpacing}">
+
+                    <!-- Hero -->
+                    <Grid ColumnSpacing="24">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Width="200"
+                              Height="200"
+                              VerticalAlignment="Top">
+                            <AnimatedVisualPlayer x:Name="Player"
+                                                  AutomationProperties.AutomationId="{x:Bind Trip.Id}"
+                                                  AutomationProperties.Name="{x:Bind Trip.Title}"
+                                                  Loaded="OnPlayerLoaded"
+                                                  Stretch="UniformToFill">
+                                <lottie:LottieVisualSource UriSource="{x:Bind AnimationSource}" />
+                            </AnimatedVisualPlayer>
+                            <ToggleButton Margin="8"
+                                          Padding="8"
+                                          HorizontalAlignment="Right"
+                                          VerticalAlignment="Bottom"
+                                          AutomationProperties.AutomationId="PlaybackToggle"
+                                          AutomationProperties.Name="{x:Bind local:MomentsPage.PlaybackName(IsPlaying), Mode=OneWay}"
+                                          Click="OnPlaybackClick"
+                                          IsChecked="{x:Bind IsPlaying, Mode=TwoWay}"
+                                          Tag="{Binding ElementName=Player}"
+                                          ToolTipService.ToolTip="{x:Bind local:MomentsPage.PlaybackName(IsPlaying), Mode=OneWay}"
+                                          UseSystemFocusVisuals="True">
+                                <FontIcon FontSize="16" Glyph="{x:Bind local:MomentsPage.PlaybackGlyph(IsPlaying), Mode=OneWay}" />
+                            </ToggleButton>
+                        </Grid>
+
+                        <StackPanel Grid.Column="1" Spacing="{StaticResource WayfarerContentSpacing}">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}"
+                                       Text="{x:Bind Trip.Title}"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Style="{StaticResource WayfarerSecondaryTextBlockStyle}" TextWrapping="Wrap">
+                                <Run Text="{x:Bind Trip.Destination}" />
+                                <Run Text="·" />
+                                <Run Text="{x:Bind helpers:Format.DateRange(Trip.StartDate, Trip.EndDate)}" />
+                            </TextBlock>
+                            <TextBlock Text="{x:Bind Trip.Summary}" TextWrapping="Wrap" />
+
+                            <Grid Margin="0,8,0,0" ColumnSpacing="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <ProgressRing Width="56"
+                                              Height="56"
+                                              AutomationProperties.AutomationId="TripCompletionRing"
+                                              AutomationProperties.Name="Trip captured"
+                                              IsIndeterminate="False"
+                                              Maximum="100"
+                                              Minimum="0"
+                                              Value="{x:Bind CapturedPercent}" />
+                                <StackPanel Grid.Column="1"
+                                            VerticalAlignment="Center"
+                                            Spacing="{StaticResource WayfarerTightSpacing}">
+                                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind CapturedSummary}" />
+                                    <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}"
+                                               Text="{x:Bind CapturedDetail}"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Grid>
+
+                            <StackPanel Spacing="{StaticResource WayfarerTightSpacing}">
+                                <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}" Text="{x:Bind JournalSummary}" />
+                                <ProgressBar AutomationProperties.AutomationId="JournalProgressBar"
+                                             AutomationProperties.Name="Journal coverage"
+                                             Maximum="100"
+                                             Minimum="0"
+                                             Value="{x:Bind JournalPercent}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Stats -->
+                    <Grid ColumnSpacing="{StaticResource WayfarerItemSpacing}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Style="{StaticResource WayfarerSettingsRowStyle}">
+                            <StackPanel Spacing="{StaticResource WayfarerTightSpacing}">
+                                <FontIcon HorizontalAlignment="Left"
+                                          AutomationProperties.AccessibilityView="Raw"
+                                          Glyph="&#xE707;"
+                                          Style="{StaticResource WayfarerSettingsGlyphStyle}" />
+                                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{x:Bind helpers:Format.Distance(Trip.DistanceKm)}" />
+                                <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}" Text="Distance" />
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="1" Style="{StaticResource WayfarerSettingsRowStyle}">
+                            <StackPanel Spacing="{StaticResource WayfarerTightSpacing}">
+                                <FontIcon HorizontalAlignment="Left"
+                                          AutomationProperties.AccessibilityView="Raw"
+                                          Glyph="&#xE787;"
+                                          Style="{StaticResource WayfarerSettingsGlyphStyle}" />
+                                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{x:Bind helpers:Format.Days(Trip.DayCount)}" />
+                                <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}" Text="Duration" />
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="2" Style="{StaticResource WayfarerSettingsRowStyle}">
+                            <StackPanel Spacing="{StaticResource WayfarerTightSpacing}">
+                                <FontIcon HorizontalAlignment="Left"
+                                          AutomationProperties.AccessibilityView="Raw"
+                                          Glyph="&#xE8B9;"
+                                          Style="{StaticResource WayfarerSettingsGlyphStyle}" />
+                                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{x:Bind helpers:Format.Photos(Trip.Photos.Count)}" />
+                                <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}" Text="Captured" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Itinerary -->
+                    <StackPanel>
+                        <TextBlock Margin="0,0,0,12"
+                                   Style="{StaticResource BodyStrongTextBlockStyle}"
+                                   Text="Itinerary" />
+                        <ItemsRepeater ItemTemplate="{StaticResource ItineraryStopTemplate}" ItemsSource="{x:Bind Itinerary}">
+                            <ItemsRepeater.Layout>
+                                <StackLayout Orientation="Vertical" Spacing="0" />
+                            </ItemsRepeater.Layout>
+                        </ItemsRepeater>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+    </Page.Resources>
+
+    <ScrollViewer>
+        <StackPanel MaxWidth="{StaticResource WayfarerSettingsMaxWidth}"
+                    Padding="{StaticResource WayfarerPagePadding}"
+                    HorizontalAlignment="Stretch"
+                    Spacing="{StaticResource WayfarerItemSpacing}">
+            <TextBlock Margin="0,0,0,4"
+                       Style="{StaticResource WayfarerPageTitleTextBlockStyle}"
+                       Text="Moments" />
+
+            <InfoBar AutomationProperties.AutomationId="MomentsTip"
+                     IsClosable="True"
+                     IsOpen="True"
+                     Message="Use the play button on each animation to pause it. Journal a day to move its trip closer to complete."
+                     Severity="Informational"
+                     Title="Tip" />
+
+            <ProgressRing Width="32"
+                          Height="32"
+                          HorizontalAlignment="Center"
+                          IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
+                          Visibility="{x:Bind helpers:Format.VisibleIf(ViewModel.IsLoading), Mode=OneWay}" />
+
+            <ItemsRepeater AutomationProperties.AutomationId="MomentsList"
+                           ItemTemplate="{StaticResource MomentTemplate}"
+                           ItemsSource="{x:Bind ViewModel.Moments}">
+                <ItemsRepeater.Layout>
+                    <StackLayout Orientation="Vertical" Spacing="{StaticResource WayfarerSectionSpacing}" />
+                </ItemsRepeater.Layout>
+            </ItemsRepeater>
+
+            <controls:EmptyState Title="No trips yet"
+                                 Glyph="&#xE81C;"
+                                 Message="Add a trip and your journey will show up here with stats and a timeline."
+                                 Visibility="{x:Bind helpers:Format.VisibleIf(ViewModel.ShowEmpty), Mode=OneWay}" />
+        </StackPanel>
+    </ScrollViewer>
 </Page>
