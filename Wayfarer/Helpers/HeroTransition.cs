@@ -70,7 +70,12 @@ public static class HeroTransition
         _pending = null;
         reveal ??= destination;
         reveal.Opacity = 0;
-        WhenLaidOut(destination, () => flight.FlyTo(destination, reveal));
+        WhenLaidOut(destination, () => flight.FlyTo(destination, reveal), () =>
+        {
+            // The target never showed up (no route, or the user left first): put the photo down.
+            flight.Land();
+            reveal.Opacity = 1;
+        });
         return true;
 #else
         return ConnectedAnimationService.GetForCurrentView().GetAnimation(key)?.TryStart(destination) == true;
@@ -78,25 +83,52 @@ public static class HeroTransition
     }
 
 #if HAS_UNO
-    private static void WhenLaidOut(FrameworkElement element, Action action)
+    private static void WhenLaidOut(FrameworkElement element, Action action, Action giveUp)
     {
-        if (element.ActualWidth > 0 && element.XamlRoot is not null)
+        if (IsLaidOut(element))
         {
             action();
             return;
         }
 
+        DispatcherQueueTimer deadline = DispatcherQueue.GetForCurrentThread().CreateTimer();
+
+        void Detach()
+        {
+            deadline.Stop();
+            element.LayoutUpdated -= OnLayoutUpdated;
+            element.Unloaded -= OnUnloaded;
+        }
+
         void OnLayoutUpdated(object? sender, object e)
         {
-            if (element.ActualWidth > 0 && element.XamlRoot is not null)
+            if (IsLaidOut(element))
             {
-                element.LayoutUpdated -= OnLayoutUpdated;
+                Detach();
                 action();
             }
         }
 
+        void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            Detach();
+            giveUp();
+        }
+
+        deadline.Interval = MaxWait;
+        deadline.IsRepeating = false;
+        deadline.Tick += (_, _) =>
+        {
+            Detach();
+            giveUp();
+        };
+
         element.LayoutUpdated += OnLayoutUpdated;
+        element.Unloaded += OnUnloaded;
+        deadline.Start();
     }
+
+    private static bool IsLaidOut(FrameworkElement element) => element.ActualWidth > 0 && element.XamlRoot is not null;
 
     /// <summary>A copy of the photo, held where it was while the next page loads, then flown to its target.</summary>
     private sealed class Flight
@@ -144,22 +176,35 @@ public static class HeroTransition
 
             void OnRendering(object? sender, object e)
             {
-                double t = Math.Min(1, (DateTimeOffset.UtcNow - start).TotalMilliseconds / DurationMs);
-                double k = ease.Ease(t);
-
-                // Re-read the target every frame: the new page may still be settling into place.
-                Rect target = UnrotatedBounds(destination);
-                _photo.Width = Lerp(_from.Width, target.Width, k);
-                _photo.Height = Lerp(_from.Height, target.Height, k);
-                _popup.HorizontalOffset = Lerp(_from.X, target.X, k);
-                _popup.VerticalOffset = Lerp(_from.Y, target.Y, k);
-                _tilt.Angle = endAngle * k;
-
-                if (t >= 1)
+                bool done = true;
+                try
                 {
-                    CompositionTarget.Rendering -= OnRendering;
-                    reveal.Opacity = 1;
-                    Land();
+                    // Gone mid-flight (e.g. the user went back): just put the photo down.
+                    if (destination.XamlRoot is null)
+                    {
+                        return;
+                    }
+
+                    double t = Math.Min(1, (DateTimeOffset.UtcNow - start).TotalMilliseconds / DurationMs);
+                    double k = ease.Ease(t);
+
+                    // Re-read the target every frame: the new page may still be settling into place.
+                    Rect target = UnrotatedBounds(destination);
+                    _photo.Width = Lerp(_from.Width, target.Width, k);
+                    _photo.Height = Lerp(_from.Height, target.Height, k);
+                    _popup.HorizontalOffset = Lerp(_from.X, target.X, k);
+                    _popup.VerticalOffset = Lerp(_from.Y, target.Y, k);
+                    _tilt.Angle = endAngle * k;
+                    done = t >= 1;
+                }
+                finally
+                {
+                    if (done)
+                    {
+                        CompositionTarget.Rendering -= OnRendering;
+                        reveal.Opacity = 1;
+                        Land();
+                    }
                 }
             }
 
