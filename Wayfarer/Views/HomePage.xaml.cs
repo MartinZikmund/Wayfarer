@@ -1,4 +1,3 @@
-using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Wayfarer.Controls.Postcard;
 using Wayfarer.Helpers;
@@ -9,8 +8,6 @@ namespace Wayfarer.Views;
 
 public sealed partial class HomePage : Page
 {
-    public const string TripCoverAnimationKey = "TripCover";
-
     public HomePage()
     {
         InitializeComponent();
@@ -31,7 +28,7 @@ public sealed partial class HomePage : Page
         await ViewModel.OnNavigatedToAsync(e.Parameter);
     }
 
-    // The animation has to be prepared before navigating, while the cover is still on screen.
+    // The cover has to be captured before navigating, while it is still on screen.
     private void OnTripClick(object sender, RoutedEventArgs e)
     {
         if (sender is not Button { DataContext: Trip trip } button)
@@ -39,27 +36,13 @@ public sealed partial class HomePage : Page
             return;
         }
 
-        if (Motion.IsEnabled && FindCover(button) is { } cover)
+        if (FindCover(button) is { } cover)
         {
-            PrepareCoverAnimation(cover);
+            HeroTransition.Prepare(MapPage.TripHeroAnimationKey, cover);
         }
 
         ViewModel.OpenTripCommand.Execute(trip);
     }
-
-    // ConnectedAnimationService is still a stub in Uno 7.0 dev builds; the page simply navigates without it.
-#pragma warning disable Uno0001
-    private static void PrepareCoverAnimation(Image cover)
-    {
-        try
-        {
-            ConnectedAnimationService.GetForCurrentView().PrepareToAnimate(TripCoverAnimationKey, cover);
-        }
-        catch (NotImplementedException)
-        {
-        }
-    }
-#pragma warning restore Uno0001
 
     private static Image? FindCover(DependencyObject start)
     {

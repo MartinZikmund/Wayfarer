@@ -3,7 +3,6 @@ using System.Numerics;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Hosting;
-using Microsoft.UI.Xaml.Media.Animation;
 using Wayfarer.Helpers;
 using Wayfarer.Models;
 using Wayfarer.ViewModels;
@@ -31,7 +30,6 @@ public sealed partial class MapPage : Page
     private readonly AccessibilitySettings _accessibility = new();
     private bool _isWide = true;
     private bool _animateNextBuild;
-    private bool _isFromHome;
 
     public MapPage()
     {
@@ -47,13 +45,13 @@ public sealed partial class MapPage : Page
     protected override async void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
-        _isFromHome = e.Parameter is string;
+        if (e.Parameter is string)
+        {
+            CompleteHeroAnimation();
+        }
+
         await ViewModel.OnNavigatedToAsync(e.Parameter);
         BuildSelector();
-        if (_isFromHome)
-        {
-            DispatcherQueue.TryEnqueue(CompleteHeroAnimation);
-        }
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
@@ -472,23 +470,11 @@ public sealed partial class MapPage : Page
         return Vector2.Lerp(a, b, f);
     }
 
-#pragma warning disable Uno0001 // ConnectedAnimationService is not implemented on Skia; the catch below covers it.
     private void CompleteHeroAnimation()
     {
-        try
+        if (!HeroTransition.TryStart(TripHeroAnimationKey, TripStamp.ArtArea, TripStamp))
         {
-            ConnectedAnimation? incoming = ConnectedAnimationService.GetForCurrentView().GetAnimation(TripHeroAnimationKey);
-            if (incoming is not null && incoming.TryStart(TripStamp))
-            {
-                return;
-            }
+            Motion.Animate(TripStamp, nameof(Opacity), 0, 1, 400);
         }
-        catch (NotImplementedException)
-        {
-            // Skia has no connected animations yet; the stamp just settles in instead.
-        }
-
-        Motion.Animate(TripStamp, nameof(Opacity), 0, 1, 400);
     }
-#pragma warning restore Uno0001
 }

@@ -81,6 +81,9 @@ public sealed partial class PostageStamp : UserControl
         set => SetValue(TiltProperty, value);
     }
 
+    /// <summary>The printed area, for connected animations that land a photo on the stamp.</summary>
+    public FrameworkElement ArtArea => Art;
+
     private static void OnArtChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((PostageStamp)d).UpdateArt();
 
     private static void OnLabelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((PostageStamp)d).UpdateLabel();
