@@ -50,8 +50,12 @@ public sealed partial class GalleryPage : Page
         }
     }
 
-    private void OnTripFilterChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs args) =>
+    private void OnTripFilterChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs args)
+    {
+        // A new filter starts at the top; Uno also renders nothing if the old offset outlives the shorter list.
+        PhotosView.ScrollView?.ScrollTo(0, 0, new ScrollingScrollOptions(ScrollingAnimationMode.Disabled));
         ViewModel.Filter(sender.SelectedItem?.Tag as string);
+    }
 
     private void OnPageSizeChanged(object sender, SizeChangedEventArgs e) =>
         PhotoLayout.LineHeight = e.NewSize.Width < NarrowWidth ? 140 : 220;
