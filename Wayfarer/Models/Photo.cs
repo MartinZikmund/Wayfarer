@@ -4,15 +4,15 @@ namespace Wayfarer.Models;
 
 public sealed record Photo
 {
-    public required string Id { get; init; }
+    public string Id { get; init; } = "";
 
-    public required string TripId { get; init; }
+    public string TripId { get; init; } = "";
 
-    public required string FileName { get; init; }
+    public string FileName { get; init; } = "";
 
-    public required string Caption { get; init; }
+    public string Caption { get; init; } = "";
 
-    public required string Location { get; init; }
+    public string Location { get; init; } = "";
 
     public DateOnly TakenOn { get; init; }
 

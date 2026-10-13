@@ -1,3 +1,4 @@
+using Microsoft.UI.Xaml.Media.Imaging;
 using Wayfarer.Models;
 
 namespace Wayfarer.Helpers;
@@ -14,6 +15,9 @@ public static class Format
     public static Visibility VisibleIfNone(int count) => count > 0 ? Visibility.Collapsed : Visibility.Visible;
 
     public static bool Not(bool value) => !value;
+
+    // WinUI's x:Bind won't convert Uri to ImageSource on its own.
+    public static ImageSource Image(Uri uri) => new BitmapImage(uri);
 
     public static string Date(DateOnly date) => date.ToString("d MMM yyyy");
 

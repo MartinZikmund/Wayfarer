@@ -12,7 +12,7 @@
             <ItemContainer AutomationProperties.AutomationId="GalleryPhotoItem"
                            AutomationProperties.Name="{x:Bind Photo.Caption}">
                 <Grid CornerRadius="{StaticResource ControlCornerRadius}">
-                    <Image Source="{x:Bind Photo.ImageUri}"
+                    <Image Source="{x:Bind helpers:Format.Image(Photo.ImageUri)}"
                            Stretch="UniformToFill" />
                     <Border Padding="12,32,12,8"
                             VerticalAlignment="Bottom"

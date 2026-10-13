@@ -32,7 +32,7 @@ public partial class App : Application
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
         MainWindow = new Window { Title = "Wayfarer" };
-#if DEBUG
+#if DEBUG && HAS_UNO
         MainWindow.UseStudio();
 #endif
         MainWindow.SystemBackdrop = new MicaBackdrop();

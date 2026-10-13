@@ -96,7 +96,7 @@
                                     <Border Height="160"
                                             AutomationProperties.Name="{x:Bind Caption}"
                                             Style="{StaticResource WayfarerPhotoFrameStyle}">
-                                        <Image Source="{x:Bind ImageUri}" Stretch="UniformToFill" />
+                                        <Image Source="{x:Bind helpers:Format.Image(ImageUri)}" Stretch="UniformToFill" />
                                     </Border>
                                     <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}"
                                                Text="{x:Bind Caption}"

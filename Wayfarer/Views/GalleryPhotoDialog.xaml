@@ -14,7 +14,7 @@
                 Style="{StaticResource WayfarerPhotoFrameStyle}">
             <Image AutomationProperties.AutomationId="GalleryDetailImage"
                    AutomationProperties.Name="{x:Bind Photo.Caption, Mode=OneTime}"
-                   Source="{x:Bind Photo.ImageUri, Mode=OneTime}"
+                   Source="{x:Bind helpers:Format.Image(Photo.ImageUri), Mode=OneTime}"
                    Stretch="Uniform" />
         </Border>
 

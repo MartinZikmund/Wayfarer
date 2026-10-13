@@ -48,4 +48,14 @@
     <UnoSplashScreenDarkBackgroundColor>#0F1C1E</UnoSplashScreenDarkBackgroundColor>
   </PropertyGroup>
 
+  <PropertyGroup Condition="$(TargetFramework.Contains('windows'))">
+    <!-- Hot Design needs an Uno.WinUI target (_UnoAddLibraryAssets) that WinAppSDK builds don't import. -->
+    <UnoDisableHotDesign>true</UnoDisableHotDesign>
+  </PropertyGroup>
+
+  <ItemGroup Condition="$(TargetFramework.Contains('windows'))">
+    <!-- Lottie is built into Uno.WinUI; WinAppSDK still needs the toolkit's LottieVisualSource. -->
+    <PackageReference Include="CommunityToolkit.WinUI.Lottie" />
+  </ItemGroup>
+
 </Project>
