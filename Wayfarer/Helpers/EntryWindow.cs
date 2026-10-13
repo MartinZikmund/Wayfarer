@@ -1,6 +1,8 @@
-using Microsoft.UI.Xaml.Automation;
 using Wayfarer.Services;
 using Wayfarer.Views;
+#if __IOS__
+using UIKit;
+#endif
 
 namespace Wayfarer.Helpers;
 
@@ -12,49 +14,59 @@ public static class EntryWindow
 
     private static readonly Dictionary<string, Window> OpenWindows = new();
 
-    public static bool IsSupported =>
-        OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || OperatingSystem.IsLinux() || OperatingSystem.IsIOS();
+    /// <summary>Desktop heads always allow it; iOS only where UIKit supports multiple scenes (iPad, not iPhone).</summary>
+    public static bool IsSupported { get; private set; } = DetectSupport();
 
-    public static void Open(string entryId)
+    /// <returns>False if the platform refused to create a window; the caller keeps editing inline.</returns>
+    public static bool TryOpen(string entryId)
     {
         if (OpenWindows.TryGetValue(entryId, out var existing))
         {
             existing.Activate();
-            return;
+            return true;
+        }
+
+        Window window;
+        try
+        {
+            window = new Window { Title = "Journal entry - Wayfarer" };
+        }
+        catch (InvalidOperationException)
+        {
+            // Uno throws when the platform can't host secondary windows; don't offer it again.
+            IsSupported = false;
+            return false;
         }
 
         var themeService = App.GetService<IThemeService>();
-        JournalEntryEditor editor = new() { ShowOpenInNewWindow = false };
-        Grid root = new()
-        {
-            Background = (Brush)Application.Current.Resources["ApplicationPageBackgroundThemeBrush"],
-            Padding = (Thickness)Application.Current.Resources["WayfarerCompactPagePadding"],
-            RequestedTheme = themeService.Theme,
-            Children = { editor },
-        };
-        AutomationProperties.SetAutomationId(root, "EntryWindowRoot");
+        EntryWindowContent content = new() { RequestedTheme = themeService.Theme };
+        window.Content = content;
 
-        Window window = new()
-        {
-            Title = "Journal entry - Wayfarer",
-            Content = root,
-        };
-
-        void OnThemeChanged(object? sender, ElementTheme theme) => root.RequestedTheme = theme;
+        void OnThemeChanged(object? sender, ElementTheme theme) => content.RequestedTheme = theme;
 
         themeService.ThemeChanged += OnThemeChanged;
-        editor.Deleted += (_, _) => window.Close();
+        content.Editor.Deleted += (_, _) => window.Close();
         window.Closed += async (_, _) =>
         {
             themeService.ThemeChanged -= OnThemeChanged;
             OpenWindows.Remove(entryId);
-            await editor.SaveIfDirtyAsync();
+            await content.Editor.SaveIfDirtyAsync();
         };
 
         OpenWindows[entryId] = window;
-        root.Loaded += (_, _) => Resize(window, root);
+        content.Loaded += (_, _) => Resize(window, content);
         window.Activate();
-        _ = editor.LoadAsync(entryId);
+        _ = content.Editor.LoadAsync(entryId);
+        return true;
+    }
+
+    private static bool DetectSupport()
+    {
+#if __IOS__
+        return UIApplication.SharedApplication.SupportsMultipleScenes;
+#else
+        return OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || OperatingSystem.IsLinux();
+#endif
     }
 
     private static void Resize(Window window, FrameworkElement root)

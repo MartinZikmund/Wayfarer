@@ -234,10 +234,18 @@ public sealed partial class JournalEntryEditor : UserControl
     private async void OnOpenInNewWindowClick(object sender, RoutedEventArgs e)
     {
         await SaveIfDirtyAsync();
-        if (EntryId is { } id)
+        if (EntryId is not { } id)
         {
-            EntryWindow.Open(id);
+            return;
+        }
+
+        if (EntryWindow.TryOpen(id))
+        {
             OpenedInNewWindow?.Invoke(this, EventArgs.Empty);
+        }
+        else
+        {
+            OpenWindowButton.Visibility = Visibility.Collapsed;
         }
     }
 
