@@ -7,10 +7,12 @@ public sealed class NavigationService : INavigationService
 {
     private static readonly Dictionary<AppPage, Type> PageTypes = new()
     {
+        [AppPage.Home] = typeof(HomePage),
         [AppPage.Gallery] = typeof(GalleryPage),
         [AppPage.Journal] = typeof(JournalPage),
         [AppPage.Stories] = typeof(StoriesPage),
         [AppPage.Moments] = typeof(MomentsPage),
+        [AppPage.Map] = typeof(MapPage),
         [AppPage.Settings] = typeof(SettingsPage),
     };
 

@@ -77,6 +77,8 @@ public partial class App : Application
 
         services.AddTransient<ShellViewModel>();
         services.AddTransient<SettingsViewModel>();
+        services.AddTransient<HomeViewModel>();
+        services.AddTransient<MapViewModel>();
         services.AddTransient<GalleryViewModel>();
         services.AddTransient<JournalViewModel>();
         services.AddTransient<StoriesViewModel>();

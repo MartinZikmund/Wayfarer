@@ -39,7 +39,7 @@ public sealed partial class MainPage : Page
 
         if (_navigation.CurrentPage is null)
         {
-            _navigation.Navigate(AppPage.Gallery);
+            _navigation.Navigate(AppPage.Home);
         }
     }
 
