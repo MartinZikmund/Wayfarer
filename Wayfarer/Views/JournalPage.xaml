@@ -41,8 +41,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <TextBlock Margin="0"
-                       VerticalAlignment="Center"
+            <TextBlock VerticalAlignment="Center"
                        Style="{StaticResource WayfarerPageTitleTextBlockStyle}"
                        Text="Journal" />
             <Button Grid.Column="1"

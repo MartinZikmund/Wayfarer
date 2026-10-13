@@ -8,9 +8,8 @@
                 Spacing="{StaticResource WayfarerContentSpacing}">
         <FontIcon HorizontalAlignment="Center"
                   AutomationProperties.AccessibilityView="Raw"
-                  FontSize="{StaticResource WayfarerEmptyStateGlyphSize}"
-                  Foreground="{ThemeResource WayfarerEmptyStateGlyphBrush}"
-                  Glyph="{x:Bind Glyph, Mode=OneWay}" />
+                  Glyph="{x:Bind Glyph, Mode=OneWay}"
+                  Style="{StaticResource WayfarerEmptyStateGlyphStyle}" />
         <TextBlock Margin="0,8,0,0"
                    HorizontalAlignment="Center"
                    Style="{StaticResource SubtitleTextBlockStyle}"

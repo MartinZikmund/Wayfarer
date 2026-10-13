@@ -20,16 +20,16 @@
                 <Border Width="2"
                         Margin="0,32,0,0"
                         HorizontalAlignment="Center"
-                        Background="{ThemeResource WayfarerDividerBrush}"
+                        Background="{ThemeResource DividerStrokeColorDefaultBrush}"
                         Visibility="{x:Bind helpers:Format.CollapsedIf(IsLast)}" />
                 <Border Width="32"
                         Height="32"
                         VerticalAlignment="Top"
-                        Background="{ThemeResource WayfarerTagBackgroundBrush}"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                         CornerRadius="16">
                     <FontIcon AutomationProperties.AccessibilityView="Raw"
                               FontSize="16"
-                              Foreground="{ThemeResource WayfarerAccentGlyphBrush}"
+                              Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
                               Glyph="{x:Bind Glyph}" />
                 </Border>
 
@@ -189,7 +189,7 @@
     </Page.Resources>
 
     <ScrollViewer>
-        <StackPanel MaxWidth="{StaticResource WayfarerSettingsMaxWidth}"
+        <StackPanel MaxWidth="{StaticResource WayfarerContentMaxWidth}"
                     Padding="{StaticResource WayfarerPagePadding}"
                     HorizontalAlignment="Stretch"
                     Spacing="{StaticResource WayfarerItemSpacing}">

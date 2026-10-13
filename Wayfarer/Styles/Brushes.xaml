@@ -1,60 +1,35 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!-- App brushes redirect to WinUI theme brushes; High Contrast uses system colors only. -->
+    <!--
+        Only brushes WinUI has no equivalent for live here; everything else uses the WinUI theme brushes directly,
+        which already carry their own High Contrast values.
+    -->
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Light">
-            <StaticResource x:Key="WayfarerCardBackgroundBrush" ResourceKey="CardBackgroundFillColorDefaultBrush" />
-            <StaticResource x:Key="WayfarerCardBorderBrush" ResourceKey="CardStrokeColorDefaultBrush" />
-            <StaticResource x:Key="WayfarerSubtleCardBackgroundBrush" ResourceKey="CardBackgroundFillColorSecondaryBrush" />
-            <StaticResource x:Key="WayfarerPhotoPlaceholderBrush" ResourceKey="ControlFillColorSecondaryBrush" />
-            <StaticResource x:Key="WayfarerPhotoBorderBrush" ResourceKey="ControlStrokeColorSecondaryBrush" />
+            <!-- The scrim sits on photos, not on the app surface, so it stays dark in both themes. -->
             <LinearGradientBrush x:Key="WayfarerPhotoScrimBrush" StartPoint="0,0" EndPoint="0,1">
                 <GradientStop Offset="0" Color="Transparent" />
-                <GradientStop Offset="0.3" Color="{StaticResource SystemChromeBlackMediumLowColor}" />
-                <GradientStop Offset="1" Color="{StaticResource SystemChromeBlackMediumColor}" />
+                <GradientStop Offset="0.35" Color="{StaticResource SystemChromeBlackMediumColor}" />
+                <GradientStop Offset="1" Color="{StaticResource SystemChromeBlackHighColor}" />
             </LinearGradientBrush>
+            <!-- White over the scrim: TextOnAccent is white in Light, TextFillColorPrimary is white in Dark. -->
             <StaticResource x:Key="WayfarerPhotoCaptionForegroundBrush" ResourceKey="TextOnAccentFillColorPrimaryBrush" />
-            <StaticResource x:Key="WayfarerTagBackgroundBrush" ResourceKey="SubtleFillColorSecondaryBrush" />
-            <StaticResource x:Key="WayfarerTagForegroundBrush" ResourceKey="TextFillColorSecondaryBrush" />
-            <StaticResource x:Key="WayfarerEmptyStateGlyphBrush" ResourceKey="TextFillColorTertiaryBrush" />
-            <StaticResource x:Key="WayfarerDividerBrush" ResourceKey="DividerStrokeColorDefaultBrush" />
-            <StaticResource x:Key="WayfarerAccentGlyphBrush" ResourceKey="AccentTextFillColorPrimaryBrush" />
         </ResourceDictionary>
 
         <ResourceDictionary x:Key="Dark">
-            <StaticResource x:Key="WayfarerCardBackgroundBrush" ResourceKey="CardBackgroundFillColorDefaultBrush" />
-            <StaticResource x:Key="WayfarerCardBorderBrush" ResourceKey="CardStrokeColorDefaultBrush" />
-            <StaticResource x:Key="WayfarerSubtleCardBackgroundBrush" ResourceKey="CardBackgroundFillColorSecondaryBrush" />
-            <StaticResource x:Key="WayfarerPhotoPlaceholderBrush" ResourceKey="ControlFillColorSecondaryBrush" />
-            <StaticResource x:Key="WayfarerPhotoBorderBrush" ResourceKey="ControlStrokeColorSecondaryBrush" />
             <LinearGradientBrush x:Key="WayfarerPhotoScrimBrush" StartPoint="0,0" EndPoint="0,1">
                 <GradientStop Offset="0" Color="Transparent" />
-                <GradientStop Offset="0.3" Color="{StaticResource SystemChromeBlackMediumLowColor}" />
-                <GradientStop Offset="1" Color="{StaticResource SystemChromeBlackMediumColor}" />
+                <GradientStop Offset="0.35" Color="{StaticResource SystemChromeBlackMediumColor}" />
+                <GradientStop Offset="1" Color="{StaticResource SystemChromeBlackHighColor}" />
             </LinearGradientBrush>
-            <!-- Over the dark scrim the caption stays light in both themes. -->
             <StaticResource x:Key="WayfarerPhotoCaptionForegroundBrush" ResourceKey="TextFillColorPrimaryBrush" />
-            <StaticResource x:Key="WayfarerTagBackgroundBrush" ResourceKey="SubtleFillColorSecondaryBrush" />
-            <StaticResource x:Key="WayfarerTagForegroundBrush" ResourceKey="TextFillColorSecondaryBrush" />
-            <StaticResource x:Key="WayfarerEmptyStateGlyphBrush" ResourceKey="TextFillColorTertiaryBrush" />
-            <StaticResource x:Key="WayfarerDividerBrush" ResourceKey="DividerStrokeColorDefaultBrush" />
-            <StaticResource x:Key="WayfarerAccentGlyphBrush" ResourceKey="AccentTextFillColorPrimaryBrush" />
         </ResourceDictionary>
 
         <ResourceDictionary x:Key="HighContrast">
-            <StaticResource x:Key="WayfarerCardBackgroundBrush" ResourceKey="SystemColorWindowColorBrush" />
-            <StaticResource x:Key="WayfarerCardBorderBrush" ResourceKey="SystemColorWindowTextColorBrush" />
-            <StaticResource x:Key="WayfarerSubtleCardBackgroundBrush" ResourceKey="SystemColorWindowColorBrush" />
-            <StaticResource x:Key="WayfarerPhotoPlaceholderBrush" ResourceKey="SystemColorWindowColorBrush" />
-            <StaticResource x:Key="WayfarerPhotoBorderBrush" ResourceKey="SystemColorWindowTextColorBrush" />
+            <!-- High Contrast drops the gradient for an opaque system surface. -->
             <StaticResource x:Key="WayfarerPhotoScrimBrush" ResourceKey="SystemColorWindowColorBrush" />
             <StaticResource x:Key="WayfarerPhotoCaptionForegroundBrush" ResourceKey="SystemColorWindowTextColorBrush" />
-            <StaticResource x:Key="WayfarerTagBackgroundBrush" ResourceKey="SystemColorButtonFaceColorBrush" />
-            <StaticResource x:Key="WayfarerTagForegroundBrush" ResourceKey="SystemColorButtonTextColorBrush" />
-            <StaticResource x:Key="WayfarerEmptyStateGlyphBrush" ResourceKey="SystemColorGrayTextColorBrush" />
-            <StaticResource x:Key="WayfarerDividerBrush" ResourceKey="SystemColorWindowTextColorBrush" />
-            <StaticResource x:Key="WayfarerAccentGlyphBrush" ResourceKey="SystemColorWindowTextColorBrush" />
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 

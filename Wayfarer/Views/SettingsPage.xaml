@@ -5,7 +5,7 @@
       AutomationProperties.AutomationId="SettingsPage">
 
     <ScrollViewer>
-        <StackPanel MaxWidth="{StaticResource WayfarerSettingsMaxWidth}"
+        <StackPanel MaxWidth="{StaticResource WayfarerContentMaxWidth}"
                     Padding="{StaticResource WayfarerPagePadding}"
                     HorizontalAlignment="Stretch">
             <TextBlock Style="{StaticResource WayfarerPageTitleTextBlockStyle}" Text="Settings" />
@@ -144,8 +144,8 @@
                             <ItemsRepeater.ItemTemplate>
                                 <DataTemplate x:DataType="vm:FeatureInfo">
                                     <Grid Padding="12"
-                                          Background="{ThemeResource WayfarerSubtleCardBackgroundBrush}"
-                                          BorderBrush="{ThemeResource WayfarerCardBorderBrush}"
+                                          Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                                          BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                           BorderThickness="1"
                                           ColumnSpacing="12"
                                           CornerRadius="{StaticResource ControlCornerRadius}">

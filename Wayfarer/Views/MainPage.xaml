@@ -50,8 +50,8 @@
                                 </Grid.ColumnDefinitions>
                                 <FontIcon VerticalAlignment="Center"
                                           AutomationProperties.AccessibilityView="Raw"
-                                          FontSize="16"
-                                          Glyph="{x:Bind Glyph}" />
+                                          Glyph="{x:Bind Glyph}"
+                                          Style="{StaticResource WayfarerIconStyle}" />
                                 <StackPanel Grid.Column="1">
                                     <TextBlock Text="{x:Bind Title}" TextTrimming="CharacterEllipsis" />
                                     <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}"

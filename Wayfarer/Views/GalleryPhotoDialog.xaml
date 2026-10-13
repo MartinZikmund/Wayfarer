@@ -23,7 +23,7 @@
                         Spacing="{StaticResource WayfarerContentSpacing}">
                 <FontIcon AutomationProperties.AccessibilityView="Raw"
                           FontSize="16"
-                          Foreground="{ThemeResource WayfarerAccentGlyphBrush}"
+                          Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
                           Glyph="&#xE707;" />
                 <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}"
                            Text="{x:Bind Photo.Location, Mode=OneTime}" />
