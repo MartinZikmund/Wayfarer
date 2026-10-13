@@ -53,7 +53,6 @@ public sealed partial class TripMoment : ObservableObject
         photoDays.UnionWith(entryDays);
         DaysCaptured = photoDays.Count(d => d >= trip.StartDate && d <= trip.EndDate);
         CapturedPercent = Math.Round(100.0 * DaysCaptured / trip.DayCount);
-        JournalPercent = Math.Round(100.0 * Math.Min(trip.Entries.Count, trip.DayCount) / trip.DayCount);
 
         Itinerary = BuildItinerary(trip);
     }
@@ -68,8 +67,6 @@ public sealed partial class TripMoment : ObservableObject
 
     public double CapturedPercent { get; }
 
-    public double JournalPercent { get; }
-
     public string CapturedSummary => $"{CapturedPercent:0}% of the trip captured";
 
     public string CapturedDetail => $"{DaysCaptured} of {Trip.DayCount} days have photos or a journal entry";
@@ -77,7 +74,15 @@ public sealed partial class TripMoment : ObservableObject
     public string JournalSummary => $"{Trip.Entries.Count} of {Trip.DayCount} days journaled";
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(PlaybackGlyph), nameof(PlaybackName))]
     public partial bool IsPlaying { get; set; } = true;
+
+    public string PlaybackGlyph => IsPlaying ? "\uE769" : "\uE768";
+
+    public string PlaybackName => IsPlaying ? "Pause animation" : "Play animation";
+
+    [RelayCommand]
+    private void TogglePlayback() => IsPlaying = !IsPlaying;
 
     private static string AnimationName(string tripId) => tripId switch
     {
