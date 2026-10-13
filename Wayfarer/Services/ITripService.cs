@@ -6,6 +6,8 @@ public interface ITripService
 {
     event EventHandler<JournalEntry>? EntrySaved;
 
+    event EventHandler<string>? EntryDeleted;
+
     /// <summary>All trips, newest first, with photos and entries resolved.</summary>
     Task<IReadOnlyList<Trip>> GetTripsAsync(CancellationToken ct = default);
 
@@ -25,4 +27,7 @@ public interface ITripService
 
     /// <summary>Replaces an entry in memory (e.g. after editing its rich text).</summary>
     Task SaveEntryAsync(JournalEntry entry, CancellationToken ct = default);
+
+    /// <summary>Removes an entry in memory and raises EntryDeleted with its id.</summary>
+    Task DeleteEntryAsync(string entryId, CancellationToken ct = default);
 }
