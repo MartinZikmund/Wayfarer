@@ -5,9 +5,51 @@
       xmlns:helpers="using:Wayfarer.Helpers"
       xmlns:models="using:Wayfarer.Models"
       xmlns:postcard="using:Wayfarer.Controls.Postcard"
+      xmlns:views="using:Wayfarer.Views"
       AutomationProperties.AutomationId="HomePage">
 
-    <!-- Stub: the page builder replaces the body; keep the header, padding and ViewModel conventions. -->
+    <Page.Resources>
+        <DataTemplate x:Key="TripPostcardTemplate" x:DataType="models:Trip">
+            <postcard:PostcardCard Padding="16,20,16,16" AutomationProperties.AutomationId="HomeTripCard">
+                <StackPanel Spacing="{StaticResource WayfarerItemSpacing}">
+                    <Grid>
+                        <Border Height="140" CornerRadius="{StaticResource ControlCornerRadius}">
+                            <Image x:Name="CoverImage"
+                                   AutomationProperties.Name="{x:Bind Title}"
+                                   Source="{x:Bind views:HomePage.Cover(CoverPhoto.ImageUri)}"
+                                   Stretch="UniformToFill" />
+                        </Border>
+                        <postcard:PostageStamp Width="{StaticResource WayfarerStampSmallWidth}"
+                                               Height="{StaticResource WayfarerStampSmallHeight}"
+                                               Margin="0,0,8,-16"
+                                               HorizontalAlignment="Right"
+                                               VerticalAlignment="Bottom"
+                                               Label="{x:Bind Code}"
+                                               Tilt="5"
+                                               Tone="{x:Bind StampTone}" />
+                    </Grid>
+                    <StackPanel Spacing="{StaticResource WayfarerTightSpacing}">
+                        <TextBlock AutomationProperties.HeadingLevel="Level3"
+                                   Style="{StaticResource SubtitleTextBlockStyle}"
+                                   Text="{x:Bind Title}"
+                                   TextTrimming="CharacterEllipsis" />
+                        <TextBlock Style="{StaticResource WayfarerSecondaryTextBlockStyle}" Text="{x:Bind Destination}" />
+                        <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}" Text="{x:Bind helpers:Format.DateRange(StartDate, EndDate)}" />
+                    </StackPanel>
+                    <postcard:RouteLine Width="160"
+                                        HorizontalAlignment="Left"
+                                        Glyph="&#xE707;" />
+                    <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}"
+                               Text="{x:Bind views:HomePage.TripStats(DayCount, Photos.Count, DistanceKm)}"
+                               TextWrapping="Wrap" />
+                    <Button AutomationProperties.AutomationId="HomeOpenRouteButton"
+                            Click="OnTripClick"
+                            Content="Open the route" />
+                </StackPanel>
+            </postcard:PostcardCard>
+        </DataTemplate>
+    </Page.Resources>
+
     <ScrollViewer>
         <Grid Padding="{StaticResource WayfarerPagePadding}">
             <Grid.ColumnDefinitions>
@@ -18,9 +60,10 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <controls:PageHeader Title="{x:Bind ViewModel.Title, Mode=OneTime}"
+            <controls:PageHeader Title="{x:Bind ViewModel.Title, Mode=OneWay}"
                                  Margin="{StaticResource WayfarerPageHeaderMargin}"
-                                 Subtitle="{x:Bind ViewModel.Subtitle, Mode=OneTime}">
+                                 Subtitle="{x:Bind ViewModel.Subtitle, Mode=OneWay}"
+                                 SubtitleAutomationId="HomeQuip">
                 <controls:PageHeader.Accent>
                     <postcard:Postmark AnimateOnLoad="True"
                                        Date="{x:Bind helpers:Format.Today()}"
@@ -29,53 +72,150 @@
                 </controls:PageHeader.Accent>
             </controls:PageHeader>
 
-            <StackPanel Grid.Row="1" Spacing="{StaticResource WayfarerSectionSpacing}">
+            <StackPanel Grid.Row="1"
+                        Spacing="{StaticResource WayfarerSectionSpacing}"
+                        Visibility="{x:Bind helpers:Format.VisibleIfAny(ViewModel.Trips.Count), Mode=OneWay}">
                 <StackPanel.ChildrenTransitions>
                     <TransitionCollection>
                         <EntranceThemeTransition IsStaggeringEnabled="True" />
                     </TransitionCollection>
                 </StackPanel.ChildrenTransitions>
 
-                <postcard:PostcardCard AutomationProperties.AutomationId="HomeGreetingCard"
-                                       Visibility="{x:Bind helpers:Format.VisibleIfAny(ViewModel.Trips.Count), Mode=OneWay}">
+                <Grid x:Name="Highlights"
+                      ColumnSpacing="16"
+                      RowSpacing="16">
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup>
+                            <VisualState x:Name="HighlightsNarrow">
+                                <VisualState.StateTriggers>
+                                    <AdaptiveTrigger MinWindowWidth="0" />
+                                </VisualState.StateTriggers>
+                                <VisualState.Setters>
+                                    <Setter Target="ContinueCard.(Grid.Row)" Value="1" />
+                                    <Setter Target="ContinueCard.(Grid.Column)" Value="0" />
+                                    <Setter Target="ContinueCard.(Grid.ColumnSpan)" Value="2" />
+                                    <Setter Target="MemoryCard.(Grid.ColumnSpan)" Value="2" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="HighlightsWide">
+                                <VisualState.StateTriggers>
+                                    <AdaptiveTrigger MinWindowWidth="900" />
+                                </VisualState.StateTriggers>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateManager.VisualStateGroups>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <postcard:PostcardCard x:Name="MemoryCard"
+                                           AutomationProperties.AutomationId="HomeMemoryCard"
+                                           Visibility="{x:Bind views:HomePage.VisibleIfPresent(ViewModel.Memory), Mode=OneWay}">
+                        <postcard:PostcardCard.Stamp>
+                            <postcard:Postmark Date="{x:Bind ViewModel.Memory.Entry.Date, Mode=OneWay}"
+                                               Place="{x:Bind ViewModel.Memory.Entry.Location, Mode=OneWay}"
+                                               Waves="None" />
+                        </postcard:PostcardCard.Stamp>
+                        <StackPanel Spacing="{StaticResource WayfarerContentSpacing}">
+                            <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}" Text="{x:Bind ViewModel.Memory.Heading, Mode=OneWay}" />
+                            <TextBlock AutomationProperties.HeadingLevel="Level2"
+                                       Style="{StaticResource SubtitleTextBlockStyle}"
+                                       Text="{x:Bind ViewModel.Memory.Entry.Title, Mode=OneWay}"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}">
+                                <Run Text="{x:Bind ViewModel.Memory.TripTitle, Mode=OneWay}" />
+                                <Run Text="·" />
+                                <Run Text="{x:Bind helpers:Format.Date(ViewModel.Memory.Entry.Date), Mode=OneWay}" />
+                            </TextBlock>
+                            <TextBlock MaxLines="3"
+                                       Text="{x:Bind ViewModel.Memory.Entry.Excerpt, Mode=OneWay}"
+                                       TextTrimming="CharacterEllipsis"
+                                       TextWrapping="Wrap" />
+                            <Button Margin="0,8,0,0"
+                                    AutomationProperties.AutomationId="HomeRevisitButton"
+                                    Command="{x:Bind ViewModel.OpenEntryCommand}"
+                                    CommandParameter="{x:Bind ViewModel.Memory.Entry, Mode=OneWay}"
+                                    Content="Revisit this day" />
+                        </StackPanel>
+                    </postcard:PostcardCard>
+
+                    <postcard:PostcardCard x:Name="ContinueCard"
+                                           Grid.Column="1"
+                                           AutomationProperties.AutomationId="HomeContinueCard"
+                                           Visibility="{x:Bind views:HomePage.VisibleIfPresent(ViewModel.LatestEntry), Mode=OneWay}">
+                        <StackPanel Spacing="{StaticResource WayfarerContentSpacing}">
+                            <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}" Text="Continue writing" />
+                            <TextBlock AutomationProperties.HeadingLevel="Level2"
+                                       Style="{StaticResource SubtitleTextBlockStyle}"
+                                       Text="{x:Bind ViewModel.LatestEntry.Title, Mode=OneWay}"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}">
+                                <Run Text="{x:Bind ViewModel.LatestEntryTripTitle, Mode=OneWay}" />
+                                <Run Text="·" />
+                                <Run Text="{x:Bind helpers:Format.Date(ViewModel.LatestEntry.Date), Mode=OneWay}" />
+                            </TextBlock>
+                            <TextBlock MaxLines="3"
+                                       Text="{x:Bind ViewModel.LatestEntry.Excerpt, Mode=OneWay}"
+                                       TextTrimming="CharacterEllipsis"
+                                       TextWrapping="Wrap" />
+                            <Button Margin="0,8,0,0"
+                                    AutomationProperties.AutomationId="HomeContinueButton"
+                                    Command="{x:Bind ViewModel.OpenEntryCommand}"
+                                    CommandParameter="{x:Bind ViewModel.LatestEntry, Mode=OneWay}"
+                                    Content="Pick up the pen"
+                                    Style="{StaticResource AccentButtonStyle}" />
+                        </StackPanel>
+                    </postcard:PostcardCard>
+                </Grid>
+
+                <StackPanel Spacing="{StaticResource WayfarerItemSpacing}">
+                    <TextBlock AutomationProperties.HeadingLevel="Level2"
+                               Style="{StaticResource SubtitleTextBlockStyle}"
+                               Text="Your postcards" />
+                    <ItemsRepeater ItemTemplate="{StaticResource TripPostcardTemplate}" ItemsSource="{x:Bind ViewModel.Trips, Mode=OneWay}">
+                        <ItemsRepeater.Layout>
+                            <UniformGridLayout ItemsStretch="Fill"
+                                               MaximumRowsOrColumns="3"
+                                               MinColumnSpacing="16"
+                                               MinItemWidth="280"
+                                               MinRowSpacing="16" />
+                        </ItemsRepeater.Layout>
+                    </ItemsRepeater>
+                </StackPanel>
+
+                <postcard:PostcardCard AutomationProperties.AutomationId="HomeNextAdventureCard" ShowAirmailEdge="False">
                     <postcard:PostcardCard.Stamp>
-                        <postcard:PostageStamp Width="{StaticResource WayfarerStampLargeWidth}"
-                                               Height="{StaticResource WayfarerStampLargeHeight}"
-                                               ImageSource="{x:Bind helpers:Format.Image(ViewModel.LatestTrip.CoverPhoto.ImageUri), Mode=OneWay}"
-                                               Label="{x:Bind ViewModel.LatestTrip.Code, Mode=OneWay}"
-                                               Tilt="4"
-                                               Tone="{x:Bind ViewModel.LatestTrip.StampTone, Mode=OneWay}" />
+                        <postcard:PostageStamp Label="Next"
+                                               Tilt="-4"
+                                               Tone="Sand" />
                     </postcard:PostcardCard.Stamp>
                     <StackPanel Spacing="{StaticResource WayfarerContentSpacing}">
-                        <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}" Text="Greetings from" />
+                        <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}" Text="Next adventure" />
                         <TextBlock AutomationProperties.HeadingLevel="Level2"
-                                   Style="{StaticResource TitleTextBlockStyle}"
-                                   Text="{x:Bind ViewModel.LatestTrip.Title, Mode=OneWay}"
+                                   Style="{StaticResource SubtitleTextBlockStyle}"
+                                   Text="Wish you were here? Write it down."
                                    TextWrapping="Wrap" />
                         <TextBlock Style="{StaticResource WayfarerSecondaryTextBlockStyle}"
-                                   Text="{x:Bind ViewModel.LatestTrip.Destination, Mode=OneWay}"
+                                   Text="A fresh page is the cheapest ticket going."
                                    TextWrapping="Wrap" />
-                        <TextBlock MaxWidth="{StaticResource WayfarerReadingMaxWidth}"
-                                   HorizontalAlignment="Left"
-                                   Text="{x:Bind ViewModel.LatestTrip.Summary, Mode=OneWay}"
-                                   TextWrapping="Wrap" />
-                        <postcard:RouteLine Width="320"
-                                            Margin="0,8,0,8"
-                                            HorizontalAlignment="Left"
-                                            AnimateOnLoad="True" />
-                        <Button AutomationProperties.AutomationId="HomeReadStoryButton"
-                                Command="{x:Bind ViewModel.OpenTripCommand}"
-                                CommandParameter="{x:Bind ViewModel.LatestTrip, Mode=OneWay}"
-                                Content="Read the story"
-                                Style="{StaticResource AccentButtonStyle}" />
+                        <Button Margin="0,8,0,0"
+                                AutomationProperties.AutomationId="HomeNewEntryButton"
+                                Command="{x:Bind ViewModel.StartNewEntryCommand}"
+                                Content="Start a new entry" />
                     </StackPanel>
                 </postcard:PostcardCard>
-
-                <controls:EmptyState Title="No trips yet"
-                                     Glyph="{x:Bind models:Glyphs.Home}"
-                                     Message="Every journey starts somewhere. Add a trip and it'll land here."
-                                     Visibility="{x:Bind helpers:Format.VisibleIfNone(ViewModel.Trips.Count), Mode=OneWay}" />
             </StackPanel>
+
+            <controls:EmptyState Title="No trips yet"
+                                 Grid.Row="1"
+                                 Glyph="{x:Bind models:Glyphs.Home}"
+                                 Message="Every journey starts somewhere. Add a trip and it will land here."
+                                 Visibility="{x:Bind helpers:Format.VisibleIfNone(ViewModel.Trips.Count), Mode=OneWay}" />
         </Grid>
     </ScrollViewer>
 </Page>
