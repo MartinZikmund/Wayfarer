@@ -28,7 +28,7 @@ public sealed partial class SettingsViewModel : PageViewModel
     [
         new("", "LinedFlowLayout", "The Gallery lays out photos of mixed aspect ratios in justified rows."),
         new("", "RichEditBox", "Journal entries support formatting, undo/redo and RTF import/export."),
-        new("", "RichTextBlock", "Stories flow across columns with overflow, highlights and inline photos."),
+        new("", "RichTextBlock", "Stories flow across overflow columns, with an inline map pin and highlighted places."),
         new("", "AnimatedVisualPlayer", "Moments play Lottie animations with no extra packages."),
         new("", "TitleBar", "The WinUI TitleBar hosts search, back and pane toggle in the window chrome."),
         new("", "Smooth scrolling", "Native flings and smooth wheel scrolling in ScrollViewer and ScrollView."),

@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Wayfarer.Helpers;
 using Wayfarer.Models;
 using Wayfarer.Services;
 
@@ -18,7 +19,13 @@ public sealed partial class StoriesViewModel(ITripService tripService) : PageVie
 
     public bool HasStory => SelectedTrip is not null;
 
-    partial void OnSelectedTripChanged(Trip? value) => OnPropertyChanged(nameof(HasStory));
+    public IReadOnlyList<Photo> StoryPhotos => StoryComposer.Photos(SelectedTrip);
+
+    partial void OnSelectedTripChanged(Trip? value)
+    {
+        OnPropertyChanged(nameof(HasStory));
+        OnPropertyChanged(nameof(StoryPhotos));
+    }
 
     public override async Task OnNavigatedToAsync(object? parameter)
     {

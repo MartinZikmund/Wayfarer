@@ -17,11 +17,16 @@
                       Visibility="{x:Bind helpers:Format.VisibleIf(ViewModel.HasStory), Mode=OneWay}">
             <StackPanel Spacing="{StaticResource WayfarerSectionSpacing}">
 
-                <Grid ColumnSpacing="{StaticResource WayfarerItemSpacing}">
+                <Grid ColumnSpacing="{StaticResource WayfarerItemSpacing}"
+                      RowSpacing="{StaticResource WayfarerItemSpacing}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
                     <StackPanel Spacing="{StaticResource WayfarerTightSpacing}">
                         <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}"
                                    Text="STORIES" />
@@ -29,11 +34,12 @@
                                    Style="{StaticResource TitleLargeTextBlockStyle}"
                                    Text="{x:Bind ViewModel.SelectedTrip.Title, Mode=OneWay}"
                                    TextWrapping="Wrap" />
-                        <TextBlock Style="{StaticResource WayfarerSecondaryTextBlockStyle}"
-                                   Text="{x:Bind helpers:StoryComposer.Byline(ViewModel.SelectedTrip), Mode=OneWay}"
-                                   TextWrapping="Wrap" />
+                        <RichTextBlock x:Name="BylineText"
+                                       AutomationProperties.AutomationId="StoryByline"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
                     </StackPanel>
-                    <StackPanel Grid.Column="1"
+                    <StackPanel x:Name="StoryControls"
+                                Grid.Column="1"
                                 VerticalAlignment="Bottom"
                                 Orientation="Horizontal"
                                 Spacing="{StaticResource WayfarerItemSpacing}">
@@ -72,6 +78,34 @@
                     <RichTextBlockOverflow x:Name="Overflow2"
                                            Grid.Column="2" />
                 </Grid>
+
+                <StackPanel Visibility="{x:Bind helpers:Format.VisibleIfAny(ViewModel.StoryPhotos.Count), Mode=OneWay}">
+                    <TextBlock Style="{StaticResource WayfarerSectionHeaderTextBlockStyle}" Text="Photos from this story" />
+                    <ItemsRepeater AutomationProperties.AutomationId="StoryPhotos"
+                                   AutomationProperties.Name="Photos from this story"
+                                   ItemsSource="{x:Bind ViewModel.StoryPhotos, Mode=OneWay}">
+                        <ItemsRepeater.Layout>
+                            <UniformGridLayout ItemsStretch="Fill"
+                                               MinColumnSpacing="12"
+                                               MinItemWidth="240"
+                                               MinRowSpacing="12" />
+                        </ItemsRepeater.Layout>
+                        <ItemsRepeater.ItemTemplate>
+                            <DataTemplate x:DataType="models:Photo">
+                                <StackPanel Spacing="{StaticResource WayfarerTightSpacing}">
+                                    <Border Height="160"
+                                            AutomationProperties.Name="{x:Bind Caption}"
+                                            Style="{StaticResource WayfarerPhotoFrameStyle}">
+                                        <Image Source="{x:Bind ImageUri}" Stretch="UniformToFill" />
+                                    </Border>
+                                    <TextBlock Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}"
+                                               Text="{x:Bind Caption}"
+                                               TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsRepeater.ItemTemplate>
+                    </ItemsRepeater>
+                </StackPanel>
             </StackPanel>
         </ScrollViewer>
 

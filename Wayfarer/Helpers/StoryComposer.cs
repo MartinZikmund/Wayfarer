@@ -1,24 +1,44 @@
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml.Automation;
-using Microsoft.UI.Xaml.Media.Imaging;
-using Windows.UI.Text;
 using Microsoft.UI.Xaml.Documents;
 using Wayfarer.Models;
+using Windows.UI.Text;
 
 namespace Wayfarer.Helpers;
 
 /// <summary>Builds the magazine-style RichTextBlock content for a trip.</summary>
 public static class StoryComposer
 {
-    public static string Byline(Trip? trip) => trip is null
-        ? ""
-        : $"{trip.Destination} · {Format.DateRange(trip.StartDate, trip.EndDate)} · {Format.Distance(trip.DistanceKm)}";
+    /// <summary>Destination, dates and distance, led by an inline map pin.</summary>
+    /// <param name="accent">Brush for the pin, resolved for the page's theme.</param>
+    public static Paragraph Byline(Trip trip, Brush accent)
+    {
+        FontIcon pin = new()
+        {
+            Glyph = Models.Glyphs.Trip,
+            FontSize = 14,
+            Foreground = accent,
+            Margin = new Thickness(0, 0, 4, -2),
+        };
+        AutomationProperties.SetAccessibilityView(pin, Microsoft.UI.Xaml.Automation.Peers.AccessibilityView.Raw);
 
-    private const double InlinePhotoWidth = 280;
+        Paragraph paragraph = new();
+        paragraph.Inlines.Add(new InlineUIContainer { Child = pin });
+        paragraph.Inlines.Add(new Run
+        {
+            Text = $"{trip.Destination} · {Format.DateRange(trip.StartDate, trip.EndDate)} · {Format.Distance(trip.DistanceKm)}",
+        });
+        return paragraph;
+    }
 
+    /// <summary>The first photo of each entry, in story order.</summary>
+    public static IReadOnlyList<Photo> Photos(Trip? trip) => trip is null
+        ? []
+        : trip.Entries.OrderBy(e => e.Date).SelectMany(e => e.Photos.Take(1)).ToList();
+
+    /// <summary>Text-only story blocks; inline photos in an overflow chain render unreliably on Uno, so photos sit below.</summary>
     /// <param name="accent">Brush for datelines and highlighted places, resolved for the page's theme.</param>
-    /// <param name="theme">Theme for inline UI, which otherwise resolves against the app theme.</param>
-    public static IReadOnlyList<Paragraph> Compose(Trip trip, Brush accent, ElementTheme theme, bool highlightPlaces)
+    public static IReadOnlyList<Paragraph> Compose(Trip trip, Brush accent, bool highlightPlaces)
     {
         List<Paragraph> blocks = new();
         List<string> places = highlightPlaces
@@ -54,11 +74,6 @@ public static class StoryComposer
                 Paragraph body = new() { Margin = new Thickness(0, 0, 0, 8), LineHeight = 24 };
                 AddRuns(body, text, places, accent);
                 blocks.Add(body);
-            }
-
-            if (entry.Photos.Count > 0)
-            {
-                blocks.Add(PhotoParagraph(entry.Photos[0], theme));
             }
         }
 
@@ -97,47 +112,6 @@ public static class StoryComposer
             });
             index = start + place.Length;
         }
-    }
-
-    private static Paragraph PhotoParagraph(Photo photo, ElementTheme theme)
-    {
-        double height = InlinePhotoWidth / photo.AspectRatio;
-        Grid card = new()
-        {
-            Width = InlinePhotoWidth,
-            RowSpacing = 4,
-            Margin = new Thickness(0, 4, 0, 4),
-            RequestedTheme = theme,
-        };
-        card.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-        card.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-
-        Border frame = new()
-        {
-            Style = (Style)Application.Current.Resources["WayfarerPhotoFrameStyle"],
-            Width = InlinePhotoWidth,
-            Height = height,
-            Child = new Image
-            {
-                Source = new BitmapImage(photo.ImageUri),
-                Stretch = Stretch.UniformToFill,
-            },
-        };
-        AutomationProperties.SetName(frame, photo.Caption);
-
-        TextBlock caption = new()
-        {
-            Text = photo.Caption,
-            Style = (Style)Application.Current.Resources["WayfarerCaptionSecondaryTextBlockStyle"],
-            TextWrapping = TextWrapping.Wrap,
-        };
-        Grid.SetRow(caption, 1);
-        card.Children.Add(frame);
-        card.Children.Add(caption);
-
-        Paragraph paragraph = new();
-        paragraph.Inlines.Add(new InlineUIContainer { Child = card });
-        return paragraph;
     }
 
     private static Paragraph CreditsParagraph(Photo? first, Brush accent)

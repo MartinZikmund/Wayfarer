@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Documents;
 using Wayfarer.Helpers;
 using Wayfarer.Models;
@@ -12,8 +11,8 @@ public sealed partial class StoriesPage : Page
 {
     private const double TwoColumnWidth = 720;
     private const double ThreeColumnWidth = 1100;
-    private const double MinColumnHeight = 360;
-    private const double ColumnHeightStep = 48;
+    private const double MinColumnHeight = 120;
+    private const double ColumnHeightStep = 24;
     private const double ColumnSpacing = 24;
 
     // One body line, so a paragraph split mid-line still fits.
@@ -30,6 +29,7 @@ public sealed partial class StoriesPage : Page
         ViewModel.PropertyChanged += OnViewModelPropertyChanged;
         Unloaded += (_, _) => ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
         StoryText.LayoutUpdated += OnStoryLayoutUpdated;
+        Columns.SizeChanged += OnColumnsSizeChanged;
         // Rebuild after the theme walk, so the probe already holds the new theme's brush.
         ActualThemeChanged += (_, _) => DispatcherQueue.TryEnqueue(BuildStory);
     }
@@ -58,6 +58,11 @@ public sealed partial class StoriesPage : Page
     private void OnPageSizeChanged(object sender, SizeChangedEventArgs e)
     {
         int columns = e.NewSize.Width >= ThreeColumnWidth ? 3 : e.NewSize.Width >= TwoColumnWidth ? 2 : 1;
+
+        // Single-column pages stack the trip picker under the title instead of squeezing it.
+        bool stacked = columns == 1;
+        Grid.SetRow(StoryControls, stacked ? 1 : 0);
+        Grid.SetColumn(StoryControls, stacked ? 0 : 1);
         if (columns != _columns)
         {
             _columns = columns;
@@ -65,28 +70,31 @@ public sealed partial class StoriesPage : Page
         }
     }
 
+    private void OnColumnsSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (_columns > 1 && e.PreviousSize.Width != e.NewSize.Width)
+        {
+            ApplyColumns();
+        }
+    }
+
     private void BuildStory()
     {
         StoryText.Blocks.Clear();
+        BylineText.Blocks.Clear();
         if (ViewModel.SelectedTrip is not { } trip)
         {
             return;
         }
 
-        foreach (Paragraph paragraph in StoryComposer.Compose(trip, AccentBrushProbe.Background, ActualTheme, ViewModel.HighlightPlaces))
+        BylineText.Blocks.Add(StoryComposer.Byline(trip, AccentBrushProbe.Background));
+        foreach (Paragraph paragraph in StoryComposer.Compose(trip, AccentBrushProbe.Background, ViewModel.HighlightPlaces))
         {
             StoryText.Blocks.Add(paragraph);
         }
 
         ApplyColumns();
         RelinkOverflow();
-
-        // Uno only paints an inline photo that opens an overflow column after the columns change width.
-        DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () =>
-        {
-            Columns.Margin = new Thickness(0, 0, 1, 0);
-            DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () => Columns.Margin = new Thickness(0));
-        });
     }
 
     // The overflow chain keeps showing the previous story unless it is re-linked after the blocks change.
@@ -122,60 +130,24 @@ public sealed partial class StoriesPage : Page
         SetColumnHeight();
     }
 
-    // HasOverflowContent alone under-reports when a photo sits at a column break, so start from a simulated fill:
-    // text paragraphs may split across columns, inline photo cards may not.
+    // Starts the columns just short of their final height; the grow loop adds the last few lines.
     private double EstimateColumnHeight()
     {
-        double width = Columns.ActualWidth > 0 ? Columns.ActualWidth : ActualWidth;
-        double columnWidth = (width - ColumnSpacing * (_columns - 1)) / _columns;
+        // Before the first arrange the width is unknown; OnColumnsSizeChanged refits once it is.
+        double columnWidth = (Columns.ActualWidth - ColumnSpacing * (_columns - 1)) / _columns;
         if (ViewModel.SelectedTrip is not { } trip || columnWidth <= 0)
         {
             return 0;
         }
 
-        List<(double Height, bool CanSplit)> blocks = new();
-        foreach (Paragraph paragraph in StoryComposer.Compose(trip, AccentBrushProbe.Background, ActualTheme, ViewModel.HighlightPlaces))
+        RichTextBlock probe = new() { TextWrapping = TextWrapping.Wrap };
+        foreach (Paragraph paragraph in StoryComposer.Compose(trip, AccentBrushProbe.Background, ViewModel.HighlightPlaces))
         {
-            bool canSplit = !paragraph.Inlines.OfType<InlineUIContainer>().Any();
-            RichTextBlock probe = new() { TextWrapping = TextWrapping.Wrap };
             probe.Blocks.Add(paragraph);
-            probe.Measure(new Size(columnWidth, double.PositiveInfinity));
-            blocks.Add((probe.DesiredSize.Height, canSplit));
         }
 
-        double height = Math.Max(blocks.Sum(b => b.Height) / _columns, blocks.Max(b => b.Height));
-        while (!Fits(blocks, height, _columns))
-        {
-            height += LineSlack / 2;
-        }
-
-        return height + LineSlack;
-    }
-
-    private static bool Fits(List<(double Height, bool CanSplit)> blocks, double columnHeight, int columns)
-    {
-        int column = 1;
-        double used = 0;
-        foreach ((double height, bool canSplit) in blocks)
-        {
-            if (used + height <= columnHeight)
-            {
-                used += height;
-            }
-            else if (canSplit)
-            {
-                double remaining = height - (columnHeight - used);
-                column += 1 + (int)(remaining / columnHeight);
-                used = remaining % columnHeight;
-            }
-            else
-            {
-                column++;
-                used = height;
-            }
-        }
-
-        return column <= columns;
+        probe.Measure(new Size(columnWidth, double.PositiveInfinity));
+        return probe.DesiredSize.Height / _columns - 2 * LineSlack;
     }
 
     private void SetColumnHeight()
