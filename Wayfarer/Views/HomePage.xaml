@@ -24,6 +24,7 @@
                                                Margin="0,0,8,-16"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Bottom"
+                                               Glyph="&#xE709;"
                                                Label="{x:Bind Code}"
                                                Tilt="5"
                                                Tone="{x:Bind StampTone}" />
@@ -182,7 +183,7 @@
                             <UniformGridLayout ItemsStretch="Fill"
                                                MaximumRowsOrColumns="3"
                                                MinColumnSpacing="16"
-                                               MinItemWidth="280"
+                                               MinItemWidth="260"
                                                MinRowSpacing="16" />
                         </ItemsRepeater.Layout>
                     </ItemsRepeater>
@@ -190,7 +191,8 @@
 
                 <postcard:PostcardCard AutomationProperties.AutomationId="HomeNextAdventureCard" ShowAirmailEdge="False">
                     <postcard:PostcardCard.Stamp>
-                        <postcard:PostageStamp Label="Next"
+                        <postcard:PostageStamp Glyph="&#xE70F;"
+                                               Label="Next"
                                                Tilt="-4"
                                                Tone="Sand" />
                     </postcard:PostcardCard.Stamp>
