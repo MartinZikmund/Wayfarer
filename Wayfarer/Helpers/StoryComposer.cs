@@ -1,4 +1,3 @@
-using System.Text;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -8,106 +7,108 @@ using Wayfarer.Models;
 
 namespace Wayfarer.Helpers;
 
-/// <summary>Builds the magazine-style RichTextBlock content for a trip and finds the place names to highlight.</summary>
+/// <summary>Builds the magazine-style RichTextBlock content for a trip.</summary>
 public static class StoryComposer
 {
-    public sealed record Story(IReadOnlyList<Paragraph> Blocks, string PlainText, IReadOnlyList<string> Places);
-
     public static string Byline(Trip? trip) => trip is null
         ? ""
         : $"{trip.Destination} · {Format.DateRange(trip.StartDate, trip.EndDate)} · {Format.Distance(trip.DistanceKm)}";
 
     private const double InlinePhotoWidth = 280;
 
-    public static Story Compose(Trip trip)
+    /// <param name="accent">Brush for datelines and highlighted places, resolved for the page's theme.</param>
+    /// <param name="theme">Theme for inline UI, which otherwise resolves against the app theme.</param>
+    public static IReadOnlyList<Paragraph> Compose(Trip trip, Brush accent, ElementTheme theme, bool highlightPlaces)
     {
         List<Paragraph> blocks = new();
-        StringBuilder plain = new();
-        HashSet<string> places = new(StringComparer.OrdinalIgnoreCase);
-
-        // Every paragraph contributes its text plus one separator to the highlight offsets.
-        void Add(Paragraph paragraph, string text)
-        {
-            blocks.Add(paragraph);
-            plain.Append(text).Append("\r\n");
-        }
+        List<string> places = highlightPlaces
+            ? trip.Entries
+                .SelectMany(e => e.Highlights.Append(e.Location))
+                .Where(p => p.Length > 0)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderByDescending(p => p.Length)
+                .ToList()
+            : [];
 
         Paragraph lede = new() { Margin = new Thickness(0, 0, 0, 12), LineHeight = 28 };
         lede.Inlines.Add(new Run { Text = trip.Summary, FontStyle = FontStyle.Italic });
-        Add(lede, trip.Summary);
+        blocks.Add(lede);
 
         foreach (JournalEntry entry in trip.Entries.OrderBy(e => e.Date))
         {
-            string dateline = $"{Format.Date(entry.Date)} · {entry.Location}".ToUpperInvariant();
             Paragraph head = new() { Margin = new Thickness(0, 12, 0, 0) };
             head.Inlines.Add(new Run
             {
-                Text = dateline,
+                Text = $"{Format.Date(entry.Date)} · {entry.Location}".ToUpperInvariant(),
                 FontWeight = FontWeights.SemiBold,
-                Foreground = (Brush)Application.Current.Resources["AccentTextFillColorPrimaryBrush"],
+                Foreground = accent,
             });
-            Add(head, dateline);
+            blocks.Add(head);
 
             Paragraph title = new() { Margin = new Thickness(0, 0, 0, 8) };
             title.Inlines.Add(new Run { Text = entry.Title, FontWeight = FontWeights.SemiBold });
-            Add(title, entry.Title);
-
-            places.Add(entry.Location);
-            foreach (string phrase in entry.Highlights)
-            {
-                places.Add(phrase);
-            }
+            blocks.Add(title);
 
             foreach (string text in entry.Paragraphs)
             {
                 Paragraph body = new() { Margin = new Thickness(0, 0, 0, 8), LineHeight = 24 };
-                body.Inlines.Add(new Run { Text = text });
-                Add(body, text);
+                AddRuns(body, text, places, accent);
+                blocks.Add(body);
             }
 
             if (entry.Photos.Count > 0)
             {
-                Add(PhotoParagraph(entry.Photos[0]), "");
+                blocks.Add(PhotoParagraph(entry.Photos[0], theme));
             }
         }
 
-        Photo? first = trip.Photos.FirstOrDefault();
-        Add(CreditsParagraph(first), $"Photography: {first?.Author}. See CREDITS for sources.");
-        return new Story(blocks, plain.ToString(), places.Where(p => p.Length > 0).ToList());
+        blocks.Add(CreditsParagraph(trip.Photos.FirstOrDefault(), accent));
+        return blocks;
     }
 
-    /// <summary>Sorted, non-overlapping ranges; the renderer expects them in text order.</summary>
-    public static IReadOnlyList<TextRange> FindRanges(Story story)
+    // Places are emphasised with styled runs rather than TextHighlighters, which drift in overflow columns on Uno.
+    private static void AddRuns(Paragraph paragraph, string text, IReadOnlyList<string> places, Brush accent)
     {
-        List<TextRange> found = new();
-        foreach (string place in story.Places)
+        int index = 0;
+        while (index < text.Length)
         {
-            int index = 0;
-            while ((index = story.PlainText.IndexOf(place, index, StringComparison.OrdinalIgnoreCase)) >= 0)
-            {
-                found.Add(new TextRange { StartIndex = index, Length = place.Length });
-                index += place.Length;
-            }
-        }
+            (int start, string place) = places
+                .Select(p => (Start: text.IndexOf(p, index, StringComparison.OrdinalIgnoreCase), Place: p))
+                .Where(m => m.Start >= 0)
+                .OrderBy(m => m.Start)
+                .FirstOrDefault((-1, ""));
 
-        List<TextRange> result = new();
-        int end = 0;
-        foreach (TextRange range in found.OrderBy(r => r.StartIndex))
-        {
-            if (range.StartIndex >= end)
+            if (start < 0)
             {
-                result.Add(range);
-                end = range.StartIndex + range.Length;
+                paragraph.Inlines.Add(new Run { Text = text[index..] });
+                return;
             }
-        }
 
-        return result;
+            if (start > index)
+            {
+                paragraph.Inlines.Add(new Run { Text = text[index..start] });
+            }
+
+            paragraph.Inlines.Add(new Run
+            {
+                Text = text.Substring(start, place.Length),
+                FontWeight = FontWeights.SemiBold,
+                Foreground = accent,
+            });
+            index = start + place.Length;
+        }
     }
 
-    private static Paragraph PhotoParagraph(Photo photo)
+    private static Paragraph PhotoParagraph(Photo photo, ElementTheme theme)
     {
         double height = InlinePhotoWidth / photo.AspectRatio;
-        Grid card = new() { Width = InlinePhotoWidth, RowSpacing = 4, Margin = new Thickness(0, 4, 0, 4) };
+        Grid card = new()
+        {
+            Width = InlinePhotoWidth,
+            RowSpacing = 4,
+            Margin = new Thickness(0, 4, 0, 4),
+            RequestedTheme = theme,
+        };
         card.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         card.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
@@ -139,13 +140,13 @@ public static class StoryComposer
         return paragraph;
     }
 
-    private static Paragraph CreditsParagraph(Photo? first)
+    private static Paragraph CreditsParagraph(Photo? first, Brush accent)
     {
         Paragraph paragraph = new() { Margin = new Thickness(0, 12, 0, 0) };
         paragraph.Inlines.Add(new Run { Text = "Photography: " });
         if (first is not null && Uri.TryCreate(first.SourceUrl, UriKind.Absolute, out Uri? uri))
         {
-            Hyperlink link = new() { NavigateUri = uri };
+            Hyperlink link = new() { NavigateUri = uri, Foreground = accent };
             link.Inlines.Add(new Run { Text = first.Author });
             paragraph.Inlines.Add(link);
         }

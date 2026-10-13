@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using Microsoft.UI.Xaml.Documents;
-using Windows.UI.Text;
 using Wayfarer.Helpers;
 using Wayfarer.Models;
 using Wayfarer.ViewModels;
@@ -15,7 +14,6 @@ public sealed partial class StoriesPage : Page
     private const double ColumnHeightStep = 48;
     private const int MaxFitPasses = 24;
 
-    private StoryComposer.Story? _story;
     private int _columns = 1;
     private double _columnHeight = MinColumnHeight;
     private int _fitPasses;
@@ -26,7 +24,8 @@ public sealed partial class StoriesPage : Page
         ViewModel.PropertyChanged += OnViewModelPropertyChanged;
         Unloaded += (_, _) => ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
         StoryText.LayoutUpdated += OnStoryLayoutUpdated;
-        ActualThemeChanged += (_, _) => ApplyHighlightBrushes();
+        // Rebuild after the theme walk, so the probe already holds the new theme's brush.
+        ActualThemeChanged += (_, _) => DispatcherQueue.TryEnqueue(BuildStory);
     }
 
     public StoriesViewModel ViewModel { get; } = App.GetService<StoriesViewModel>();
@@ -45,7 +44,7 @@ public sealed partial class StoriesPage : Page
                 BuildStory();
                 break;
             case nameof(StoriesViewModel.HighlightPlaces):
-                ApplyHighlights();
+                BuildStory();
                 break;
         }
     }
@@ -65,17 +64,14 @@ public sealed partial class StoriesPage : Page
         StoryText.Blocks.Clear();
         if (ViewModel.SelectedTrip is not { } trip)
         {
-            _story = null;
             return;
         }
 
-        _story = StoryComposer.Compose(trip);
-        foreach (Paragraph paragraph in _story.Blocks)
+        foreach (Paragraph paragraph in StoryComposer.Compose(trip, AccentBrushProbe.Background, ActualTheme, ViewModel.HighlightPlaces))
         {
             StoryText.Blocks.Add(paragraph);
         }
 
-        ApplyHighlights();
         ApplyColumns();
         RelinkOverflow();
     }
@@ -88,27 +84,6 @@ public sealed partial class StoriesPage : Page
         ApplyColumns();
         Overflow1.InvalidateMeasure();
         Overflow2.InvalidateMeasure();
-    }
-
-    private void ApplyHighlightBrushes()
-    {
-        PlaceHighlighter.Background = HighlightBrushProbe.Background;
-        PlaceHighlighter.Foreground = HighlightBrushProbe.BorderBrush;
-    }
-
-    private void ApplyHighlights()
-    {
-        ApplyHighlightBrushes();
-        PlaceHighlighter.Ranges.Clear();
-        if (_story is null || !ViewModel.HighlightPlaces)
-        {
-            return;
-        }
-
-        foreach (TextRange range in StoryComposer.FindRanges(_story))
-        {
-            PlaceHighlighter.Ranges.Add(range);
-        }
     }
 
     // One column flows as a normal page; wider layouts need a fixed column height to force the text to overflow.

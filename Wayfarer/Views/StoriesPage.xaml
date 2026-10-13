@@ -8,10 +8,9 @@
       SizeChanged="OnPageSizeChanged">
 
     <Grid>
-        <!-- TextHighlighter is not a DependencyObject in Uno, so ThemeResource brushes are read from this probe. -->
-        <Border x:Name="HighlightBrushProbe"
-                Background="{ThemeResource WayfarerHighlightBackgroundBrush}"
-                BorderBrush="{ThemeResource WayfarerHighlightForegroundBrush}"
+        <!-- Story runs are built in code, so the theme-correct accent brush is read from this probe. -->
+        <Border x:Name="AccentBrushProbe"
+                Background="{ThemeResource AccentTextFillColorPrimaryBrush}"
                 Visibility="Collapsed" />
         <ScrollViewer Padding="{StaticResource WayfarerPagePadding}"
                       AutomationProperties.AutomationId="StoriesScrollViewer"
@@ -66,11 +65,7 @@
                                    AutomationProperties.AutomationId="StoryText"
                                    IsTextSelectionEnabled="True"
                                    OverflowContentTarget="{x:Bind Overflow1}"
-                                   TextWrapping="Wrap">
-                        <RichTextBlock.TextHighlighters>
-                            <TextHighlighter x:Name="PlaceHighlighter" />
-                        </RichTextBlock.TextHighlighters>
-                    </RichTextBlock>
+                                   TextWrapping="Wrap" />
                     <RichTextBlockOverflow x:Name="Overflow1"
                                            Grid.Column="1"
                                            OverflowContentTarget="{x:Bind Overflow2}" />

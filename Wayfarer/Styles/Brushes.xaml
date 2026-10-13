@@ -15,8 +15,6 @@
                 <GradientStop Offset="1" Color="{StaticResource SystemChromeBlackMediumColor}" />
             </LinearGradientBrush>
             <StaticResource x:Key="WayfarerPhotoCaptionForegroundBrush" ResourceKey="TextOnAccentFillColorPrimaryBrush" />
-            <StaticResource x:Key="WayfarerHighlightBackgroundBrush" ResourceKey="SystemFillColorCautionBackgroundBrush" />
-            <StaticResource x:Key="WayfarerHighlightForegroundBrush" ResourceKey="TextFillColorPrimaryBrush" />
             <StaticResource x:Key="WayfarerTagBackgroundBrush" ResourceKey="SubtleFillColorSecondaryBrush" />
             <StaticResource x:Key="WayfarerTagForegroundBrush" ResourceKey="TextFillColorSecondaryBrush" />
             <StaticResource x:Key="WayfarerEmptyStateGlyphBrush" ResourceKey="TextFillColorTertiaryBrush" />
@@ -37,8 +35,6 @@
             </LinearGradientBrush>
             <!-- Over the dark scrim the caption stays light in both themes. -->
             <StaticResource x:Key="WayfarerPhotoCaptionForegroundBrush" ResourceKey="TextFillColorPrimaryBrush" />
-            <StaticResource x:Key="WayfarerHighlightBackgroundBrush" ResourceKey="SystemFillColorCautionBackgroundBrush" />
-            <StaticResource x:Key="WayfarerHighlightForegroundBrush" ResourceKey="TextFillColorPrimaryBrush" />
             <StaticResource x:Key="WayfarerTagBackgroundBrush" ResourceKey="SubtleFillColorSecondaryBrush" />
             <StaticResource x:Key="WayfarerTagForegroundBrush" ResourceKey="TextFillColorSecondaryBrush" />
             <StaticResource x:Key="WayfarerEmptyStateGlyphBrush" ResourceKey="TextFillColorTertiaryBrush" />
@@ -54,8 +50,6 @@
             <StaticResource x:Key="WayfarerPhotoBorderBrush" ResourceKey="SystemColorWindowTextColorBrush" />
             <StaticResource x:Key="WayfarerPhotoScrimBrush" ResourceKey="SystemColorWindowColorBrush" />
             <StaticResource x:Key="WayfarerPhotoCaptionForegroundBrush" ResourceKey="SystemColorWindowTextColorBrush" />
-            <StaticResource x:Key="WayfarerHighlightBackgroundBrush" ResourceKey="SystemColorHighlightColorBrush" />
-            <StaticResource x:Key="WayfarerHighlightForegroundBrush" ResourceKey="SystemColorHighlightTextColorBrush" />
             <StaticResource x:Key="WayfarerTagBackgroundBrush" ResourceKey="SystemColorButtonFaceColorBrush" />
             <StaticResource x:Key="WayfarerTagForegroundBrush" ResourceKey="SystemColorButtonTextColorBrush" />
             <StaticResource x:Key="WayfarerEmptyStateGlyphBrush" ResourceKey="SystemColorGrayTextColorBrush" />
