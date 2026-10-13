@@ -2,7 +2,7 @@
 
 Photos in `Wayfarer/Assets/Photos` come from [Lorem Picsum](https://picsum.photos), which serves images from [Unsplash](https://unsplash.com) under the [Unsplash License](https://unsplash.com/license) (free to use, no permission needed).
 
-Captions and locations are fictional, written for the sample trips.
+Captions and locations are fictional, written for the sample trips. The photos are stock images, not shots of the places named in the trip stories, so captions describe what is in the frame rather than naming a landmark.
 
 | File | Photographer | Source |
 | --- | --- | --- |
@@ -30,3 +30,15 @@ Captions and locations are fictional, written for the sample trips.
 | `patagonia-22.jpg` | Alex Talmon | [Unsplash](https://unsplash.com/photos/6iat9p85VnQ) (picsum id 191) |
 | `patagonia-23.jpg` | Nicholas Swanson | [Unsplash](https://unsplash.com/photos/agnhLQWqr1Q) (picsum id 66) |
 | `patagonia-24.jpg` | Dorothy Lin | [Unsplash](https://unsplash.com/photos/TIr6EwYMRUM) (picsum id 79) |
+
+## Animations
+
+The three Lottie animations in `Wayfarer/Assets/Lottie` (`mountain.json`, `plane.json` and `sunrise.json`) were hand-authored for Wayfarer by Martin Zikmund and are covered by this repository's [MIT license](LICENSE).
+
+## App icon and artwork
+
+The app icon (`Wayfarer/Assets/Icons/icon.svg`, `icon_foreground.svg`), the logo (`Wayfarer/Assets/Images/app_logo.svg`) and the splash artwork (`Wayfarer/Assets/Splash/splash_screen.svg`) were made for Wayfarer by Martin Zikmund and are covered by this repository's [MIT license](LICENSE).
+
+## Icons
+
+In-app glyphs use the Fluent symbol font: Segoe Fluent Icons on Windows, and the Fluent icon font Uno Platform bundles on every other platform.
