@@ -87,12 +87,23 @@ public sealed partial class GalleryPage : Page
 
     private void OnTilePointerEntered(object sender, PointerRoutedEventArgs e) => ShowBadge(sender, true);
 
-    private void OnTilePointerExited(object sender, PointerRoutedEventArgs e) => ShowBadge(sender, false);
+    private void OnTilePointerExited(object sender, PointerRoutedEventArgs e) =>
+        ShowBadge(sender, sender is ItemContainer { FocusState: FocusState.Keyboard });
 
-    // The trip's stamp slides in on hover, like a sticker peeking out of the corner.
+    private void OnTileGotFocus(object sender, RoutedEventArgs e)
+    {
+        if (sender is ItemContainer { FocusState: FocusState.Keyboard })
+        {
+            ShowBadge(sender, true);
+        }
+    }
+
+    private void OnTileLostFocus(object sender, RoutedEventArgs e) => ShowBadge(sender, false);
+
+    // The trip's stamp slides in on hover or keyboard focus, like a sticker peeking out of the corner.
     private static void ShowBadge(object tile, bool show)
     {
-        if (tile is not Panel panel || panel.Children.OfType<PostageStamp>().FirstOrDefault() is not { } badge)
+        if (tile is not ItemContainer { Child: Panel panel } || panel.Children.OfType<PostageStamp>().FirstOrDefault() is not { } badge)
         {
             return;
         }

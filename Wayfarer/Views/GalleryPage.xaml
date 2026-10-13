@@ -13,11 +13,13 @@
         <DataTemplate x:Key="PhotoTemplate" x:DataType="vm:GalleryItem">
             <ItemContainer AutomationProperties.AutomationId="GalleryPhotoItem"
                            AutomationProperties.Name="{x:Bind Photo.Caption}"
+                           GotFocus="OnTileGotFocus"
+                           LostFocus="OnTileLostFocus"
+                           PointerCanceled="OnTilePointerExited"
+                           PointerEntered="OnTilePointerEntered"
+                           PointerExited="OnTilePointerExited"
                            ToolTipService.ToolTip="{x:Bind Photo.Caption}">
-                <Grid CornerRadius="{StaticResource ControlCornerRadius}"
-                      PointerEntered="OnTilePointerEntered"
-                      PointerExited="OnTilePointerExited"
-                      PointerCanceled="OnTilePointerExited">
+                <Grid CornerRadius="{StaticResource ControlCornerRadius}">
                     <Image Source="{x:Bind helpers:Format.Image(Photo.ImageUri)}"
                            Stretch="UniformToFill" />
                     <Border Padding="12,40,12,8"
