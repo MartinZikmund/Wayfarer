@@ -123,7 +123,7 @@ public sealed partial class GalleryPage : Page
         _isDialogOpen = true;
         try
         {
-            GalleryPhotoDialog dialog = new(photo, ViewModel.TripOf(photo)) { XamlRoot = XamlRoot };
+            GalleryPhotoDialog dialog = new(photo, ViewModel.TripOf(photo)) { XamlRoot = XamlRoot, RequestedTheme = ActualTheme };
             await dialog.ShowAsync();
         }
         catch (Exception ex) when (ex is InvalidOperationException or COMException)
