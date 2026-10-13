@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging.Abstractions;
 using Uno.Resizetizer;
 using Wayfarer.Services;
 using Wayfarer.ViewModels;
@@ -21,6 +22,9 @@ public partial class App : Application
     public static IServiceProvider Services { get; private set; } = null!;
 
     public static Window? MainWindow { get; private set; }
+
+    /// <summary>Set by <see cref="InitializeLogging"/> in Debug builds; app services log through it too.</summary>
+    private static ILoggerFactory? AppLoggerFactory { get; set; }
 
     /// <summary>True on Skia desktop (Win32, macOS, X11) and WinAppSDK, where the app owns the window chrome.</summary>
     public static bool IsDesktop { get; } =
@@ -63,6 +67,9 @@ public partial class App : Application
     private static ServiceProvider ConfigureServices()
     {
         ServiceCollection services = new();
+
+        services.AddSingleton(AppLoggerFactory ?? NullLoggerFactory.Instance);
+        services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 
         services.AddSingleton<ITripService, TripService>();
         services.AddSingleton<INavigationService, NavigationService>();
@@ -121,6 +128,7 @@ public partial class App : Application
             builder.AddFilter("Microsoft", LogLevel.Warning);
         });
 
+        AppLoggerFactory = factory;
         global::Uno.Extensions.LogExtensionPoint.AmbientLoggerFactory = factory;
 
 #if HAS_UNO

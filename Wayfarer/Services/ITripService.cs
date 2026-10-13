@@ -25,9 +25,9 @@ public interface ITripService
 
     Task<IReadOnlyList<SearchResult>> SearchAsync(string query, CancellationToken ct = default);
 
-    /// <summary>Replaces an entry in memory (e.g. after editing its rich text).</summary>
+    /// <summary>Adds or replaces an entry and saves it on this device.</summary>
     Task SaveEntryAsync(JournalEntry entry, CancellationToken ct = default);
 
-    /// <summary>Removes an entry in memory and raises EntryDeleted with its id.</summary>
+    /// <summary>Removes an entry, saves that on this device and raises EntryDeleted with its id.</summary>
     Task DeleteEntryAsync(string entryId, CancellationToken ct = default);
 }
