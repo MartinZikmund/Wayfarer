@@ -4,9 +4,9 @@ namespace Wayfarer.Models;
 
 public sealed record Trip
 {
-    public required string Id { get; init; }
+    public string Id { get; init; } = "";
 
-    public required string Title { get; init; }
+    public string Title { get; init; } = "";
 
     public string Region { get; init; } = "";
 
