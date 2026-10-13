@@ -1,0 +1,213 @@
+<UserControl x:Class="Wayfarer.Views.JournalEntryEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:views="using:Wayfarer.Views">
+
+    <UserControl.KeyboardAccelerators>
+        <KeyboardAccelerator Key="S"
+                             Invoked="OnSaveAccelerator"
+                             Modifiers="Control" />
+    </UserControl.KeyboardAccelerators>
+
+    <Grid RowSpacing="{StaticResource WayfarerContentSpacing}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <CommandBar x:Name="Toolbar"
+                    Grid.Row="0"
+                    AutomationProperties.AutomationId="EditorToolbar"
+                    Background="Transparent"
+                    DefaultLabelPosition="Collapsed"
+                    HorizontalAlignment="Left">
+            <AppBarButton x:Name="UndoButton"
+                          Width="48"
+                          AutomationProperties.AutomationId="EntryUndo"
+                          Click="OnUndoClick"
+                          Label="Undo">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE7A7;" />
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="RedoButton"
+                          Width="48"
+                          AutomationProperties.AutomationId="EntryRedo"
+                          Click="OnRedoClick"
+                          Label="Redo">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE7A6;" />
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarSeparator />
+            <AppBarToggleButton x:Name="BoldButton"
+                                Width="48"
+                                AutomationProperties.AutomationId="EntryBold"
+                                Click="OnBoldClick"
+                                Label="Bold">
+                <AppBarToggleButton.Icon>
+                    <FontIcon Glyph="&#xE8DD;" />
+                </AppBarToggleButton.Icon>
+            </AppBarToggleButton>
+            <AppBarToggleButton x:Name="ItalicButton"
+                                Width="48"
+                                AutomationProperties.AutomationId="EntryItalic"
+                                Click="OnItalicClick"
+                                Label="Italic">
+                <AppBarToggleButton.Icon>
+                    <FontIcon Glyph="&#xE8DB;" />
+                </AppBarToggleButton.Icon>
+            </AppBarToggleButton>
+            <AppBarToggleButton x:Name="UnderlineButton"
+                                Width="48"
+                                AutomationProperties.AutomationId="EntryUnderline"
+                                Click="OnUnderlineClick"
+                                Label="Underline">
+                <AppBarToggleButton.Icon>
+                    <FontIcon Glyph="&#xE8DC;" />
+                </AppBarToggleButton.Icon>
+            </AppBarToggleButton>
+            <AppBarToggleButton x:Name="StrikethroughButton"
+                                Width="48"
+                                AutomationProperties.AutomationId="EntryStrikethrough"
+                                Click="OnStrikethroughClick"
+                                Label="Strikethrough">
+                <AppBarToggleButton.Icon>
+                    <FontIcon Glyph="&#xEDE0;" />
+                </AppBarToggleButton.Icon>
+            </AppBarToggleButton>
+            <AppBarButton Width="48"
+                          AutomationProperties.AutomationId="EntryFontColor"
+                          Label="Font color">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE790;" />
+                </AppBarButton.Icon>
+                <AppBarButton.Flyout>
+                    <Flyout x:Name="ColorFlyout">
+                        <StackPanel Spacing="{StaticResource WayfarerContentSpacing}">
+                            <GridView x:Name="ColorGrid"
+                                      MaxWidth="240"
+                                      AutomationProperties.AutomationId="EntryColorGrid"
+                                      IsItemClickEnabled="True"
+                                      ItemClick="OnColorClick"
+                                      SelectionMode="None">
+                                <GridView.ItemTemplate>
+                                    <DataTemplate x:DataType="views:ColorSwatch">
+                                        <Border Width="28"
+                                                Height="28"
+                                                AutomationProperties.Name="{x:Bind Name}"
+                                                Background="{x:Bind Brush}"
+                                                CornerRadius="{StaticResource ControlCornerRadius}"
+                                                ToolTipService.ToolTip="{x:Bind Name}" />
+                                    </DataTemplate>
+                                </GridView.ItemTemplate>
+                            </GridView>
+                            <Button HorizontalAlignment="Stretch"
+                                    AutomationProperties.AutomationId="EntryColorAutomatic"
+                                    Click="OnAutomaticColorClick"
+                                    Content="Automatic" />
+                        </StackPanel>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+            <AppBarButton Width="48"
+                          AutomationProperties.AutomationId="EntryInsertLink"
+                          Label="Insert link">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE71B;" />
+                </AppBarButton.Icon>
+                <AppBarButton.Flyout>
+                    <Flyout x:Name="LinkFlyout" Opening="OnLinkFlyoutOpening">
+                        <StackPanel Width="280" Spacing="{StaticResource WayfarerContentSpacing}">
+                            <TextBox x:Name="LinkBox"
+                                     AutomationProperties.AutomationId="EntryLinkAddress"
+                                     Header="Link address"
+                                     InputScope="Url"
+                                     PlaceholderText="https://" />
+                            <Button AutomationProperties.AutomationId="EntryLinkInsert"
+                                    Click="OnInsertLinkClick"
+                                    Content="Insert"
+                                    Style="{StaticResource AccentButtonStyle}" />
+                        </StackPanel>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+
+            <CommandBar.SecondaryCommands>
+            <AppBarButton AutomationProperties.AutomationId="EntrySave"
+                          Click="OnSaveClick"
+                          IsEnabled="{x:Bind ViewModel.IsDirty, Mode=OneWay}"
+                          Label="Save">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE74E;" />
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="OpenWindowButton"
+                          AutomationProperties.AutomationId="EntryOpenInNewWindow"
+                          Click="OnOpenInNewWindowClick"
+                          Label="Open in new window">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE8A7;" />
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton AutomationProperties.AutomationId="EntryDelete"
+                          Click="OnDeleteClick"
+                          Label="Delete entry">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE74D;" />
+                </AppBarButton.Icon>
+            </AppBarButton>
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+
+        <Grid Grid.Row="1"
+              Padding="{StaticResource WayfarerTightSpacing}"
+              ColumnSpacing="{StaticResource WayfarerItemSpacing}"
+              RowSpacing="{StaticResource WayfarerItemSpacing}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBox Grid.ColumnSpan="2"
+                     AutomationProperties.AutomationId="EntryTitleBox"
+                     Header="Title"
+                     PlaceholderText="Give this day a name"
+                     Text="{x:Bind ViewModel.EntryTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <CalendarDatePicker Grid.Row="1"
+                                AutomationProperties.AutomationId="EntryDatePicker"
+                                Date="{x:Bind ViewModel.EntryDate, Mode=TwoWay}"
+                                Header="Date" />
+            <ComboBox Grid.Row="1"
+                      Grid.Column="1"
+                      HorizontalAlignment="Stretch"
+                      AutomationProperties.AutomationId="EntryTripComboBox"
+                      DisplayMemberPath="Title"
+                      Header="Trip"
+                      ItemsSource="{x:Bind ViewModel.Trips, Mode=OneWay}"
+                      SelectedItem="{x:Bind ViewModel.SelectedTrip, Mode=TwoWay}" />
+        </Grid>
+
+        <RichEditBox x:Name="Editor"
+                     Grid.Row="2"
+                     Margin="{StaticResource WayfarerTightSpacing}"
+                     AutomationProperties.AutomationId="EntryRichEditBox"
+                     AutomationProperties.Name="Entry text"
+                     PlaceholderText="Start writing..."
+                     SelectionChanged="OnEditorSelectionChanged"
+                     TextChanged="OnEditorTextChanged"
+                     TextWrapping="Wrap" />
+
+        <TextBlock Grid.Row="3"
+                   Margin="{StaticResource WayfarerTightSpacing}"
+                   AutomationProperties.AutomationId="EntrySaveStatus"
+                   Style="{StaticResource WayfarerCaptionSecondaryTextBlockStyle}"
+                   Text="{x:Bind SaveStatusText(ViewModel.IsDirty), Mode=OneWay}" />
+    </Grid>
+</UserControl>
