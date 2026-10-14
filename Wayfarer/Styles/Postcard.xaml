@@ -146,10 +146,13 @@
                                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                                   Content="{TemplateBinding Content}"
                                                   ContentTemplate="{TemplateBinding ContentTemplate}" />
-                                <ContentPresenter Grid.Column="1"
-                                                  VerticalAlignment="Top"
-                                                  AutomationProperties.AccessibilityView="Raw"
-                                                  Content="{TemplateBinding Stamp}" />
+                                <!-- Not a ContentPresenter: WinUI doesn't count a TemplateBinding from a custom
+                                     property as bound, so a stampless card would present its Content twice. -->
+                                <ContentControl Grid.Column="1"
+                                                VerticalAlignment="Top"
+                                                AutomationProperties.AccessibilityView="Raw"
+                                                Content="{TemplateBinding Stamp}"
+                                                IsTabStop="False" />
                             </Grid>
                         </Grid>
                     </Border>
