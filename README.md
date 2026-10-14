@@ -113,8 +113,6 @@ On the web you need a browser with WebGPU enabled. The WebAssembly build links D
 - **Your journal stays on your device.** The trips, photos and starting entries ship in [`Assets/Data/trips.json`](Wayfarer/Assets/Data/trips.json). New, edited and deleted entries are saved to the app's local folder (IndexedDB in the browser) and replayed over that catalog. Nothing syncs between devices.
 - **Multi-window needs an iPad on Apple devices.** iPhone has no multi-scene support, so the "Open in new window" command is hidden there. Desktop heads always offer it. Android and the web don't offer it at all.
 - **The trips are made up.** The photos are stock images from Unsplash, so captions describe what's in the frame rather than naming landmarks.
-- **A few Uno Platform 7.0 preview gaps are worked around in the code**, each with a comment at the spot: `ConnectedAnimationService` is a stub on Skia (Home flies the photo itself), animating `CompositionGeometry.TrimEnd` doesn't render yet (the route steps `TrimEnd` each frame), leaving a scrolled page could leave its pixels behind (the shell repaints the frame after each navigation), and the web's accessibility tree ignores an automation peer's children (the motif's text is also marked Raw letter by letter).
-- **iOS and tvOS were compile-checked only.** Both heads were built on Windows for the simulator, but they haven't been run on an iPad or an Apple TV yet.
 
 ## Credits and license
 
