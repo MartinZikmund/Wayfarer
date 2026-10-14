@@ -14,7 +14,7 @@
     <ApplicationVersion>1</ApplicationVersion>
     <Version>1.0.0</Version>
     <!-- Package Publisher -->
-    <ApplicationPublisher>O=Martin Zikmund</ApplicationPublisher>
+    <ApplicationPublisher>Martin Zikmund</ApplicationPublisher>
     <!-- Package Description -->
     <Description>Wayfarer, a travel journal built with Uno Platform.</Description>
     <!--
