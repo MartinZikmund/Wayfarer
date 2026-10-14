@@ -535,8 +535,8 @@ public sealed partial class MapPage : Page
             float t = i / (float)Samples;
             Vector2 point = PointAt(line, along, total * t, out float angle);
 
-            // The plane glyph points up; keep the angle continuous so it never spins the long way round.
-            float degrees = angle * 180 / MathF.PI + 90;
+            // The plane glyph points right; keep the angle continuous so it never spins the long way round.
+            float degrees = angle * 180 / MathF.PI;
             while (degrees - previousAngle > 180)
             {
                 degrees -= 360;
