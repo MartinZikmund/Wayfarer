@@ -9,7 +9,11 @@ using Wayfarer.Controls.Postcard;
 using Wayfarer.Helpers;
 using Wayfarer.Models;
 using Wayfarer.ViewModels;
+#if HAS_UNO
 using Windows.UI.ViewManagement;
+#else
+using Microsoft.UI.System;
+#endif
 
 namespace Wayfarer.Views;
 
@@ -35,7 +39,12 @@ public sealed partial class MapPage : Page
     // dash is trimmed to almost nothing instead. Flat caps keep that sliver invisible.
     private const float HiddenTrim = 0.001f;
 
+#if HAS_UNO
     private readonly AccessibilitySettings _accessibility = new();
+#else
+    // WinAppSDK apps have no CoreWindow, so AccessibilitySettings.HighContrastChanged throws there.
+    private ThemeSettings? _themeSettings;
+#endif
     private readonly List<Button> _stopButtons = new();
     private Trip? _stopsTrip;
     private bool _animateNextBuild;
@@ -77,7 +86,12 @@ public sealed partial class MapPage : Page
     {
         OnUnloaded(sender, e);
         ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+#if HAS_UNO
         _accessibility.HighContrastChanged += OnHighContrastChanged;
+#else
+        _themeSettings ??= ThemeSettings.CreateForWindowId(XamlRoot.ContentIslandEnvironment.AppWindowId);
+        _themeSettings.Changed += OnHighContrastChanged;
+#endif
         BuildSelector();
         Rebuild(true);
     }
@@ -85,7 +99,14 @@ public sealed partial class MapPage : Page
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
         ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+#if HAS_UNO
         _accessibility.HighContrastChanged -= OnHighContrastChanged;
+#else
+        if (_themeSettings is not null)
+        {
+            _themeSettings.Changed -= OnHighContrastChanged;
+        }
+#endif
         _resizeTimer?.Stop();
         StopDrawIn();
         ReleaseRoute();
@@ -106,8 +127,14 @@ public sealed partial class MapPage : Page
     }
 
     // Switching to or from High Contrast doesn't always change ActualTheme (Dark to a dark HC theme stays Dark).
-    private void OnHighContrastChanged(AccessibilitySettings sender, object args) =>
+    private void OnHighContrastChanged(object sender, object args) =>
         DispatcherQueue.TryEnqueue(() => Rebuild(false));
+
+#if HAS_UNO
+    private bool IsHighContrast => _accessibility.HighContrast;
+#else
+    private bool IsHighContrast => _themeSettings?.HighContrast ?? false;
+#endif
 
     private void BuildSelector()
     {
@@ -326,7 +353,7 @@ public sealed partial class MapPage : Page
     // Faint contour rings and a dotted survey grid; both are ornament, so High Contrast drops them.
     private void DrawDecoration(double width, double height)
     {
-        bool show = !_accessibility.HighContrast;
+        bool show = !IsHighContrast;
         Contours.Visibility = GridLines.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
         if (!show)
         {
